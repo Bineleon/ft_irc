@@ -1,6 +1,6 @@
 NAME = ircserv
-SRCS = srcs/main.cpp
-INCLUDE = includes/ircserv.hpp
+SRCS = main.cpp
+INCLUDE = minitcp.hpp
 
 OBJS_DIR = objects
 OBJS = ${addprefix ${OBJS_DIR}/, ${SRCS:.cpp=.o}}
