@@ -18,7 +18,7 @@ int	main() {
 	server_addr.sin_port = htons(PORT);
 
 	if (bind(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-		std::perror("listen");
+		std::perror("bind");
 		close(server_fd);
 		return 1;
 	}
