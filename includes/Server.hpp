@@ -1,7 +1,7 @@
 #ifndef IRCSERV_HPP
 # define IRCSERV_HPP
 
-# include "client.hpp"
+# include "Client.hpp"
 
 # include <iostream>
 # include <vector>
