@@ -1,36 +1,45 @@
-NAME = ircserv
+RESET			= \e[0m\033[0m
+GREEN			= \033[0;32m\e[1m
 
-SRC_DIR = srcs/
-SRCS = main.cpp Server.cpp Client.cpp
-SRC = ${addprefix ${SRC_DIR}, ${SRCS}}
+NAME			= ircserv
 
-INCLUDE_DIR = includes/
-INCLUDES =  Server.hpp Client.hpp
-INCLUDE = ${addprefix ${INCLUDE_DIR}, ${INCLUDES}}
+SRC_DIR			= srcs/
+SRCS			= main.cpp Server.cpp Client.cpp
+SRC				= ${addprefix ${SRC_DIR}, ${SRCS}}
 
-OBJS_DIR = objects/
-OBJS = ${addprefix ${OBJS_DIR}, ${SRCS:.cpp=.o}}
+INCLUDE_DIR		= includes/
+INCLUDES		=  Server.hpp Client.hpp
+INCLUDE			= ${addprefix ${INCLUDE_DIR}, ${INCLUDES}}
 
-DEPS_DIR = dependances/
-DEPS = ${addprefix ${DEPS_DIR}, ${SRCS:.cpp=.d}}
+OBJS_DIR		= objects/
+OBJS			= ${addprefix ${OBJS_DIR}, ${SRCS:.cpp=.o}}
 
-CXX = c++
-CFLAGS = -Wall -Werror -Wextra -std=c++98 -g -MMD -MP
+DEPS_DIR		= dependances/
+DEPS			= ${addprefix ${DEPS_DIR}, ${SRCS:.cpp=.d}}
+
+CXX				= c++
+CFLAGS			= -Wall -Werror -Wextra -std=c++98 -g -MMD -MP
+
+RM				= rm -rf
 
 ${OBJS_DIR}%.o: ${SRC_DIR}%.cpp ${INCLUDE}
-		mkdir -p ${OBJS_DIR} ${DEPS_DIR}
-		${CXX} ${CFLAGS} -c $< -o $@ -MF ${DEPS_DIR}$*.d
+		@mkdir -p ${OBJS_DIR} ${DEPS_DIR}
+		@${CXX} ${CFLAGS} -c $< -o $@ -MF ${DEPS_DIR}$*.d
 
 ${NAME}: ${OBJS} ${INCLUDE} Makefile
-		${CXX} ${CFLAGS} ${OBJS} -I ./ -o $@
+		@${CXX} ${CFLAGS} ${OBJS} -I ./ -o $@
+		@echo "${GREEN}ircserv		: DONE!${RESET}"
 
 all: ${NAME}
 
 clean:
-		rm -rf ${OBJS_DIR} ${DEPS_DIR}
+		@${RM} ${OBJS_DIR} ${DEPS_DIR}
+		@echo "${GREEN}Clean		: DONE!${RESET}"
+
 
 fclean: clean;
-		rm -f ${NAME}
+		@${RM} ${NAME}
+		@echo "${GREEN}Full Clean	: DONE!${RESET}"
 
 -include ${DEPS}
 
