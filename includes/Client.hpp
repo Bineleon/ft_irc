@@ -2,22 +2,38 @@
 # define CLIENT_HPP
 
 # include <iostream>
+# include <sys/socket.h>
+
+enum ClientStatus {
+	PASSWORD_NEEDED,
+	NICKNAME_NEEDED,
+	USERNAME_NEEDED,
+	AUTHENTICATED
+};
 
 class Client
 {
 	private:
 		int	_fd; // client file descriptor
-		std::string	_IP; // client ip adress
+		const std::string	_IP; // client ip adress
 		std::string	_nickname;
 		std::string	_username;
-		std::string	_realname;
-		std::string	_hostname;
+		ClientStatus	_status;
+
+		Client(const Client&);
+		Client&	operator=(const Client&);
 
 	public:
 		Client();
-		Client(const Client& copy);
-		Client&	operator=(const Client& copy);
-		~Client();
+		Client(const int fd, const std::string& IP);
+
+		void	sendMessage(const std::string& msg);
+
+		void	acceptPassword();
+		void	setNickname(const std::string nickname);
+		void	setUsername(const std::string username);
+
+		~Client(){};
 };
 
 #endif
