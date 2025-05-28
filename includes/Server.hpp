@@ -5,6 +5,7 @@
 
 # include <iostream>
 # include <vector>
+# include <map>
 # include <sys/socket.h>
 # include <poll.h>
 # include <exception>
@@ -14,8 +15,10 @@
 # include <netinet/in.h>
 # include <sys/socket.h>
 # include <cstdio>
+# include <cstdlib>
 
 #define BACKLOG 10
+# define BUFFER_SIZE 1024
 
 class Server
 {
@@ -28,10 +31,13 @@ class Server
 		int _fd;
 		std::string	_pwd;
 		std::vector<struct pollfd> _pollFds;
+		std::map<int, Client> _clients;
 	
 	public:
 		Server(int port, std::string &pwd);
 		~Server();
+		int	const &getFd() const;
+		int const &getPort() const;
 		void initServerSocket();
 };
 

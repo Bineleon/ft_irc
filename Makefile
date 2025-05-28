@@ -1,11 +1,11 @@
 NAME = ircserv
 
 SRC_DIR = srcs/
-SRCS = main.cpp
+SRCS = main.cpp Server.cpp Client.cpp
 SRC = ${addprefix ${SRC_DIR}, ${SRCS}}
 
 INCLUDE_DIR = includes/
-INCLUDES = minitcp.hpp
+INCLUDES =  Server.hpp Client.hpp
 INCLUDE = ${addprefix ${INCLUDE_DIR}, ${INCLUDES}}
 
 OBJS_DIR = objects/

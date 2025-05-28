@@ -1,10 +1,13 @@
-#include "Server.hpp"
+#include "../includes/Server.hpp"
 
 Server::Server(){}
 
-Server::Server(int port, std::string &pwd): _port(port), _pwd(pwd) {}
+Server::Server(int port, std::string &pwd): _port(port), _pwd(pwd)
+{
+	initServerSocket();
+}
 
-Server::~Server(){}
+Server::~Server() {}
 
 Server::Server(const Server& copy){ (void) copy; }
 
@@ -13,6 +16,12 @@ Server&	Server::operator=(const Server& copy)
 	(void) copy;
 	return *this;
 }
+
+int	const & Server::getFd() const { return _fd; }
+
+int	const & Server::getPort() const { return _port; }
+
+
 
 void Server::initServerSocket()
 {
@@ -39,3 +48,4 @@ void Server::initServerSocket()
 		throw std::runtime_error("listen()");
 	}
 }
+
