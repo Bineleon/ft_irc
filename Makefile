@@ -1,22 +1,28 @@
 NAME = ircserv
+
+SRC_DIR = srcs/
 SRCS = main.cpp
-INCLUDE = minitcp.hpp
+SRC = ${addprefix ${SRC_DIR}, ${SRCS}}
 
-OBJS_DIR = objects
-OBJS = ${addprefix ${OBJS_DIR}/, ${SRCS:.cpp=.o}}
+INCLUDE_DIR = includes/
+INCLUDES = minitcp.hpp
+INCLUDE = ${addprefix ${INCLUDE_DIR}, ${INCLUDES}}
 
-DEPS_DIR = dependances
-DEPS = ${addprefix ${DEPS_DIR}/, ${OBJS:.o=.d}}
+OBJS_DIR = objects/
+OBJS = ${addprefix ${OBJS_DIR}, ${SRCS:.cpp=.o}}
 
-CC = c++
+DEPS_DIR = dependances/
+DEPS = ${addprefix ${DEPS_DIR}, ${SRCS:.cpp=.d}}
+
+CXX = c++
 CFLAGS = -Wall -Werror -Wextra -std=c++98 -g -MMD -MP
 
-${OBJS_DIR}/%.o: %.cpp ${INCLUDE}
+${OBJS_DIR}%.o: ${SRC_DIR}%.cpp ${INCLUDE}
 		mkdir -p ${OBJS_DIR} ${DEPS_DIR}
-		${CC} ${CFLAGS} -c $< -o $@ -MF ${DEPS_DIR}/$*.d
+		${CXX} ${CFLAGS} -c $< -o $@ -MF ${DEPS_DIR}$*.d
 
 ${NAME}: ${OBJS} ${INCLUDE} Makefile
-		${CC} ${CFLAGS} ${OBJS} -I ./ -o $@
+		${CXX} ${CFLAGS} ${OBJS} -I ./ -o $@
 
 all: ${NAME}
 
