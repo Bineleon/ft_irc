@@ -6,6 +6,16 @@
 # include <iostream>
 # include <vector>
 # include <sys/socket.h>
+# include <poll.h>
+# include <exception>
+# include <string>
+# include <cstring>
+# include <unistd.h>
+# include <netinet/in.h>
+# include <sys/socket.h>
+# include <cstdio>
+
+#define BACKLOG 10
 
 class Server
 {
@@ -22,7 +32,7 @@ class Server
 	public:
 		Server(int port, std::string &pwd);
 		~Server();
-		void initSocket();
+		void initServerSocket();
 };
 
 #endif
