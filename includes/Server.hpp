@@ -20,6 +20,15 @@
 #define BACKLOG 10
 # define BUFFER_SIZE 1024
 
+enum ErrorFormat {
+	CLIENT,
+	CLIENT_NICK,
+	CLIENT_CMD,
+	CLIENT_CHANNEL
+};
+
+extern std::map<int, std::pair<ErrorFormat, std::string>> clientMessages;
+
 class Server
 {
 	private:
@@ -32,7 +41,7 @@ class Server
 		std::string	_pwd;
 		std::vector<struct pollfd> _pollFds;
 		std::map<int, Client> _clients;
-	
+
 	public:
 		Server(int port, std::string &pwd);
 		~Server();

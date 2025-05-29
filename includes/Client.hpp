@@ -18,6 +18,7 @@ class Client
 		const std::string	_IP; // client ip adress
 		std::string	_nickname;
 		std::string	_username;
+		std::string	_realname;
 		ClientStatus	_status;
 
 		Client(const Client&);

@@ -30,7 +30,7 @@ void Server::initServerSocket()
 	_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (_fd == -1)
 		throw std::runtime_error("socket()");
-	
+
 	std::memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = INADDR_ANY;
@@ -49,3 +49,14 @@ void Server::initServerSocket()
 	}
 }
 
+std::map<int, std::pair<ErrorFormat, std::string>> clientMessages;
+
+void	initErrorMessages() {
+	clientMessages[464] = std::make_pair(CLIENT, "Password incorrect");
+	clientMessages[461] = std::make_pair(CLIENT_CMD, "Not enough parameters");
+	clientMessages[462] = std::make_pair(CLIENT, "You may not reregister");
+	clientMessages[431] = std::make_pair(CLIENT, "No nickname given");
+	clientMessages[432] = std::make_pair(CLIENT_NICK, "Erroneus nickname"); // invalid characters in the nickname
+	clientMessages[433] = std::make_pair(CLIENT_NICK, "Nickname is already in use");
+	clientMessages[403] = std::make_pair(CLIENT_CHANNEL, "No such channel");
+}
