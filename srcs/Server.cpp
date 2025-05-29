@@ -54,7 +54,7 @@ void Server::initServerSocket()
 	std::cout << "Serveur waiting on port " << _port << "..." << std::endl;
 }
 
-std::map<int, std::pair<ErrorFormat, std::string>> clientMessages;
+std::map<int, std::pair<ErrorFormat, std::string> > clientMessages;
 
 void	initErrorMessages() {
 	clientMessages[464] = std::make_pair(CLIENT, "Password incorrect");
@@ -80,11 +80,14 @@ void Server::runIRC()
 		}
 		else if (status == 0)
 			continue;
-		for (int i = 0; i < _pollFds.size(); ++i)
+		
+		std::vector<pollfd>::iterator it;
+		
+		for (it = _pollFds.begin(); it != _pollFds.end(); ++it)
 		{
-			if ((_pollFds[i].revents & POLLIN) != 1)
+			if ((it->revents & POLLIN) != 1)
 				continue;
-			if (_pollFds[i].fd == _fd)
+			if (it->fd == _fd)
 			{
 				//TODO : accept connection
 			}

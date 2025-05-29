@@ -20,6 +20,7 @@ class Client
 		std::string	_username;
 		std::string	_realname;
 		ClientStatus	_status;
+		std::string	_msgBuffer;
 
 		Client(const Client&);
 		Client&	operator=(const Client&);
@@ -33,6 +34,8 @@ class Client
 		void	acceptPassword();
 		void	setNickname(const std::string nickname);
 		void	setUsername(const std::string username);
+		void	appendToMsgBuf(std::string msg);
+		std::string const & getmsgBuffer(void) const;
 
 		~Client(){};
 };
