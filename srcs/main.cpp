@@ -1,11 +1,12 @@
 // #include "../includes/minitcp.hpp"
 #include "../includes/Server.hpp"
 
+
 int	main(int ac, char **av)
 {
 	int	client_fd;
 	struct sockaddr_in client_addr;
-	char	buffer[BUFFER_SIZE];
+	// char	buffer[BUFFER_SIZE];
 	socklen_t	addr_len = sizeof(client_addr);
 	int port;
 	std::string pwd;
@@ -29,16 +30,9 @@ int	main(int ac, char **av)
 			return 1;
 		}
 		
-		std::memset(buffer, 0, BUFFER_SIZE);
-		ssize_t	bytes_received = recv(client_fd, buffer, BUFFER_SIZE - 1, 0);
-		if (bytes_received > 0) {
-			std::cout << "Message received: " << buffer << std::endl;
-			
-			std::string	reply = "Hello from server!\r\n";
-			send(client_fd, reply.c_str(), reply.length(), 0);
-		}
+		serv.runIRC();
 		
-		close(client_fd);
+		// close(client_fd);
 		close(serv.getFd());
 	}
 	catch(const std::exception& e)
@@ -49,6 +43,55 @@ int	main(int ac, char **av)
 
 	return 0;
 }
+
+// int	main(int ac, char **av)
+// {
+// 	int	client_fd;
+// 	struct sockaddr_in client_addr;
+// 	char	buffer[BUFFER_SIZE];
+// 	socklen_t	addr_len = sizeof(client_addr);
+// 	int port;
+// 	std::string pwd;
+
+// 	if (ac != 3)
+// 	{
+// 		std::cerr << "Format: <port> <password>" << std::endl;
+// 		return (1);
+// 	}
+
+// 	pwd = av[2];
+// 	port = std::atoi(av[1]);
+// 	try
+// 	{
+// 		Server serv(port, pwd);
+		
+// 		client_fd = accept(serv.getFd(), (struct sockaddr*)&client_addr, &addr_len);
+// 		if (client_fd < 0) {
+// 			std::perror("accept");
+// 			close(serv.getFd());
+// 			return 1;
+// 		}
+		
+// 		std::memset(buffer, 0, BUFFER_SIZE);
+// 		ssize_t	bytes_received = recv(client_fd, buffer, BUFFER_SIZE - 1, 0);
+// 		if (bytes_received > 0) {
+// 			std::cout << "Message received: " << buffer << std::endl;
+			
+// 			std::string	reply = "Hello from server!\r\n";
+// 			send(client_fd, reply.c_str(), reply.length(), 0);
+// 		}
+		
+// 		close(client_fd);
+// 		close(serv.getFd());
+// 	}
+// 	catch(const std::exception& e)
+// 	{
+// 		std::cerr << e.what() << '\n';
+// 	}
+	
+
+// 	return 0;
+// }
 
 
 // int	main(int ac, char **av) {

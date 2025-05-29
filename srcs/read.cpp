@@ -6,7 +6,12 @@
 void Server::closeClient(struct pollfd pfdClient)
 {
 	close(pfdClient.fd);
-	std::vector<struct pollfd>::iterator it = std::find(_pollFds.begin(), _pollFds.end(), pfdClient);
+	std::vector<struct pollfd>::iterator it;
+	for (it = _pollFds.begin(); it != _pollFds.end(); ++it)
+	{
+		if (it->fd == pfdClient.fd) // ou autre critère
+			break;
+	}
 	if (it != _pollFds.end())
 		_pollFds.erase(it);
 }
@@ -17,7 +22,8 @@ void Server::readFromSocket(struct pollfd pfdClient)
 	int bytesRead;
 
 	std::memset(&buffer, 0, sizeof buffer);
-	bytesRead = recv(pfdClient.fd, buffer, sizeof buffer, 0);
+	bytesRead = recv(pfdClient.fd, buffer, BUFFER_SIZE, 0);
+	std::cout << "ICI\n";
 	if (bytesRead <= 0)
 	{
 		if (bytesRead == 0)
@@ -28,11 +34,11 @@ void Server::readFromSocket(struct pollfd pfdClient)
 	}
 	else
 	{
-		_clients[pfdClient.fd].appendToMsgBuf(buffer);
-		std::string clientMsgBuf = _clients[pfdClient.fd].getmsgBuffer();
+		_clients[pfdClient.fd]->appendToMsgBuf(buffer);
+		std::string clientMsgBuf = _clients[pfdClient.fd]->getmsgBuffer();
 		size_t pos;
 
-		while (pos = clientMsgBuf.find("\r\n") != std::string::npos)
+		while ((pos = clientMsgBuf.find("\r\n")) != std::string::npos)
 		{
 			std::string toParse = clientMsgBuf.substr(0, pos);
 			clientMsgBuf.erase(0, pos + 2);

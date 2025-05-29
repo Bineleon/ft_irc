@@ -89,11 +89,13 @@ void Server::runIRC()
 				continue;
 			if (it->fd == _fd)
 			{
-				//TODO : accept connection
+				acceptNewClient();
 			}
 			else
 			{
-				//TODO : read from client
+				readFromSocket(*it);
+				std::string	reply = "Hello from server!\r\n";
+				send(it->fd, reply.c_str(), reply.length(), 0);
 			}
 		}
 
