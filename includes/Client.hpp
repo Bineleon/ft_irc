@@ -37,6 +37,8 @@ class Client
 		void	appendToMsgBuf(std::string msg);
 		std::string const & getmsgBuffer(void) const;
 
+        void setMsgBuffer(const std::string& buffer);
+
 		~Client(){};
 };
 

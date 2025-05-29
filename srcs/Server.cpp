@@ -29,6 +29,7 @@ void Server::initServerSocket()
 	_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (_fd == -1)
 		throw std::runtime_error("socket()");
+    fcntl(_fd, F_SETFL, O_NONBLOCK);
 
 	std::memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
@@ -80,12 +81,12 @@ void Server::runIRC()
 		}
 		else if (status == 0)
 			continue;
-		
+
 		std::vector<pollfd>::iterator it;
-		
+
 		for (it = _pollFds.begin(); it != _pollFds.end(); ++it)
 		{
-			if ((it->revents & POLLIN) != 1)
+			if (!(it->revents & POLLIN))
 				continue;
 			if (it->fd == _fd)
 			{

@@ -4,10 +4,10 @@
 
 int	main(int ac, char **av)
 {
-	int	client_fd;
-	struct sockaddr_in client_addr;
+	// int	client_fd;
+	// struct sockaddr_in client_addr;
 	// char	buffer[BUFFER_SIZE];
-	socklen_t	addr_len = sizeof(client_addr);
+	// socklen_t	addr_len = sizeof(client_addr);
 	int port;
 	std::string pwd;
 
@@ -22,16 +22,10 @@ int	main(int ac, char **av)
 	try
 	{
 		Server serv(port, pwd);
-		
-		client_fd = accept(serv.getFd(), (struct sockaddr*)&client_addr, &addr_len);
-		if (client_fd < 0) {
-			std::perror("accept");
-			close(serv.getFd());
-			return 1;
-		}
-		
+
+
 		serv.runIRC();
-		
+
 		// close(client_fd);
 		close(serv.getFd());
 	}
@@ -39,7 +33,7 @@ int	main(int ac, char **av)
 	{
 		std::cerr << e.what() << '\n';
 	}
-	
+
 
 	return 0;
 }
@@ -64,23 +58,23 @@ int	main(int ac, char **av)
 // 	try
 // 	{
 // 		Server serv(port, pwd);
-		
+
 // 		client_fd = accept(serv.getFd(), (struct sockaddr*)&client_addr, &addr_len);
 // 		if (client_fd < 0) {
 // 			std::perror("accept");
 // 			close(serv.getFd());
 // 			return 1;
 // 		}
-		
+
 // 		std::memset(buffer, 0, BUFFER_SIZE);
 // 		ssize_t	bytes_received = recv(client_fd, buffer, BUFFER_SIZE - 1, 0);
 // 		if (bytes_received > 0) {
 // 			std::cout << "Message received: " << buffer << std::endl;
-			
+
 // 			std::string	reply = "Hello from server!\r\n";
 // 			send(client_fd, reply.c_str(), reply.length(), 0);
 // 		}
-		
+
 // 		close(client_fd);
 // 		close(serv.getFd());
 // 	}
@@ -88,7 +82,7 @@ int	main(int ac, char **av)
 // 	{
 // 		std::cerr << e.what() << '\n';
 // 	}
-	
+
 
 // 	return 0;
 // }

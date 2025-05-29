@@ -1,15 +1,12 @@
 #include "../includes/Server.hpp"
 
-// i = it
-// read_data_from_socket(i, &poll_fds, &poll_count, server_socket);
-
 void Server::closeClient(struct pollfd pfdClient)
 {
 	close(pfdClient.fd);
 	std::vector<struct pollfd>::iterator it;
 	for (it = _pollFds.begin(); it != _pollFds.end(); ++it)
 	{
-		if (it->fd == pfdClient.fd) // ou autre critère
+		if (it->fd == pfdClient.fd)
 			break;
 	}
 	if (it != _pollFds.end())
@@ -27,7 +24,7 @@ void Server::readFromSocket(struct pollfd pfdClient)
 	if (bytesRead <= 0)
 	{
 		if (bytesRead == 0)
-			std::cout << "[" << pfdClient.fd << "] Client socket closed connection." << std::endl; 
+			std::cout << "[" << pfdClient.fd << "] Client socket closed connection." << std::endl;
 		else
 			std::cerr << "Error: recv()" << std::endl;
 		closeClient(pfdClient);
@@ -42,7 +39,8 @@ void Server::readFromSocket(struct pollfd pfdClient)
 		{
 			std::string toParse = clientMsgBuf.substr(0, pos);
 			clientMsgBuf.erase(0, pos + 2);
-			std::cout << "Msg from fd [" << pfdClient.fd << "]: " << toParse << std::endl; 
+			std::cout << "Msg from fd [" << pfdClient.fd << "]: " << toParse << std::endl;
+            _clients[pfdClient.fd]->setMsgBuffer(clientMsgBuf);
 		}
 		// Parse msg
 
