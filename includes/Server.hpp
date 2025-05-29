@@ -12,10 +12,12 @@
 # include <string>
 # include <cstring>
 # include <unistd.h>
+# include <fcntl.h>
 # include <netinet/in.h>
 # include <sys/socket.h>
 # include <cstdio>
 # include <cstdlib>
+# include <arpa/inet.h>
 # include <algorithm>
 
 #define BACKLOG 10
@@ -41,7 +43,7 @@ class Server
 		int _fd;
 		std::string	_pwd;
 		std::vector<struct pollfd> _pollFds;
-		std::map<int, Client> _clients;
+		std::map<int, Client*> _clients;
 
 	public:
 		Server(int port, std::string &pwd);
@@ -54,6 +56,10 @@ class Server
 		void readFromSocket(struct pollfd pfdClient);
 		void closeClient(struct pollfd pfdClient);
 
+		void acceptNewClient();
+
+		// void	handleCommands(Client *client, const std::string& cmd, const std::vector<std::string>& args);
+		// void	PASS(Client *client, const std::string pass);
 };
 
 #endif
