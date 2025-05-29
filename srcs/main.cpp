@@ -22,8 +22,6 @@ int	main(int ac, char **av)
 	{
 		Server serv(port, pwd);
 		
-		std::cout << "Serveur waiting on port " << "..." << std::endl;
-		
 		client_fd = accept(serv.getFd(), (struct sockaddr*)&client_addr, &addr_len);
 		if (client_fd < 0) {
 			std::perror("accept");

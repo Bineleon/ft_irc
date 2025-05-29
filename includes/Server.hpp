@@ -48,6 +48,7 @@ class Server
 		int	const &getFd() const;
 		int const &getPort() const;
 		void initServerSocket();
+		void runIRC();
 };
 
 #endif
