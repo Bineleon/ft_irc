@@ -28,10 +28,13 @@ class Client
 		Client();
 		Client(const int fd, const std::string& IP);
 
-		void	sendMessage(const std::string& msg);
+		void	setStatus(ClientStatus newStatus);
 
-		void	acceptPassword();
-		void	setNickname(const std::string nickname);
+		void	sendMessage(const std::string& msg);
+		void	sendError(int error);
+
+		void	PASS();
+		void	NICK(const std::string nickname);
 		void	setUsername(const std::string username);
 
 		~Client(){};

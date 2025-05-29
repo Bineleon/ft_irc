@@ -1,4 +1,5 @@
 #include "../includes/Client.hpp"
+#include "../includes/Server.hpp"
 
 Client::Client() {
 	this->_status = PASSWORD_NEEDED;
@@ -13,11 +14,36 @@ void	Client::sendMessage(const std::string& msg) {
 	send(this->_fd, fullMsg.c_str(), fullMsg.length(), 0);
 }
 
-void	Client::acceptPassword() {
+void	Client::sendError(int error) {
+	std::map<int, std::pair<ErrorFormat, std::string>>::iterator it = clientMessages.find(error);
+
+	if (it == clientMessages.end()) {
+		this->sendMessage("Unknown error");
+		return ;
+	}
+
+	ErrorFormat	format = it->second.first;
+	std::string	msg = it->second.second;
+
+	std::ostringstream	oss;
+
+	switch (format)
+	{
+		case CLIENT:
+			sendMessage(this->)
+			break;
+
+		default:
+			break;
+	}
+}
+
+void	Client::PASS() {
+
 	this->_status = NICKNAME_NEEDED;
 }
 
-void	Client::setNickname(const std::string nickname) {
+void	Client::NICK(const std::string nickname) {
 	if (this->_status == PASSWORD_NEEDED) {
 		sendMessage("Please enter the password using the PASS command before configuring your nickname");
 		return ;
