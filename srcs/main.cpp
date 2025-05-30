@@ -1,13 +1,8 @@
 // #include "../includes/minitcp.hpp"
 #include "../includes/Server.hpp"
 
-
 int	main(int ac, char **av)
 {
-	// int	client_fd;
-	// struct sockaddr_in client_addr;
-	// char	buffer[BUFFER_SIZE];
-	// socklen_t	addr_len = sizeof(client_addr);
 	int port;
 	std::string pwd;
 
@@ -22,19 +17,13 @@ int	main(int ac, char **av)
 	try
 	{
 		Server serv(port, pwd);
-
-
 		serv.runIRC();
-
-		// close(client_fd);
-		close(serv.getFd());
+        close(serv.getFd());
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << e.what() << '\n';
+        std::cerr << e.what() << '\n';
 	}
-
-
 	return 0;
 }
 

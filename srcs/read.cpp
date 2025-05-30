@@ -20,7 +20,6 @@ void Server::readFromSocket(struct pollfd pfdClient)
 
 	std::memset(&buffer, 0, sizeof buffer);
 	bytesRead = recv(pfdClient.fd, buffer, BUFFER_SIZE, 0);
-	std::cout << "ICI\n";
 	if (bytesRead <= 0)
 	{
 		if (bytesRead == 0)

@@ -7,7 +7,10 @@ Server::Server(int port, std::string &pwd): _port(port), _pwd(pwd)
 	initServerSocket();
 }
 
-Server::~Server() {}
+Server::~Server()
+{
+    
+}
 
 Server::Server(const Server& copy){ (void) copy; }
 
