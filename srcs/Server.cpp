@@ -9,7 +9,7 @@ Server::Server(int port, std::string &pwd): _port(port), _pwd(pwd)
 
 Server::~Server()
 {
-    
+    close(_fd);
 }
 
 Server::Server(const Server& copy){ (void) copy; }
