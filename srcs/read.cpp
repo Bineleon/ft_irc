@@ -2,15 +2,25 @@
 
 void Server::closeClient(struct pollfd pfdClient)
 {
-	close(pfdClient.fd);
+	if (_pollFds.empty())
+		return;
 	std::vector<struct pollfd>::iterator it;
 	for (it = _pollFds.begin(); it != _pollFds.end(); ++it)
 	{
 		if (it->fd == pfdClient.fd)
+		{
+			close(pfdClient.fd);
 			break;
+		}
 	}
 	if (it != _pollFds.end())
-		_pollFds.erase(it);
+	_pollFds.erase(it);
+	std::map<int, Client*>::iterator cit = _clients.find(pfdClient.fd);
+	if (cit != _clients.end())
+	{
+		delete cit->second;
+		_clients.erase(cit);
+	}
 }
 
 void Server::readFromSocket(struct pollfd pfdClient)
@@ -23,10 +33,12 @@ void Server::readFromSocket(struct pollfd pfdClient)
 	if (bytesRead <= 0)
 	{
 		if (bytesRead == 0)
+		{
 			std::cout << "[" << pfdClient.fd << "] Client socket closed connection." << std::endl;
+			closeClient(pfdClient);
+		}
 		else
-			std::cerr << "Error: recv()" << std::endl;
-		closeClient(pfdClient);
+			perror("recv()");
 	}
 	else
 	{

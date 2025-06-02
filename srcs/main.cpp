@@ -18,7 +18,6 @@ int	main(int ac, char **av)
 	{
 		Server serv(port, pwd);
 		serv.runIRC();
-        close(serv.getFd());
 	}
 	catch(const std::exception& e)
 	{

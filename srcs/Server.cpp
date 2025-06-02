@@ -9,7 +9,7 @@ Server::Server(int port, std::string &pwd): _port(port), _pwd(pwd)
 
 Server::~Server()
 {
-    
+    close(_fd);
 }
 
 Server::Server(const Server& copy){ (void) copy; }
@@ -42,7 +42,7 @@ void Server::initServerSocket()
 	if (bind(_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
 	{
 		close(_fd);
-		throw std::runtime_error("bind()");
+		throw std::runtime_error("Error: bind()");
 	}
 
 	if (listen(_fd, BACKLOG) < 0)
@@ -80,28 +80,24 @@ void Server::runIRC()
 		if (status == -1)
 		{
 			close(_fd);
-			throw std::runtime_error("poll()");
+			throw std::runtime_error("Error: poll()");
 		}
 		else if (status == 0)
 			continue;
 
-		std::vector<pollfd>::iterator it;
-
-		for (it = _pollFds.begin(); it != _pollFds.end(); ++it)
+		for (size_t i = 0; i < _pollFds.size(); ++i)
 		{
-			if (!(it->revents & POLLIN))
+			if (!(_pollFds[i].revents & POLLIN))
 				continue;
-			if (it->fd == _fd)
-			{
+
+			if (_pollFds[i].fd == _fd)
 				acceptNewClient();
-			}
 			else
 			{
-				readFromSocket(*it);
+				readFromSocket(_pollFds[i]);
 				std::string	reply = "Hello from server!\r\n";
-				send(it->fd, reply.c_str(), reply.length(), 0);
+				send(_pollFds[i].fd, reply.c_str(), reply.length(), 0);
 			}
 		}
-
 	}
 }
