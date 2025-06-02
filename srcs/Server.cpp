@@ -42,7 +42,7 @@ void Server::initServerSocket()
 	if (bind(_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
 	{
 		close(_fd);
-		throw std::runtime_error("bind()");
+		throw std::runtime_error("Error: bind()");
 	}
 
 	if (listen(_fd, BACKLOG) < 0)
@@ -80,7 +80,7 @@ void Server::runIRC()
 		if (status == -1)
 		{
 			close(_fd);
-			throw std::runtime_error("poll()");
+			throw std::runtime_error("Error: poll()");
 		}
 		else if (status == 0)
 			continue;
