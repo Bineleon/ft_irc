@@ -19,6 +19,7 @@
 # include <cstdlib>
 # include <arpa/inet.h>
 # include <algorithm>
+# include <csignal>
 
 #define BACKLOG 10
 # define BUFFER_SIZE 1024
