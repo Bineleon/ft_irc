@@ -85,23 +85,19 @@ void Server::runIRC()
 		else if (status == 0)
 			continue;
 
-		std::vector<pollfd>::iterator it;
-
-		for (it = _pollFds.begin(); it != _pollFds.end(); ++it)
+		for (size_t i = 0; i < _pollFds.size(); ++i)
 		{
-			if (!(it->revents & POLLIN))
+			if (!(_pollFds[i].revents & POLLIN))
 				continue;
-			if (it->fd == _fd)
-			{
+
+			if (_pollFds[i].fd == _fd)
 				acceptNewClient();
-			}
 			else
 			{
-				readFromSocket(*it);
+				readFromSocket(_pollFds[i]);
 				std::string	reply = "Hello from server!\r\n";
-				send(it->fd, reply.c_str(), reply.length(), 0);
+				send(_pollFds[i].fd, reply.c_str(), reply.length(), 0);
 			}
 		}
-
 	}
 }

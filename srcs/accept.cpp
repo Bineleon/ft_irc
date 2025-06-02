@@ -17,6 +17,7 @@ void	Server::acceptNewClient() {
 	struct pollfd	new_pollfd;
 	new_pollfd.fd = client_fd;
 	new_pollfd.events = POLLIN;
+	new_pollfd.revents = 0;
 	this->_pollFds.push_back(new_pollfd);
 
 	std::cout << "The new client has been added to the list of pollFds.\n";
