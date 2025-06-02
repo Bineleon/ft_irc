@@ -18,6 +18,7 @@
 # include <cstdio>
 # include <cstdlib>
 # include <arpa/inet.h>
+# include <algorithm>
 
 #define BACKLOG 10
 # define BUFFER_SIZE 1024
@@ -29,7 +30,7 @@ enum ErrorFormat {
 	CLIENT_CHANNEL
 };
 
-extern std::map<int, std::pair<ErrorFormat, std::string>> clientMessages;
+extern std::map<int, std::pair< ErrorFormat, std::string> > clientMessages;
 
 class Server
 {
@@ -51,6 +52,10 @@ class Server
 		int const &getPort() const;
 		void initServerSocket();
 		void runIRC();
+
+		void readFromSocket(struct pollfd pfdClient);
+		void closeClient(struct pollfd pfdClient);
+
 		void acceptNewClient();
 
 		// void	handleCommands(Client *client, const std::string& cmd, const std::vector<std::string>& args);

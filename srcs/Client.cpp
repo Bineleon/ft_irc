@@ -73,3 +73,4 @@ void	Client::setUsername(const std::string username) {
 	if (this->_status == USERNAME_NEEDED)
 		this->_status = AUTHENTICATED;
 }
+

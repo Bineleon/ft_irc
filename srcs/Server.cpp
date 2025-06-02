@@ -7,7 +7,10 @@ Server::Server(int port, std::string &pwd): _port(port), _pwd(pwd)
 	initServerSocket();
 }
 
-Server::~Server() {}
+Server::~Server()
+{
+    
+}
 
 Server::Server(const Server& copy){ (void) copy; }
 
@@ -29,6 +32,7 @@ void Server::initServerSocket()
 	_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (_fd == -1)
 		throw std::runtime_error("socket()");
+    fcntl(_fd, F_SETFL, O_NONBLOCK);
 
 	std::memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
@@ -54,7 +58,7 @@ void Server::initServerSocket()
 	std::cout << "Serveur waiting on port " << _port << "..." << std::endl;
 }
 
-std::map<int, std::pair<ErrorFormat, std::string>> clientMessages;
+std::map<int, std::pair<ErrorFormat, std::string> > clientMessages;
 
 void	initErrorMessages() {
 	clientMessages[464] = std::make_pair(CLIENT, "Password incorrect");
@@ -80,17 +84,22 @@ void Server::runIRC()
 		}
 		else if (status == 0)
 			continue;
-		for (int i = 0; i < _pollFds.size(); ++i)
+
+		std::vector<pollfd>::iterator it;
+
+		for (it = _pollFds.begin(); it != _pollFds.end(); ++it)
 		{
-			if ((_pollFds[i].revents & POLLIN) != 1)
+			if (!(it->revents & POLLIN))
 				continue;
-			if (_pollFds[i].fd == _fd)
+			if (it->fd == _fd)
 			{
-				//TODO : accept connection
+				acceptNewClient();
 			}
 			else
 			{
-				//TODO : read from client
+				readFromSocket(*it);
+				std::string	reply = "Hello from server!\r\n";
+				send(it->fd, reply.c_str(), reply.length(), 0);
 			}
 		}
 
