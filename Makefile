@@ -4,7 +4,7 @@ GREEN			= \033[0;32m\e[1m
 NAME			= ircserv
 
 SRC_DIR			= srcs/
-SRCS			= main.cpp Server.cpp Client.cpp read.cpp accept.cpp clientBis.cpp
+SRCS			= main.cpp Server.cpp Client.cpp read.cpp accept.cpp clientBis.cpp Command.cpp
 SRC				= ${addprefix ${SRC_DIR}, ${SRCS}}
 
 INCLUDE_DIR		= includes/

@@ -2,6 +2,7 @@
 # define SERVER_HPP
 
 # include "Client.hpp"
+# include "Command.hpp"
 
 # include <iostream>
 # include <vector>
@@ -57,6 +58,8 @@ class Server
 		void closeClient(struct pollfd pfdClient);
 
 		void acceptNewClient();
+
+		void parseMsg(std::string msg);
 
 		// void	handleCommands(Client *client, const std::string& cmd, const std::vector<std::string>& args);
 		// void	PASS(Client *client, const std::string pass);
