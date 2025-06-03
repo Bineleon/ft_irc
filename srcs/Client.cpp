@@ -48,3 +48,7 @@ void	Client::setUsername(const std::string username) {
 		this->_status = AUTHENTICATED;
 }
 
+ClientStatus const & Client::getStatus(void) const
+{
+	return _status;
+}

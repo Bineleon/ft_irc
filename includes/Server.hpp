@@ -3,6 +3,7 @@
 
 # include "Client.hpp"
 # include "Command.hpp"
+# include "Channel.hpp"
 
 # include <iostream>
 # include <vector>
@@ -45,6 +46,7 @@ class Server
 		std::string	_pwd;
 		std::vector<struct pollfd> _pollFds;
 		std::map<int, Client*> _clients;
+		std::map<std::string, Channel*> _channels;
 
 	public:
 		Server(int port, std::string &pwd);
@@ -59,7 +61,8 @@ class Server
 
 		void acceptNewClient();
 
-		void parseMsg(std::string msg);
+		void executeCmd(fullCmd cmd, Client client);
+		void joinCmd(fullCmd cmd, Client client);
 
 		// void	handleCommands(Client *client, const std::string& cmd, const std::vector<std::string>& args);
 		// void	PASS(Client *client, const std::string pass);

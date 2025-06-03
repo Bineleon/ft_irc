@@ -61,3 +61,18 @@ void Server::readFromSocket(struct pollfd pfdClient)
 		}
 	}
 }
+
+
+void Server::executeCmd(fullCmd cmd, Client client)
+{
+
+	if (client.getStatus() != AUTHENTICATED)
+	{
+		// authenticate
+	}
+	else
+	{
+		
+	}
+
+}

@@ -1,21 +1,27 @@
-#ifndef COMMAND_HPP
-#define COMMAND_HPP
+#ifndef CHANNEL_HPP
+#define CHANNEL_HPP
 
 #include <iostream>
-#include <vector>
-#include <string>
-#include <sstream>  
+#include <set>
+#include "Client.hpp"
 
-struct fullCmd
+class Channel
 {
-	std::string verb;
-	std::vector<std::string> params;
-	std::string trailing;
+	public:
+		Channel(void);
+		~Channel(void);
+		
+	private:
+		Channel(const Channel& src);
+		Channel& operator=(const Channel& rhs);
+		std::string			_name;
+		std::string			_topic;
+		std::string			_pwd;
+		std::string			_description;
+		std::set<Client*>	_users;
+		std::set<Client*>	_operators;
+		size_t				_userLimit;
 };
-
-fullCmd parseCmd(std::string const & msg);
-std::string const & whichCmd();
-void printCmd(fullCmd cmd);
 
 # define RESET "\033[0m"
 # define SMRED "\033[0;31m"

@@ -1,5 +1,13 @@
 #include "../includes/Command.hpp"
 
+void printCmd(fullCmd cmd)
+{
+	std::cout << "Verb: " << cmd.verb << std::endl;
+	for (size_t i = 0; i < cmd.params.size(); ++i)
+		std::cout << "Param[" << i << "]: " << cmd.params[i] << std::endl;
+	std::cout << "Trailing: " << cmd.trailing << std::endl;
+}
+
 std::string toUpper(std::string &str)
 {
 	std::string up = str;
@@ -34,10 +42,3 @@ fullCmd parseCmd(std::string const & msg)
 	return cmd;
 }
 
-void printCmd(fullCmd cmd)
-{
-	std::cout << "Verb: " << cmd.verb << std::endl;
-	for (size_t i = 0; i < cmd.params.size(); ++i)
-		std::cout << "Param[" << i << "]: " << cmd.params[i] << std::endl;
-	std::cout << "Trailing: " << cmd.trailing << std::endl;
-}
