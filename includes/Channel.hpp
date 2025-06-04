@@ -5,13 +5,27 @@
 #include <set>
 #include "Client.hpp"
 
+enum JoinStatus
+{
+	J_OK,
+	J_FULL,
+	J_INVIT_O,
+	J_BANNED,
+	J_BAD_K,
+	J_ALRDYIN
+};
+
 class Channel
 {
 	public:
-		Channel(void);
+		Channel(std::string name);
 		~Channel(void);
-		
+		void addOperator(Client *client);
+		void addUser(Client *client);
+		JoinStatus checkJoinStatus(Client *client) const;
+
 	private:
+		Channel(void);
 		Channel(const Channel& src);
 		Channel& operator=(const Channel& rhs);
 		std::string			_name;
@@ -21,6 +35,7 @@ class Channel
 		std::set<Client*>	_users;
 		std::set<Client*>	_operators;
 		size_t				_userLimit;
+		bool				_hasUserLimit;
 };
 
 # define RESET "\033[0m"

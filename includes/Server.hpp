@@ -4,6 +4,7 @@
 # include "Client.hpp"
 # include "Command.hpp"
 # include "Channel.hpp"
+# include "errorMsgs.hpp"
 
 # include <iostream>
 # include <vector>
@@ -24,15 +25,6 @@
 
 #define BACKLOG 10
 # define BUFFER_SIZE 1024
-
-enum ErrorFormat {
-	CLIENT,
-	CLIENT_NICK,
-	CLIENT_CMD,
-	CLIENT_CHANNEL
-};
-
-extern std::map<int, std::pair< ErrorFormat, std::string> > clientMessages;
 
 class Server
 {
@@ -62,7 +54,7 @@ class Server
 		void acceptNewClient();
 
 		void executeCmd(fullCmd cmd, Client client);
-		void joinCmd(fullCmd cmd, Client client);
+		void joinCmd(fullCmd cmd, Client *client);
 
 		// void	handleCommands(Client *client, const std::string& cmd, const std::vector<std::string>& args);
 		// void	PASS(Client *client, const std::string pass);

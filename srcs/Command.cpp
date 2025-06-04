@@ -11,7 +11,7 @@ void printCmd(fullCmd cmd)
 std::string toUpper(std::string &str)
 {
 	std::string up = str;
-	for (int i = 0; i < up.length(); ++i)
+	for (size_t i = 0; i < up.length(); ++i)
 		std::toupper(up[i]);
 	return up;
 }

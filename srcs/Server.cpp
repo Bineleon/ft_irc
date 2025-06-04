@@ -58,17 +58,6 @@ void Server::initServerSocket()
 	std::cout << "Serveur waiting on port " << _port << "..." << std::endl;
 }
 
-std::map<int, std::pair<ErrorFormat, std::string> > clientMessages;
-
-void	initErrorMessages() {
-	clientMessages[464] = std::make_pair(CLIENT, "Password incorrect");
-	clientMessages[461] = std::make_pair(CLIENT_CMD, "Not enough parameters");
-	clientMessages[462] = std::make_pair(CLIENT, "You may not reregister");
-	clientMessages[431] = std::make_pair(CLIENT, "No nickname given");
-	clientMessages[432] = std::make_pair(CLIENT_NICK, "Erroneus nickname"); // invalid characters in the nickname
-	clientMessages[433] = std::make_pair(CLIENT_NICK, "Nickname is already in use");
-	clientMessages[403] = std::make_pair(CLIENT_CHANNEL, "No such channel");
-}
 
 void Server::runIRC()
 {

@@ -1,21 +1,46 @@
 #include "../includes/Server.hpp"
 
-void Server::joinCmd(fullCmd cmd, Client client)
+std::vector<std::string> splitCmds(std::string const &param)
 {
-	// if , in param, split param
-	if (cmd.params[i].empty() || cmd.params[i][0] != '#')
-	{
-		// handle error
-		return;
-	}
+	std::vector<std::string> splitParams;
+	std::istringstream s(param);
+	std::string word;
 
-	if (_channels.find(cmd.params[i]) == _channels.end())
+	while (getline(s, word, ','))
+		splitParams.push_back(word);
+	return splitParams;
+}
+
+void Server::joinCmd(fullCmd cmd, Client *client)
+{
+	std::vector<std::string> splitParams = splitCmds(cmd.params[0]);
+	Channel *channel = NULL;
+
+	for (int i = 0; i < splitParams.size(); ++i)
 	{
-		// Create channel
-		// add client as operator
-	}
-	else
-	{
-		// Add client as user
+		if (splitParams[i].empty() || splitParams[i][0] != '#')
+		{
+			// handle error
+			continue;
+		}
+
+		if (_channels.find(splitParams[i]) == _channels.end())
+		{
+			channel = new Channel(splitParams[i]);
+			channel->addOperator(client);
+			_channels[splitParams[i]] = channel;
+		}
+		else
+		{
+			channel = _channels[splitParams[i]];
+		}
+		JoinStatus status = channel->checkJoinStatus(client);
+		if (status != J_OK)
+		{
+			// TODO
+			continue;
+		}
+		channel->addUser(client);
+		// add RPL
 	}
 }
