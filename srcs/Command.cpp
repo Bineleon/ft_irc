@@ -12,7 +12,7 @@ std::string toUpper(std::string &str)
 {
 	std::string up = str;
 	for (size_t i = 0; i < up.length(); ++i)
-		std::toupper(up[i]);
+		up[i] = std::toupper(up[i]);
 	return up;
 }
 
