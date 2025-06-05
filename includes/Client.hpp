@@ -14,13 +14,13 @@ enum ClientStatus {
 class Client
 {
 	private:
-		int	_fd; // client file descriptor
-		const std::string	_IP; // client ip adress
-		std::string	_nickname;
-		std::string	_username;
-		std::string	_realname;
-		ClientStatus	_status;
-		std::string	_msgBuffer;
+		int					_fd;
+		const std::string	_IP;
+		std::string			_nickname;
+		std::string			_username;
+		std::string			_realname;
+		std::string			_msgBuffer;
+		ClientStatus		_status;
 
 		Client(const Client&);
 		Client&	operator=(const Client&);
@@ -29,16 +29,16 @@ class Client
 		Client();
 		Client(const int fd, const std::string& IP);
 
-		void	sendMessage(const std::string& msg);
+		void				sendMessage(const std::string& msg);
 
-		void	acceptPassword();
-		void	setNickname(const std::string nickname);
-		void	setUsername(const std::string username);
-		void	appendToMsgBuf(std::string msg);
-		std::string const & getmsgBuffer(void) const;
-		ClientStatus const & getStatus(void) const;
+		void				acceptPassword();
+		void				setNickname(const std::string nickname);
+		void				setUsername(const std::string username);
+		void				appendToMsgBuf(std::string msg);
+		std::string const &getmsgBuffer(void) const;
+		ClientStatus const &getStatus(void) const;
 
-        void setMsgBuffer(const std::string& buffer);
+		void setMsgBuffer(const std::string& buffer);
 
 		~Client(){};
 };

@@ -14,19 +14,23 @@ std::vector<std::string> splitCmds(std::string const &param)
 void Server::joinCmd(fullCmd cmd, Client *client)
 {
 	std::vector<std::string> splitParams = splitCmds(cmd.params[0]);
+	bool keys = cmd.params.size() > 1 ? true : false;
+
+	std::vector<std::string> splitKeys = splitCmds(cmd.params[1]);
 	Channel *channel = NULL;
 
-	for (int i = 0; i < splitParams.size(); ++i)
+	for (size_t i = 0; i < splitParams.size(); ++i)
 	{
+		std::string key = (keys && (i <= splitKeys.size())) ? splitKeys[i] : "";
 		if (splitParams[i].empty() || splitParams[i][0] != '#')
 		{
-			// handle error
+			// error ERR_NOSUCHCHANNEL
 			continue;
 		}
 
 		if (_channels.find(splitParams[i]) == _channels.end())
 		{
-			channel = new Channel(splitParams[i]);
+			channel = new Channel(splitParams[i], key);
 			channel->addOperator(client);
 			_channels[splitParams[i]] = channel;
 		}
@@ -34,12 +38,15 @@ void Server::joinCmd(fullCmd cmd, Client *client)
 		{
 			channel = _channels[splitParams[i]];
 		}
-		JoinStatus status = channel->checkJoinStatus(client);
+
+		JoinStatus status = channel->checkJoinStatus(client, key);
+
 		if (status != J_OK)
 		{
-			// TODO
+			channel->handleJoinErr(status);
 			continue;
 		}
+
 		channel->addUser(client);
 		// add RPL
 	}

@@ -19,10 +19,12 @@ class Channel
 {
 	public:
 		Channel(std::string name);
+		Channel(std::string name, std::string key);
 		~Channel(void);
-		void addOperator(Client *client);
-		void addUser(Client *client);
-		JoinStatus checkJoinStatus(Client *client) const;
+		void		addOperator(Client *client);
+		void		addUser(Client *client);
+		JoinStatus	checkJoinStatus(Client *client, std::string const &key) const;
+		void		handleJoinErr(JoinStatus status) const;
 
 	private:
 		Channel(void);
@@ -30,12 +32,15 @@ class Channel
 		Channel& operator=(const Channel& rhs);
 		std::string			_name;
 		std::string			_topic;
-		std::string			_pwd;
-		std::string			_description;
+		std::string			_key;
 		std::set<Client*>	_users;
 		std::set<Client*>	_operators;
+		std::set<Client*>	_banned;
+		std::set<Client*>	_invited;
 		size_t				_userLimit;
 		bool				_hasUserLimit;
+		bool				_hasKey;
+		bool				_isInviteOnly;
 };
 
 # define RESET "\033[0m"
