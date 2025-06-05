@@ -24,7 +24,7 @@ class Channel
 		void		addOperator(Client *client);
 		void		addUser(Client *client);
 		JoinStatus	checkJoinStatus(Client *client, std::string const &key) const;
-		void		handleJoinErr(JoinStatus status) const;
+		void		handleJoinErr(Client *client, JoinStatus status) const;
 
 	private:
 		Channel(void);

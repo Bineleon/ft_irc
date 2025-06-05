@@ -48,7 +48,7 @@ JoinStatus Channel::checkJoinStatus(Client *client, std::string const &key) cons
 		return J_FULL;
 	else if (_banned.find(client) != _banned.end())
 		return J_BANNED;
-	else if (_hasKey && key.empty() || key != _key)
+	else if (_hasKey && (key.empty() || key != _key))
 		return J_BAD_K;
 	else if (_users.find(client) != _users.end())
 		return J_ALRDYIN;
@@ -57,7 +57,7 @@ JoinStatus Channel::checkJoinStatus(Client *client, std::string const &key) cons
     return J_OK;
 }
 
-void Channel::handleJoinErr(JoinStatus status) const
+void Channel::handleJoinErr(Client *client, JoinStatus status) const
 {
 	switch (status)
 	{

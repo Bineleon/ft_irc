@@ -16,7 +16,7 @@ std::string toUpper(std::string &str)
 	return up;
 }
 
-fullCmd parseCmd(std::string const & msg)
+fullCmd parseCmd(std::string const & msg)	
 {
 	fullCmd	cmd;
 	std::istringstream s (msg);
@@ -29,7 +29,6 @@ fullCmd parseCmd(std::string const & msg)
 	
 	while (s >> word)
 	{
-		
 		if (word[0] == ':')
 		{
 			getline(s, restOfTrail);

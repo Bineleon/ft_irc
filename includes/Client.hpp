@@ -36,6 +36,7 @@ class Client
 		void				setUsername(const std::string username);
 		void				appendToMsgBuf(std::string msg);
 		std::string const &getmsgBuffer(void) const;
+		std::string const &getMask(void) const;
 		ClientStatus const &getStatus(void) const;
 
 		void setMsgBuffer(const std::string& buffer);

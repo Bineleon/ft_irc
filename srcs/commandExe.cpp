@@ -43,7 +43,7 @@ void Server::joinCmd(fullCmd cmd, Client *client)
 
 		if (status != J_OK)
 		{
-			channel->handleJoinErr(status);
+			channel->handleJoinErr(client, status);
 			continue;
 		}
 
