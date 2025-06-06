@@ -20,6 +20,7 @@
 # include <arpa/inet.h>
 # include <algorithm>
 # include <csignal>
+# include <sstream>
 
 #define BACKLOG 10
 # define BUFFER_SIZE 1024
@@ -45,6 +46,7 @@ class Server
 		std::string	_pwd;
 		std::vector<struct pollfd> _pollFds;
 		std::map<int, Client*> _clients;
+		std::map<int, std::pair<ErrorFormat, std::string> >	_errorMessages;
 
 	public:
 		Server(int port, std::string &pwd);
@@ -58,6 +60,10 @@ class Server
 		void closeClient(struct pollfd pfdClient);
 
 		void acceptNewClient();
+
+		void cleanAll();
+
+		void initErrorMessages();
 
 		// void	handleCommands(Client *client, const std::string& cmd, const std::vector<std::string>& args);
 		// void	PASS(Client *client, const std::string pass);

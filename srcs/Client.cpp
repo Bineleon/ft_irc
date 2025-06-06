@@ -14,30 +14,6 @@ Client::Client(const int fd, const std::string& IP): _fd(fd), _IP(IP) {
 // 	send(this->_fd, fullMsg.c_str(), fullMsg.length(), 0);
 // }
 
-// void	Client::sendError(int error) {
-// 	std::map<int, std::pair<ErrorFormat, std::string> >::iterator it = clientMessages.find(error);
-
-// 	if (it == clientMessages.end()) {
-// 		this->sendMessage("Unknown error");
-// 		return ;
-// 	}
-
-// 	ErrorFormat	format = it->second.first;
-// 	std::string	msg = it->second.second;
-
-// 	std::ostringstream	oss;
-
-// 	switch (format)
-// 	{
-// 		case CLIENT:
-// 			sendMessage(this->)
-// 			break;
-
-// 		default:
-// 			break;
-// 	}
-// }
-
 // void	Client::PASS() {
 
 // 	this->_status = NICKNAME_NEEDED;
