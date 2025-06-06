@@ -9,10 +9,14 @@ Client::Client(const int fd, const std::string& IP): _fd(fd), _IP(IP) {
 	this->_status = PASSWORD_NEEDED;
 }
 
-// void	Client::sendMessage(const std::string& msg) {
-// 	std::string	fullMsg = msg + "\r\n";
-// 	send(this->_fd, fullMsg.c_str(), fullMsg.length(), 0);
-// }
+const std::string&	Client::getUsername() const {
+	return (this->_username);
+}
+
+void	Client::sendMessage(const std::string& msg) const {
+	std::string	fullMsg = msg + "\r\n";
+	send(this->_fd, fullMsg.c_str(), fullMsg.length(), 0);
+}
 
 // void	Client::PASS() {
 

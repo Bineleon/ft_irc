@@ -26,10 +26,10 @@
 # define BUFFER_SIZE 1024
 
 enum ErrorFormat {
-	CLIENT,
-	CLIENT_NICK,
-	CLIENT_CMD,
-	CLIENT_CHANNEL
+	NOTHING,
+	NICK,
+	CMD,
+	CHANNEL
 };
 
 extern std::map<int, std::pair< ErrorFormat, std::string> > clientMessages;
@@ -41,6 +41,7 @@ class Server
 		Server(const Server& copy);
 		Server&	operator=(const Server& copy);
 
+		const std::string	_name = "ircserv";
 		int _port;
 		int _fd;
 		std::string	_pwd;
@@ -64,6 +65,7 @@ class Server
 		void cleanAll();
 
 		void initErrorMessages();
+		void sendError(const Client& client, int error);
 
 		// void	handleCommands(Client *client, const std::string& cmd, const std::vector<std::string>& args);
 		// void	PASS(Client *client, const std::string pass);
