@@ -2,6 +2,9 @@
 # define SERVER_HPP
 
 # include "Client.hpp"
+# include "Command.hpp"
+# include "Channel.hpp"
+# include "errorMsgs.hpp"
 
 # include <iostream>
 # include <vector>
@@ -48,6 +51,7 @@ class Server
 		std::vector<struct pollfd> _pollFds;
 		std::map<int, Client*> _clients;
 		std::map<int, std::pair<ErrorFormat, std::string> >	_errorMessages;
+		std::map<std::string, Channel*> _channels;
 
 	public:
 		Server(int port, std::string &pwd);
@@ -66,6 +70,8 @@ class Server
 
 		void initErrorMessages();
 		void sendError(const Client& client, int error);
+		void executeCmd(fullCmd cmd, Client client);
+		void joinCmd(fullCmd cmd, Client *client);
 
 		// void	handleCommands(Client *client, const std::string& cmd, const std::vector<std::string>& args);
 		// void	PASS(Client *client, const std::string pass);

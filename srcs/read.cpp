@@ -27,6 +27,7 @@ void Server::readFromSocket(struct pollfd pfdClient)
 {
 	char buffer[BUFFER_SIZE];
 	int bytesRead;
+	std::string toParse;
 
 	std::memset(&buffer, 0, sizeof buffer);
 	bytesRead = recv(pfdClient.fd, buffer, BUFFER_SIZE, 0);
@@ -48,12 +49,30 @@ void Server::readFromSocket(struct pollfd pfdClient)
 
 		while ((pos = clientMsgBuf.find("\r\n")) != std::string::npos)
 		{
-			std::string toParse = clientMsgBuf.substr(0, pos);
+			toParse = clientMsgBuf.substr(0, pos);
 			clientMsgBuf.erase(0, pos + 2);
 			std::cout << "Msg from fd [" << pfdClient.fd << "]: " << toParse << std::endl;
             _clients[pfdClient.fd]->setMsgBuffer(clientMsgBuf);
 		}
-		// Parse msg
-
+		if (!toParse.empty())
+		{
+			fullCmd cmd = parseCmd(toParse);
+			printCmd(cmd);
+		}
 	}
 }
+
+
+// void Server::executeCmd(fullCmd cmd, Client client)
+// {
+
+// 	if (client.getStatus() != AUTHENTICATED)
+// 	{
+// 		// authenticate
+// 	}
+// 	else
+// 	{
+		
+// 	}
+
+// }

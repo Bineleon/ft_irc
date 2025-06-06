@@ -48,6 +48,11 @@
 		"stdexcept": "cpp",
 		"streambuf": "cpp",
 		"typeinfo": "cpp",
+<<<<<<< HEAD
 		"csignal": "cpp"
+=======
+		"sstream": "cpp",
+		"set": "cpp"
+>>>>>>> main
 	}
 }

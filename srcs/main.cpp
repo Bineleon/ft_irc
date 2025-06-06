@@ -3,8 +3,10 @@
 
 int	main(int ac, char **av)
 {
-	int port;
+	long port;
+	const char *sPort = av[1];
 	std::string pwd;
+	char * pEnd;
 
 	if (ac != 3)
 	{
@@ -13,7 +15,7 @@ int	main(int ac, char **av)
 	}
 
 	pwd = av[2];
-	port = std::atoi(av[1]);
+	port = std::strtol(sPort, &pEnd, 10);
 	try
 	{
 		Server serv(port, pwd);

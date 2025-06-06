@@ -48,7 +48,7 @@ void Server::initServerSocket()
 	if (listen(_fd, BACKLOG) < 0)
 	{
 		close(_fd);
-		throw std::runtime_error("listen()");
+		throw std::runtime_error("Error: listen()");
 	}
 	pfd.fd = _fd;
 	pfd.events = POLLIN;
@@ -85,7 +85,9 @@ void Server::runIRC()
 				readFromSocket(_pollFds[i]);
 				std::string	reply = "Hello from server!\r\n";
 				send(_pollFds[i].fd, reply.c_str(), reply.length(), 0);
+				//parse msg
 			}
 		}
 	}
 }
+

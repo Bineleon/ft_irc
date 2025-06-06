@@ -54,3 +54,7 @@ void	Client::sendMessage(const std::string& msg) const {
 // 		this->_status = AUTHENTICATED;
 // }
 
+ClientStatus const & Client::getStatus(void) const
+{
+	return _status;
+}

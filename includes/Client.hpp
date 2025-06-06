@@ -14,13 +14,13 @@ enum ClientStatus {
 class Client
 {
 	private:
-		int	_fd; // client file descriptor
-		const std::string	_IP; // client ip adress
-		std::string	_nickname;
-		std::string	_username;
-		std::string	_realname;
-		ClientStatus	_status;
-		std::string	_msgBuffer;
+		int					_fd;
+		const std::string	_IP;
+		std::string			_nickname;
+		std::string			_username;
+		std::string			_realname;
+		std::string			_msgBuffer;
+		ClientStatus		_status;
 
 		Client(const Client&);
 		Client&	operator=(const Client&);
@@ -32,16 +32,18 @@ class Client
 		const std::string&	getUsername() const;
 		void	setStatus(ClientStatus newStatus);
 
-		void	sendMessage(const std::string& msg) const;
+		void				sendMessage(const std::string& msg) const;
 		// void	sendError(int error);
 
-		void	PASS();
-		void	NICK(const std::string nickname);
-		void	setUsername(const std::string username);
-		void	appendToMsgBuf(std::string msg);
-		std::string const & getmsgBuffer(void) const;
+		void				PASS();
+		void				NICK(const std::string nickname);
+		void				setUsername(const std::string username);
+		void				appendToMsgBuf(std::string msg);
+		std::string const &getmsgBuffer(void) const;
+		std::string const &getMask(void) const;
+		ClientStatus const &getStatus(void) const;
 
-        void setMsgBuffer(const std::string& buffer);
+		void setMsgBuffer(const std::string& buffer);
 
 		~Client(){};
 };
