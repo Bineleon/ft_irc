@@ -5,7 +5,7 @@ NAME			= ircserv
 
 SRC_DIR			= srcs/
 SRCS			= main.cpp Server.cpp Client.cpp read.cpp accept.cpp clientBis.cpp Command.cpp\
-				errorMsgs.cpp
+				errorMsgs.cpp handleErrors.cpp
 SRC				= ${addprefix ${SRC_DIR}, ${SRCS}}
 
 INCLUDE_DIR		= includes/

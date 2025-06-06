@@ -5,6 +5,8 @@
 #include <set>
 #include "Client.hpp"
 
+class Client;
+
 enum JoinStatus
 {
 	J_OK,

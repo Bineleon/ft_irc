@@ -58,3 +58,27 @@ ClientStatus const & Client::getStatus(void) const
 {
 	return _status;
 }
+
+void	Client::setStatus(const ClientStatus& newStatus) {
+	this->_status = newStatus;
+}
+
+const Channel*	Client::getCurrentChannel() const {
+	return this->_currentChannel;
+}
+
+void	Client::setCurrentChannel(Channel* channel) {
+	this->_currentChannel = channel;
+}
+
+const std::string&	Client::getLastCmd() const {
+	return this->_lastCmd;
+}
+
+void	Client::setLastCmd(const std::string& cmd) {
+	this->_lastCmd = cmd;
+}
+
+const std::string&	Client::getNickname() const {
+	return this->_nickname;
+}

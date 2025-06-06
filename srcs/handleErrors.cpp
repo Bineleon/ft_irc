@@ -2,19 +2,19 @@
 #include "../includes/Client.hpp"
 
 void	Server::initErrorMessages() {
-	clientMessages[464] = std::make_pair(NOTHING, "Password incorrect");
-	clientMessages[461] = std::make_pair(CMD, "Not enough parameters");
-	clientMessages[462] = std::make_pair(NOTHING, "You may not reregister");
-	clientMessages[431] = std::make_pair(NOTHING, "No nickname given");
-	clientMessages[432] = std::make_pair(NICK, "Erroneus nickname"); // invalid characters in the nickname
-	clientMessages[433] = std::make_pair(NICK, "Nickname is already in use");
-	clientMessages[403] = std::make_pair(CHANNEL, "No such channel");
+	this->_errorMessages[464] = std::make_pair(NOTHING, "Password incorrect");
+	this->_errorMessages[461] = std::make_pair(CMD, "Not enough parameters");
+	this->_errorMessages[462] = std::make_pair(NOTHING, "You may not reregister");
+	this->_errorMessages[431] = std::make_pair(NOTHING, "No nickname given");
+	this->_errorMessages[432] = std::make_pair(NICK, "Erroneus nickname"); // invalid characters in the nickname
+	this->_errorMessages[433] = std::make_pair(NICK, "Nickname is already in use");
+	this->_errorMessages[403] = std::make_pair(CHANNEL, "No such channel");
 }
 
 void	Server::sendError(const Client& client, int error) {
-	std::map<int, std::pair<ErrorFormat, std::string> >::iterator it = clientMessages.find(error);
+	std::map<int, std::pair<ErrorFormat, std::string> >::iterator it = this->_errorMessages.find(error);
 
-	if (it == clientMessages.end()) {
+	if (it == this->_errorMessages.end()) {
 		client.sendMessage("Unknown error");
 		return ;
 	}
@@ -32,10 +32,22 @@ void	Server::sendError(const Client& client, int error) {
 			break;
 
 		case CMD:
-			oss << " " << 
+			oss << " " << client.getLastCmd();
+			break;
+
+		case NICK:
+			oss << " " << client.getNickname();
+			break;
+
+		case CHANNEL:
+			oss << " " << client.getCurrentChannel();
+			break;
 
 		default:
 			break;
 	}
+
+	oss << ": " << msg;
+	client.sendMessage(oss.str());
 }
 
