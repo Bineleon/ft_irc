@@ -34,7 +34,7 @@ void	Server::sendError(const Client& client, int error) {
 			break;
 
 		case CMD:
-			oss << " " << 
+			oss << " " ;
 
 		default:
 			break;
