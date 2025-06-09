@@ -1,6 +1,8 @@
 #include "../includes/Server.hpp"
 #include "../includes/Client.hpp"
 
+std::map<int, std::pair<ErrorFormat, std::string> > clientMessages;
+
 void	Server::initErrorMessages() {
 	clientMessages[464] = std::make_pair(NOTHING, "Password incorrect");
 	clientMessages[461] = std::make_pair(CMD, "Not enough parameters");

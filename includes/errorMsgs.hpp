@@ -10,14 +10,14 @@
     // 	WITH_ARG
     // };
     
-enum ErrorFormat {
-    CLIENT,
-    CLIENT_NICK,
-    CLIENT_CMD,
-    CLIENT_CHANNEL
-};
+// enum ErrorFormat {
+//     CLIENT,
+//     CLIENT_NICK,
+//     CLIENT_CMD,
+//     CLIENT_CHANNEL
+// };
     
-extern std::map<int, std::pair< ErrorFormat, std::string> > clientMessages;
+// extern std::map<int, std::pair< ErrorFormat, std::string> > clientMessages;
 
 #define ERR_ALREADYREGISTERED     462
 #define ERR_PASSWDMISMATCH        464
