@@ -70,4 +70,3 @@ void	Server::sendError(const Client& client, int error) {
 	oss << ": " << msg;
 	client.sendMessage(oss.str());
 }
-
