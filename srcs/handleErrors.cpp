@@ -40,4 +40,3 @@ void	Server::sendError(const Client& client, int error) {
 			break;
 	}
 }
-
