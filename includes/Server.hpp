@@ -5,6 +5,7 @@
 # include "Command.hpp"
 # include "Channel.hpp"
 # include "errorMsgs.hpp"
+# include "replies.hpp"
 
 # include <iostream>
 # include <vector>
@@ -26,7 +27,7 @@
 # include <sstream>
 # include <iomanip>
 
-#define BACKLOG 10
+# define BACKLOG 10
 # define BUFFER_SIZE 1024
 
 enum ErrorFormat {
@@ -73,6 +74,8 @@ class Server
 		void sendError(const Client& client, int error);
 		void executeCmd(fullCmd cmd, Client client);
 		void joinCmd(fullCmd cmd, Client *client);
+
+		void sendReply(const Client& client, int code);
 
 		// void	handleCommands(Client *client, const std::string& cmd, const std::vector<std::string>& args);
 		// void	PASS(Client *client, const std::string pass);
