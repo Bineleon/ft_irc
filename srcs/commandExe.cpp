@@ -24,7 +24,7 @@ void Server::joinCmd(fullCmd cmd, Client *client)
 		std::string key = (keys && (i <= splitKeys.size())) ? splitKeys[i] : "";
 		if (splitParams[i].empty() || splitParams[i][0] != '#')
 		{
-			// error ERR_NOSUCHCHANNEL
+			sendError(*client, ERR_NOSUCHCHANNEL);
 			continue;
 		}
 
@@ -35,19 +35,90 @@ void Server::joinCmd(fullCmd cmd, Client *client)
 			_channels[splitParams[i]] = channel;
 		}
 		else
-		{
 			channel = _channels[splitParams[i]];
-		}
 
-		JoinStatus status = channel->checkJoinStatus(client, key);
+		JoinStatus status = checkJoinStatus(channel, client, key);
 
 		if (status != J_OK)
 		{
-			channel->handleJoinErr(client, status);
+			handleJoinErr(client, status);
 			continue;
 		}
 
 		channel->addUser(client);
 		// add RPL
 	}
+}
+
+JoinStatus Server::checkJoinStatus(Channel *channel, Client *client, std::string const &key) const
+{
+	if (channel->getUsers().size() == channel->getUserLimit())
+		return J_FULL;
+	else if (channel->getBanned().find(client) != channel->getBanned().end())
+		return J_BANNED;
+	else if (channel->getHasKey() && (key.empty() || key != channel->getKey()))
+		return J_BAD_K;
+	else if (channel->getUsers().find(client->getNickname()) != channel->getUsers().end())
+		return J_ALRDYIN;
+	else if (channel->getIsInviteOnly() && channel->getInvited().find(client) == channel->getInvited().end())
+		return J_INVIT_O;
+    return J_OK;
+}
+
+void Server::handleJoinErr(Client *client, JoinStatus status)
+{
+	switch (status)
+	{
+		case J_FULL:
+			
+			break;
+		case J_BANNED:
+			sendError(*client, ERR_BANNEDFROMCHAN);
+			break;
+		case J_BAD_K:
+			sendError(*client, ERR_BADCHANNELKEY);
+			break;
+		case J_ALRDYIN:
+			sendError(*client, ERR_USERONCHANNEL);
+			break;
+		case J_INVIT_O:
+			sendError(*client, ERR_INVITEONLYCHAN);
+			break;
+		default:
+			break;
+	}
+}
+
+void Server::kickCmd(fullCmd cmd, Client *client)
+{
+	if (cmd.params[0].empty() || cmd.params[0][0] != '#')
+	{
+		sendError(*client, ERR_NOSUCHCHANNEL);
+		return;
+	}
+
+	if (_channels.find(cmd.params[0]) == _channels.end())
+	{
+		sendError(*client, ERR_NOSUCHCHANNEL);
+		return;
+	}
+
+	Client	*client;
+	Channel *channel = _channels[cmd.params[0]];
+
+	if (channel->getUsers().find(cmd.params[1]) == channel->getUsers().end())
+	{
+		sendError(*client, ERR_NOSUCHNICK);
+		return;
+	}
+	
+	if (channel->getOperators().find(client) == channel->getOperators().end())
+	{
+		sendError(*client, ERR_CHANOPRIVSNEEDED);
+		return;
+	}
+
+
+	channel->kickUser(client);
+	// add RPL
 }

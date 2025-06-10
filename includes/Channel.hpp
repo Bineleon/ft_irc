@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <set>
+#include <map>
 #include "Client.hpp"
 
 enum JoinStatus
@@ -23,8 +24,20 @@ class Channel
 		~Channel(void);
 		void		addOperator(Client *client);
 		void		addUser(Client *client);
-		JoinStatus	checkJoinStatus(Client *client, std::string const &key) const;
-		void		handleJoinErr(Client *client, JoinStatus status) const;
+		void		kickUser(Client *client);
+		std::string			const &getName() const;
+		std::string			const &getTopic() const;
+		std::string			const &getKey() const;
+		std::map<std::string, Client*>	const &getUsers() const;
+		std::set<Client*>	const &getOperators() const;
+		std::set<Client*>	const &getBanned() const;
+		std::set<Client*>	const &getInvited() const;
+		size_t				const &getUserLimit() const;
+		bool				const &getHasUserLimit() const;
+		bool				const &getHasKey() const;
+		bool				const &getIsInviteOnly() const;
+		// JoinStatus	checkJoinStatus(Client *client, std::string const &key) const;
+		// void		handleJoinErr(Client *client, JoinStatus status) const;
 
 	private:
 		Channel(void);
@@ -33,7 +46,8 @@ class Channel
 		std::string			_name;
 		std::string			_topic;
 		std::string			_key;
-		std::set<Client*>	_users;
+		// std::set<Client*>	_users;
+		std::map<std::string, Client*>	_users;
 		std::set<Client*>	_operators;
 		std::set<Client*>	_banned;
 		std::set<Client*>	_invited;

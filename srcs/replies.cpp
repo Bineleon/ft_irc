@@ -17,9 +17,16 @@ void Server::sendReply(const Client& client, int code)
 	ErrorFormat type = it->second.first;
 	std::string msg = it->second.second;
 
-	switch (type)
+	switch (type) // TODO / to finish
     {
-		// TODO
+		case NOTHING:
+			break;
+
+		case CMD:
+			oss << " " ;
+			
+		default:
+			break;
 	}
 
 	oss << msg;

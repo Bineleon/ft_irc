@@ -30,6 +30,7 @@ class Client
 		Client(const int fd, const std::string& IP);
 
 		const std::string&	getUsername() const;
+		const std::string&	getNickname() const;
 		void	setStatus(ClientStatus newStatus);
 
 		void				sendMessage(const std::string& msg) const;

@@ -11,6 +11,7 @@ void	Server::initErrorMessages() {
 	clientMessages[432] = std::make_pair(NICK, "Erroneus nickname"); // invalid characters in the nickname
 	clientMessages[433] = std::make_pair(NICK, "Nickname is already in use");
 	clientMessages[403] = std::make_pair(CHANNEL, "No such channel");
+	clientMessages[ERR_BANNEDFROMCHAN] = std::make_pair(CHANNEL, "Cannot join channel (+b)");
 }
 
 void	Server::sendError(const Client& client, int error) {

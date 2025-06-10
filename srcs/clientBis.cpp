@@ -19,3 +19,8 @@ void Client::setMsgBuffer(const std::string& buffer)
 {
 	_msgBuffer = buffer;
 }
+
+const std::string&	Client::getNickname() const
+{
+	return (_nickname);
+}
