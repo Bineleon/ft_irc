@@ -2,15 +2,15 @@
 
 std::map<int, std::pair<ErrorFormat, std::string> > clientMessages;
 
-void	initErrorMessages()
-{
-	clientMessages[ERR_PASSWDMISMATCH] = std::make_pair(CLIENT, "Password incorrect");
-	clientMessages[ERR_NEEDMOREPARAMS] = std::make_pair(CLIENT_CMD, "Not enough parameters");
-	clientMessages[ERR_ALREADYREGISTERED] = std::make_pair(CLIENT, "You may not reregister");
-	clientMessages[ERR_NONICKNAMEGIVEN] = std::make_pair(CLIENT, "No nickname given");
-	clientMessages[ERR_ERRONEUSNICKNAME] = std::make_pair(CLIENT_NICK, "Erroneus nickname"); // invalid characters in the nickname
-	clientMessages[ERR_NICKNAMEINUSE] = std::make_pair(CLIENT_NICK, "Nickname is already in use");
-	clientMessages[ERR_NOSUCHCHANNEL] = std::make_pair(CLIENT_CHANNEL, "No such channel");
+// void	initErrorMessages()
+// {
+// 	clientMessages[ERR_PASSWDMISMATCH] = std::make_pair(CLIENT, "Password incorrect");
+// 	clientMessages[ERR_NEEDMOREPARAMS] = std::make_pair(CLIENT_CMD, "Not enough parameters");
+// 	clientMessages[ERR_ALREADYREGISTERED] = std::make_pair(CLIENT, "You may not reregister");
+// 	clientMessages[ERR_NONICKNAMEGIVEN] = std::make_pair(CLIENT, "No nickname given");
+// 	clientMessages[ERR_ERRONEUSNICKNAME] = std::make_pair(CLIENT_NICK, "Erroneus nickname"); // invalid characters in the nickname
+// 	clientMessages[ERR_NICKNAMEINUSE] = std::make_pair(CLIENT_NICK, "Nickname is already in use");
+// 	clientMessages[ERR_NOSUCHCHANNEL] = std::make_pair(CLIENT_CHANNEL, "No such channel");
 
 	// clientMessages[ERR_ALREADYREGISTERED] = std::make_pair(NO_ARG, "You may not reregister");
 	// clientMessages[ERR_PASSWDMISMATCH] = std::make_pair(NO_ARG, "Password incorrect");
@@ -37,4 +37,4 @@ void	initErrorMessages()
 	// clientMessages[ERR_BADCHANNELKEY] = std::make_pair(WITH_ARG, "Cannot join channel (+k)");
 	// clientMessages[ERR_CHANOPRIVSNEEDED] = std::make_pair(WITH_ARG, "You're not channel operator");
 
-}
+// }
