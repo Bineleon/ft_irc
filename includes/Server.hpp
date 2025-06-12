@@ -81,7 +81,7 @@ class Server
 		void kickCmd(fullCmd cmd, Client *client);
 
 
-		void sendReply(const Client& client, int code);
+		void sendReply(const Client& client, int code, std::string const & param);
 
 		// void	handleCommands(Client *client, const std::string& cmd, const std::vector<std::string>& args);
 		// void	PASS(Client *client, const std::string pass);

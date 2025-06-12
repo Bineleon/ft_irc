@@ -13,29 +13,36 @@ std::vector<std::string> splitCmds(std::string const &param)
 
 void Server::joinCmd(fullCmd cmd, Client *client)
 {
-	std::vector<std::string> splitParams = splitCmds(cmd.params[0]);
+	if (cmd.params.empty() || cmd.params[0].empty())
+	{
+		sendError(*client, ERR_NEEDMOREPARAMS);
+		return;
+	}
+
+	std::vector<std::string> splitChan = splitCmds(cmd.params[0]);
 	bool keys = cmd.params.size() > 1 ? true : false;
 
 	std::vector<std::string> splitKeys = splitCmds(cmd.params[1]);
 	Channel *channel = NULL;
 
-	for (size_t i = 0; i < splitParams.size(); ++i)
+	for (size_t i = 0; i < splitChan.size(); ++i)
 	{
 		std::string key = (keys && (i <= splitKeys.size())) ? splitKeys[i] : "";
-		if (splitParams[i].empty() || splitParams[i][0] != '#')
+
+		if (splitChan[i].empty() || splitChan[i][0] != '#')
 		{
 			sendError(*client, ERR_NOSUCHCHANNEL);
 			continue;
 		}
 
-		if (_channels.find(splitParams[i]) == _channels.end())
+		if (_channels.find(splitChan[i]) == _channels.end())
 		{
-			channel = new Channel(splitParams[i], key);
+			channel = new Channel(splitChan[i], key);
 			channel->addOperator(client);
-			_channels[splitParams[i]] = channel;
+			_channels[splitChan[i]] = channel;
 		}
 		else
-			channel = _channels[splitParams[i]];
+			channel = _channels[splitChan[i]];
 
 		JoinStatus status = checkJoinStatus(channel, client, key);
 
@@ -91,13 +98,12 @@ void Server::handleJoinErr(Client *client, JoinStatus status)
 
 void Server::kickCmd(fullCmd cmd, Client *client)
 {
-	if (cmd.params[0].empty() || cmd.params[0][0] != '#')
+	if (cmd.params.empty() || cmd.params[0].empty())
 	{
-		sendError(*client, ERR_NOSUCHCHANNEL);
+		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
 	}
-
-	if (_channels.find(cmd.params[0]) == _channels.end())
+	if (cmd.params[0][0] != '#' || _channels.find(cmd.params[0]) == _channels.end())
 	{
 		sendError(*client, ERR_NOSUCHCHANNEL);
 		return;
@@ -105,20 +111,16 @@ void Server::kickCmd(fullCmd cmd, Client *client)
 
 	Client	*client;
 	Channel *channel = _channels[cmd.params[0]];
-
-	if (channel->getUsers().find(cmd.params[1]) == channel->getUsers().end())
-	{
-		sendError(*client, ERR_NOSUCHNICK);
-		return;
-	}
-	
 	if (channel->getOperators().find(client) == channel->getOperators().end())
 	{
 		sendError(*client, ERR_CHANOPRIVSNEEDED);
 		return;
 	}
-
-
+	if (channel->getUsers().find(cmd.params[1]) == channel->getUsers().end())
+	{
+		sendError(*client, ERR_USERNOTINCHANNEL);
+		return;
+	}
 	channel->kickUser(client);
 	// add RPL
 }
