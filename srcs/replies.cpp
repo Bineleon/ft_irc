@@ -1,7 +1,7 @@
 #include "../includes/Server.hpp"
 #include "../includes/Client.hpp"
 
-void Server::sendReply(const Client& client, int code)
+void Server::sendReply(const Client& client, int code, std::string const & param)
 {
 	std::map<int, std::pair<ErrorFormat, std::string> >::iterator it = clientMessages.find(code);
 
