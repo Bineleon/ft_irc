@@ -30,13 +30,6 @@
 
 class Server
 {
-	enum ErrorFormat {
-		NOTHING,
-		NICK,
-		CMD,
-		CHANNEL
-	};
-
 	private:
 		Server();
 		Server(const Server& copy);

@@ -4,20 +4,15 @@
 #include "Server.hpp"
 #include <map>
 
-// enum ErrorFormat
-// {
-    // 	NO_ARG,
-    // 	WITH_ARG
-    // };
-    
-// enum ErrorFormat {
-//     CLIENT,
-//     CLIENT_NICK,
-//     CLIENT_CMD,
-//     CLIENT_CHANNEL
-// };
-    
 // extern std::map<int, std::pair< ErrorFormat, std::string> > clientMessages;
+
+enum ErrorFormat {
+	NOTHING,
+	NICK,
+	CMD,
+	CHANNEL,
+	NICK_CHANNEL
+};
 
 #define ERR_ALREADYREGISTERED     462
 #define ERR_PASSWDMISMATCH        464
