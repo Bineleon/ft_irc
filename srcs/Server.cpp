@@ -29,6 +29,7 @@ void Server::initServerSocket()
 	struct sockaddr_in server_addr;
 	struct pollfd pfd;
 
+	_name = "ircserv";
 	_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (_fd == -1)
 		throw std::runtime_error("socket()");
@@ -85,6 +86,8 @@ void Server::runIRC()
 				readFromSocket(_pollFds[i]);
 				std::string	reply = "Hello from server!\r\n";
 				send(_pollFds[i].fd, reply.c_str(), reply.length(), 0);
+				std::map<int, Client*>::iterator it = this->_clients.find(_pollFds[i].fd);
+				sendError(*it->second, 464);
 				//parse msg
 			}
 		}

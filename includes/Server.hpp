@@ -30,15 +30,6 @@
 # define BACKLOG 10
 # define BUFFER_SIZE 1024
 
-enum ErrorFormat {
-	NOTHING,
-	NICK,
-	CMD,
-	CHANNEL
-};
-
-extern std::map<int, std::pair< ErrorFormat, std::string> > clientMessages;
-
 class Server
 {
 	private:
@@ -46,7 +37,7 @@ class Server
 		Server(const Server& copy);
 		Server&	operator=(const Server& copy);
 
-		const std::string	_name = "ircserv";
+		std::string	_name;
 		int _port;
 		int _fd;
 		std::string	_pwd;

@@ -3,6 +3,9 @@
 
 # include <iostream>
 # include <sys/socket.h>
+# include "Channel.hpp"
+
+class Channel;
 
 enum ClientStatus {
 	PASSWORD_NEEDED,
@@ -21,6 +24,8 @@ class Client
 		std::string			_realname;
 		std::string			_msgBuffer;
 		ClientStatus		_status;
+		Channel*			_currentChannel;
+		std::string			_lastCmd;
 
 		Client(const Client&);
 		Client&	operator=(const Client&);
@@ -31,7 +36,13 @@ class Client
 
 		const std::string&	getUsername() const;
 		const std::string&	getNickname() const;
-		void	setStatus(ClientStatus newStatus);
+		const std::string&	getNickname() const;
+		void	setStatus(const ClientStatus& newStatus);
+		const Channel*	getCurrentChannel() const;
+		void	setCurrentChannel(Channel* channel);
+		const std::string&	getLastCmd() const;
+		void	setLastCmd(const std::string& cmd);
+		const std::string&	getNickname() const;
 
 		void				sendMessage(const std::string& msg) const;
 		// void	sendError(int error);
@@ -41,7 +52,7 @@ class Client
 		void				setUsername(const std::string username);
 		void				appendToMsgBuf(std::string msg);
 		std::string const &getmsgBuffer(void) const;
-		std::string const &getMask(void) const;
+		// std::string const &getMask(void) const;
 		ClientStatus const &getStatus(void) const;
 
 		void setMsgBuffer(const std::string& buffer);
