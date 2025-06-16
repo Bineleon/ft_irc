@@ -22,9 +22,9 @@ class Channel
 		Channel(std::string name);
 		Channel(std::string name, std::string key);
 		~Channel(void);
-		void		addOperator(Client *client);
-		void		addUser(Client *client);
-		void		kickUser(Client *client);
+		void				addOperator(Client *client);
+		void				addUser(Client *client);
+		void				kickUser(Client *client);
 		std::string			const &getName() const;
 		std::string			const &getTopic() const;
 		std::string			const &getKey() const;
@@ -36,6 +36,11 @@ class Channel
 		bool				const &getHasUserLimit() const;
 		bool				const &getHasKey() const;
 		bool				const &getIsInviteOnly() const;
+		void				setTopic(std::string topic);
+		bool				hasUser(Client *client);
+		
+		bool				isOperator(Client *client);
+		bool				invite(Client *client);
 		// JoinStatus	checkJoinStatus(Client *client, std::string const &key) const;
 		// void		handleJoinErr(Client *client, JoinStatus status) const;
 

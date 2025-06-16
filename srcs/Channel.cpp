@@ -88,19 +88,45 @@ bool				const &Channel::getHasKey() const
 	return _hasKey;
 }
 
-bool				const &Channel::getIsInviteOnly() const
+bool	const &Channel::getIsInviteOnly() const
 {
 	return _isInviteOnly;
 }
 
+void	Channel::setTopic(std::string topic)
+{
+	_topic = topic;
+}
 
-void		Channel::kickUser(Client *client)
+bool	Channel::hasUser(Client *client)
+{
+	std::map<std::string, Client*>::iterator it = _users.find(client->getNickname());
+	if (it == _users.end())
+		return false;
+	return true;
+}
+
+bool	Channel::isOperator(Client *client)
+{
+	if (_operators.find(client) == _operators.end())
+		return false;
+	return true;
+}
+
+void	Channel::kickUser(Client *client)
 {
 	std::map<std::string, Client*>::iterator it = _users.find(client->getNickname());
 	if (it == _users.end())
 		return;
 	_users.erase(it);
 }
+
+bool Channel::invite(Client *client)
+{
+	return _invited.insert(client).second;
+}
+
+
 // JoinStatus Channel::checkJoinStatus(Client *client, std::string const &key) const
 // {
 // 	if (_users.size() == _userLimit)

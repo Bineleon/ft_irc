@@ -52,6 +52,7 @@ class Server
 		std::string	_pwd;
 		std::vector<struct pollfd> _pollFds;
 		std::map<int, Client*> _clients;
+		std::map<std::string, Client*> _nickClients;
 		std::map<int, std::pair<ErrorFormat, std::string> >	_errorMessages;
 		std::map<std::string, Channel*> _channels;
 
@@ -79,9 +80,12 @@ class Server
 		void handleJoinErr(Client *client, JoinStatus status);
 
 		void kickCmd(fullCmd cmd, Client *client);
-
+		void inviteCmd(fullCmd cmd, Client *client);
+		void topicCmd(fullCmd cmd, Client *client);
 
 		void sendReply(const Client& client, int code, std::string const & param);
+
+		bool chanIsOnServer(std::string chanName);
 
 		// void	handleCommands(Client *client, const std::string& cmd, const std::vector<std::string>& args);
 		// void	PASS(Client *client, const std::string pass);
