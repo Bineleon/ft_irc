@@ -192,14 +192,6 @@ void Server::topicCmd(fullCmd cmd, Client *client)
 
 }
 
-// . i: Set/remove Invite-only channel
-// · t: Set/remove the restrictions of the TOPIC command to channel operators
-// · k: Set/remove the channel key (password)
-// · o: Give/take channel operator privilege
-// · l: Set/remove the user limit to channel
-
-
-
 void Server::modeCmd(fullCmd cmd, Client *client)
 {
 	if (cmd.params.empty() || cmd.params[0].empty() || cmd.params.size() < 2)
@@ -222,5 +214,5 @@ void Server::modeCmd(fullCmd cmd, Client *client)
 	std::string modes = cmd.params[1];
 	std::vector<std::string> modesParams(cmd.params.begin() + 2, cmd.params.end());
 
-	targetChannel->handleModes(client, modes, modesParams);
+	targetChannel->handleModes(this, client, modes, modesParams);
 }

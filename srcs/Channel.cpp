@@ -156,9 +156,55 @@ bool Channel::invite(Client *client)
 	return _invited.insert(client).second;
 }
 
-void	Channel::handleModes(Client *client, std::string const &modes, std::vector<std::string> const &modesParams)
+
+// . i: Set/remove Invite-only channel
+// · t: Set/remove the restrictions of the TOPIC command to channel operators
+// · k: Set/remove the channel key (password)
+// · o: Give/take channel operator privilege
+// · l: Set/remove the user limit to channel
+
+void	Channel::handleModes(Server *serv, Client *client, std::string const &modes, std::vector<std::string> const &modesParams)
 {
-	
+	if (modes.empty() || (modes[0] != '-' && modes[0] != '+'))
+	{
+		serv->sendError(*client, ERR_UNKNOWNMODE);
+		return;
+	}
+
+	bool add;
+	size_t idxParams = 0;
+
+
+	for (size_t i = 0; i < modes.size(); ++i)
+	{
+		char mode = modes[i];
+		if (mode == '+')
+			add = true;
+		else if (mode == '-')
+			add = false;
+		
+		switch (mode)
+		{
+		case 'i':
+			_isInviteOnly = add;
+			break;
+		case 't':
+			_hasTopicRestric = add;
+			break;
+		case 'k':
+			/* code */
+			break;
+		case 'o':
+			/* code */
+			break;
+		case 'l':
+			/* code */
+			break;
+		default:
+			serv->sendError(*client, ERR_UNKNOWNMODE);
+			break;
+		}
+	}
 }
 
 

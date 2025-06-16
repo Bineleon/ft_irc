@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 #include "Client.hpp"
+#include "Server.hpp"
 
 class Client;
 
@@ -51,7 +52,7 @@ class Channel
 		bool				isOperator(Client *client);
 		bool				invite(Client *client);
 
-		void				handleModes(Client *client, std::string const &modes, std::vector<std::string> const &modesParams);
+		void				handleModes(Server *serv, Client *client, std::string const &modes, std::vector<std::string> const &modesParams);
 		// JoinStatus	checkJoinStatus(Client *client, std::string const &key) const;
 		// void		handleJoinErr(Client *client, JoinStatus status) const;
 
