@@ -124,3 +124,65 @@ void Server::kickCmd(fullCmd cmd, Client *client)
 	channel->kickUser(client);
 	// add RPL
 }
+
+void Server::inviteCmd(fullCmd cmd, Client *client)
+{
+	if (cmd.params.empty() || cmd.params[0].empty() || cmd.params[1].empty())
+	{
+		sendError(*client, ERR_NEEDMOREPARAMS);
+		return;
+	}
+	if (!chanIsOnServer(cmd.params[1]))
+	{
+		sendError(*client, ERR_NOSUCHCHANNEL);
+		return;
+	}
+
+	Channel *chanToInviteTo = _channels[cmd.params[1]];
+	if (!chanToInviteTo->isOperator(client))
+	{
+		sendError(*client, ERR_CHANOPRIVSNEEDED);
+		return;
+	}
+
+	Client *toInvite = _nickClients[cmd.params[0]];
+	if (chanToInviteTo->hasUser(toInvite))
+	{
+		sendError(*client, ERR_USERONCHANNEL);
+		return;
+	}
+	if (chanToInviteTo->invite(toInvite))
+	{
+		// sendReply(client, ) // TODO 
+
+	}
+	
+}
+
+void Server::topicCmd(fullCmd cmd, Client *client)
+{
+	if (cmd.params.empty() || cmd.params[0].empty())
+	{
+		sendError(*client, ERR_NEEDMOREPARAMS);
+		return;
+	}
+	if (!chanIsOnServer(cmd.params[0]))
+	{
+		sendError(*client, ERR_NOSUCHCHANNEL);
+		return;
+	}
+	Channel *targetChannel = _channels[cmd.params[0]];
+	if (!targetChannel->isOperator(client))
+	{
+		sendError(*client, ERR_CHANOPRIVSNEEDED);
+		return;
+	}
+	if (cmd.params.size() < 2)
+	{
+		// sendRplTopic
+		return;
+	}
+	targetChannel->setTopic(cmd.params[1]);
+	// sendPlyTopic
+
+}

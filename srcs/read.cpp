@@ -63,6 +63,14 @@ void Server::readFromSocket(struct pollfd pfdClient)
 }
 
 
+bool Server::chanIsOnServer(std::string chanName)
+{
+	if (_channels.find(chanName) == _channels.end())
+		return false;
+	return true;
+}
+
+
 // void Server::executeCmd(fullCmd cmd, Client client)
 // {
 
