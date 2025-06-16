@@ -73,6 +73,7 @@ class Server
 		void kickCmd(fullCmd cmd, Client *client);
 		void inviteCmd(fullCmd cmd, Client *client);
 		void topicCmd(fullCmd cmd, Client *client);
+		void modeCmd(fullCmd cmd, Client *client);
 
 		void sendReply(const Client& client, int code, std::string const & param);
 

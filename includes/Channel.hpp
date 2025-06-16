@@ -4,6 +4,7 @@
 #include <iostream>
 #include <set>
 #include <map>
+#include <vector>
 #include "Client.hpp"
 
 class Client;
@@ -38,11 +39,19 @@ class Channel
 		bool				const &getHasUserLimit() const;
 		bool				const &getHasKey() const;
 		bool				const &getIsInviteOnly() const;
+		bool				const &getHasTopicRestric() const;
 		void				setTopic(std::string topic);
-		bool				hasUser(Client *client);
-		
+		void				setUserLimit(size_t userLimit);
+		void				setTopicRestric(bool isRestricted);
+		void				setKey(std::string key);
+		void				setHasKey(bool hasKey);
+		void				setInviteOnly(bool isInviteOnly);
+
+		bool				isUser(Client *client);
 		bool				isOperator(Client *client);
 		bool				invite(Client *client);
+
+		void				handleModes(Client *client, std::string const &modes, std::vector<std::string> const &modesParams);
 		// JoinStatus	checkJoinStatus(Client *client, std::string const &key) const;
 		// void		handleJoinErr(Client *client, JoinStatus status) const;
 
@@ -60,6 +69,7 @@ class Channel
 		std::set<Client*>	_invited;
 		size_t				_userLimit;
 		bool				_hasUserLimit;
+		bool				_hasTopicRestric;
 		bool				_hasKey;
 		bool				_isInviteOnly;
 };

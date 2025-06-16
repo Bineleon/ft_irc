@@ -4,11 +4,11 @@ Channel::Channel(void)
 {
 }
 
-Channel::Channel(std::string name): _name(name), _hasUserLimit(false)
+Channel::Channel(std::string name): _name(name), _hasUserLimit(false), _hasTopicRestric(false)
 {
 }
 
-Channel::Channel(std::string name, std::string key): _name(name), _key(key),_hasUserLimit(false)
+Channel::Channel(std::string name, std::string key): _name(name), _key(key), _hasUserLimit(false), _hasTopicRestric(false)
 {
 }
 
@@ -93,12 +93,42 @@ bool	const &Channel::getIsInviteOnly() const
 	return _isInviteOnly;
 }
 
+bool				const &Channel::getHasTopicRestric() const
+{
+	return _hasTopicRestric;
+}
+
 void	Channel::setTopic(std::string topic)
 {
 	_topic = topic;
 }
 
-bool	Channel::hasUser(Client *client)
+void	Channel::setUserLimit(size_t userLimit)
+{
+	_userLimit = userLimit;
+}
+
+void	Channel::setTopicRestric(bool isRestricted)
+{
+	_hasTopicRestric = isRestricted;
+}
+
+void	Channel::setKey(std::string key)
+{
+	_key = key;
+}
+
+void	Channel::setHasKey(bool hasKey)
+{
+	_hasKey = hasKey;
+}
+
+void	Channel::setInviteOnly(bool isInviteOnly)
+{
+	_isInviteOnly = isInviteOnly;
+}
+
+bool	Channel::isUser(Client *client)
 {
 	std::map<std::string, Client*>::iterator it = _users.find(client->getNickname());
 	if (it == _users.end())
@@ -124,6 +154,11 @@ void	Channel::kickUser(Client *client)
 bool Channel::invite(Client *client)
 {
 	return _invited.insert(client).second;
+}
+
+void	Channel::handleModes(Client *client, std::string const &modes, std::vector<std::string> const &modesParams)
+{
+	
 }
 
 

@@ -146,7 +146,7 @@ void Server::inviteCmd(fullCmd cmd, Client *client)
 	}
 
 	Client *toInvite = _nickClients[cmd.params[0]];
-	if (chanToInviteTo->hasUser(toInvite))
+	if (chanToInviteTo->isUser(toInvite))
 	{
 		sendError(*client, ERR_USERONCHANNEL);
 		return;
@@ -172,7 +172,12 @@ void Server::topicCmd(fullCmd cmd, Client *client)
 		return;
 	}
 	Channel *targetChannel = _channels[cmd.params[0]];
-	if (!targetChannel->isOperator(client))
+	if (!targetChannel->isUser(client))
+	{
+		sendError(*client, ERR_NOTONCHANNEL);
+		return;
+	}
+	if (!targetChannel->isOperator(client) && targetChannel->getHasTopicRestric())
 	{
 		sendError(*client, ERR_CHANOPRIVSNEEDED);
 		return;
@@ -185,4 +190,37 @@ void Server::topicCmd(fullCmd cmd, Client *client)
 	targetChannel->setTopic(cmd.params[1]);
 	// sendPlyTopic
 
+}
+
+// . i: Set/remove Invite-only channel
+// · t: Set/remove the restrictions of the TOPIC command to channel operators
+// · k: Set/remove the channel key (password)
+// · o: Give/take channel operator privilege
+// · l: Set/remove the user limit to channel
+
+
+
+void Server::modeCmd(fullCmd cmd, Client *client)
+{
+	if (cmd.params.empty() || cmd.params[0].empty() || cmd.params.size() < 2)
+	{
+		sendError(*client, ERR_NEEDMOREPARAMS);
+		return;
+	}
+	if (!chanIsOnServer(cmd.params[0]))
+	{
+		sendError(*client, ERR_NOSUCHCHANNEL);
+		return;
+	}
+	Channel *targetChannel = _channels[cmd.params[0]];
+	if (!targetChannel->isOperator(client))
+	{
+		sendError(*client, ERR_CHANOPRIVSNEEDED);
+		return;
+	}
+
+	std::string modes = cmd.params[1];
+	std::vector<std::string> modesParams(cmd.params.begin() + 2, cmd.params.end());
+
+	targetChannel->handleModes(client, modes, modesParams);
 }
