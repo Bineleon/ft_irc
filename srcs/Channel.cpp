@@ -273,8 +273,7 @@ void	Channel::handleLimitMode(Server *serv, Client *client, bool add, std::vecto
 			serv->sendError(*client, ERR_NEEDMOREPARAMS);
 			return;
 		}
-		std::string strLimit = params[idx++];
-		if (!convertToInt(strLimit, limit) || limit <= 0)
+		if (!convertToInt(params[idx++], limit) || limit <= 0)
 		{
 			serv->sendError(*client, ERR_NEEDMOREPARAMS);
 			return;
