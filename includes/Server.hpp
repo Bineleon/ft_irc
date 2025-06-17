@@ -6,6 +6,8 @@
 # include "Channel.hpp"
 # include "errorMsgs.hpp"
 # include "replies.hpp"
+#include "utils.hpp"
+
 
 # include <iostream>
 # include <vector>
@@ -26,7 +28,6 @@
 # include <csignal>
 # include <sstream>
 # include <iomanip>
-#include <limits>
 
 # define BACKLOG 10
 # define BUFFER_SIZE 1024
@@ -79,7 +80,6 @@ class Server
 		void sendReply(const Client& client, int code, std::string const & param);
 
 		bool chanIsOnServer(std::string chanName);
-		bool convertToInt(std::string const &str, int &result);
 
 		// void	handleCommands(Client *client, const std::string& cmd, const std::vector<std::string>& args);
 		// void	PASS(Client *client, const std::string pass);

@@ -7,6 +7,7 @@
 #include <vector>
 #include "Client.hpp"
 #include "Server.hpp"
+#include "utils.hpp"
 
 class Client;
 

@@ -1,4 +1,4 @@
-#include "Channel.hpp"
+#include "../includes/Channel.hpp"
 
 Channel::Channel(void)
 {
@@ -174,6 +174,14 @@ bool Channel::invite(Client *client)
 // · o: Give/take channel operator privilege
 // · l: Set/remove the user limit to channel
 
+void checkSign(char mode, bool &add)
+{
+	if (mode == '+')
+		add = true;
+	else if (mode == '-')
+		add = false;
+}
+
 void	Channel::handleModes(Server *serv, Client *client, std::string const &modes, std::vector<std::string> const &modesParams)
 {
 	if (modes.empty() || (modes[0] != '-' && modes[0] != '+'))
@@ -188,11 +196,9 @@ void	Channel::handleModes(Server *serv, Client *client, std::string const &modes
 	for (size_t i = 0; i < modes.size(); ++i)
 	{
 		char mode = modes[i];
-		if (mode == '+')
-			add = true;
-		else if (mode == '-')
-			add = false;
-		
+
+		checkSign(mode, add);
+
 		switch (mode)
 		{
 		case 'i':
@@ -226,11 +232,8 @@ void	Channel::handleKeyMode(Server *serv, Client *client, bool add, std::vector<
 			serv->sendError(*client, ERR_NEEDMOREPARAMS);
 			return;
 		}
-		else
-		{
-			_key = params[idx++];
-			_hasKey = true;
-		}
+		_key = params[idx++];
+		_hasKey = true;
 	}
 	else
 	{
@@ -241,37 +244,22 @@ void	Channel::handleKeyMode(Server *serv, Client *client, bool add, std::vector<
 
 void	Channel::handleOpMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx)
 {
+	if (idx >= params.size() || params[idx].empty())
+	{
+		serv->sendError(*client, ERR_NEEDMOREPARAMS);
+		return;
+	}
+	
+	std::string nickname = params[idx++];
+	if (!isUser(nickname))
+	{
+		serv->sendError(*client, ERR_USERNOTINCHANNEL);
+		return;
+	}
 	if (add)
-	{
-		if (idx >= params.size() || params[idx].empty())
-		{
-			serv->sendError(*client, ERR_NEEDMOREPARAMS);
-			return;
-		}
-		else
-		{
-			if (!isUser(params[idx]))
-				serv->sendError(*client, ERR_USERNOTINCHANNEL);
-			else
-				addOperator(_users[params[idx]]);
-			
-		}
-	}
+		addOperator(_users[nickname]);
 	else
-	{
-		if (idx >= params.size() || params[idx].empty())
-		{
-			serv->sendError(*client, ERR_NEEDMOREPARAMS);
-			return;
-		}
-		else
-		{
-			if (!isUser(params[idx++]))
-				serv->sendError(*client, ERR_USERNOTINCHANNEL);
-			else
-				rmOperator(_users[params[idx]]);
-		}
-	}
+		rmOperator(_users[nickname]);
 }
 
 void	Channel::handleLimitMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx)
@@ -280,57 +268,20 @@ void	Channel::handleLimitMode(Server *serv, Client *client, bool add, std::vecto
 
 	if (add)
 	{
-		if (idx >= params.size() || params[idx].empty() || !serv->convertToInt(params[idx++], limit) || limit <= 0)
+		if (idx >= params.size() || params[idx].empty())
 		{
 			serv->sendError(*client, ERR_NEEDMOREPARAMS);
 			return;
 		}
-		else
+		std::string strLimit = params[idx++];
+		if (!convertToInt(strLimit, limit) || limit <= 0)
 		{
-			_userLimit = limit;
-			_hasUserLimit = true;
+			serv->sendError(*client, ERR_NEEDMOREPARAMS);
+			return;
 		}
+		_userLimit = limit;
+		_hasUserLimit = true;
 	}
 	else
 		_hasUserLimit =  false;
 }
-
-
-// JoinStatus Channel::checkJoinStatus(Client *client, std::string const &key) const
-// {
-// 	if (_users.size() == _userLimit)
-// 		return J_FULL;
-// 	else if (_banned.find(client) != _banned.end())
-// 		return J_BANNED;
-// 	else if (_hasKey && (key.empty() || key != _key))
-// 		return J_BAD_K;
-// 	else if (_users.find(client) != _users.end())
-// 		return J_ALRDYIN;
-// 	else if (_isInviteOnly && _invited.find(client) == _invited.end())
-// 		return J_INVIT_O;
-//     return J_OK;
-// }
-
-// void Channel::handleJoinErr(Client *client, JoinStatus status) const
-// {
-// 	switch (status)
-// 	{
-// 		case J_FULL:
-			
-// 			break;
-// 		case J_BANNED:
-// 			// error ERR_BANNEDFROMCHAN
-// 			break;
-// 		case J_BAD_K:
-// 			// error ERR_BADCHANNELKEY
-// 			break;
-// 		case J_ALRDYIN:
-// 			// error ERR_USERONCHANNEL
-// 			break;
-// 		case J_INVIT_O:
-// 			// error ERR_INVITEONLYCHAN
-// 			break;
-// 		default:
-// 			break;
-// 	}
-// }
