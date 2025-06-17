@@ -29,11 +29,12 @@ class Channel
 		void				addOperator(Client *client);
 		void				addUser(Client *client);
 		void				kickUser(Client *client);
+		void				rmOperator(Client *client);
 		std::string			const &getName() const;
 		std::string			const &getTopic() const;
 		std::string			const &getKey() const;
 		std::map<std::string, Client*>	const &getUsers() const;
-		std::set<Client*>	const &getOperators() const;
+		std::map<std::string, Client*>	const &getOperators() const;
 		std::set<Client*>	const &getBanned() const;
 		std::set<Client*>	const &getInvited() const;
 		size_t				const &getUserLimit() const;
@@ -49,10 +50,15 @@ class Channel
 		void				setInviteOnly(bool isInviteOnly);
 
 		bool				isUser(Client *client);
+		bool				isUser(std::string nickname);
 		bool				isOperator(Client *client);
 		bool				invite(Client *client);
 
 		void				handleModes(Server *serv, Client *client, std::string const &modes, std::vector<std::string> const &modesParams);
+		void				handleKeyMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx);
+		void				handleOpMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx);
+		void				handleLimitMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx);
+
 		// JoinStatus	checkJoinStatus(Client *client, std::string const &key) const;
 		// void		handleJoinErr(Client *client, JoinStatus status) const;
 
@@ -65,7 +71,8 @@ class Channel
 		std::string			_key;
 		// std::set<Client*>	_users;
 		std::map<std::string, Client*>	_users;
-		std::set<Client*>	_operators;
+		std::map<std::string, Client*>	_operators;
+		// std::set<Client*>	_operators;
 		std::set<Client*>	_banned;
 		std::set<Client*>	_invited;
 		size_t				_userLimit;

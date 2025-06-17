@@ -30,7 +30,7 @@ Channel::~Channel(void)
 
 void Channel::addOperator(Client *client)
 {
-    _operators.insert(client);
+    _operators[client->getNickname()] = client;
 }
 
 void Channel::addUser(Client *client)
@@ -58,7 +58,7 @@ std::map<std::string, Client*>	const &Channel::getUsers() const
 	return _users;
 }
 
-std::set<Client*>	const &Channel::getOperators() const
+std::map<std::string, Client*>	const &Channel::getOperators() const
 {
 	return _operators;
 }
@@ -130,25 +130,36 @@ void	Channel::setInviteOnly(bool isInviteOnly)
 
 bool	Channel::isUser(Client *client)
 {
-	std::map<std::string, Client*>::iterator it = _users.find(client->getNickname());
-	if (it == _users.end())
+	if (_users.find(client->getNickname()) == _users.end())
+		return false;
+	return true;
+}
+
+bool	Channel::isUser(std::string nickname)
+{
+	if (_users.find(nickname) == _users.end())
 		return false;
 	return true;
 }
 
 bool	Channel::isOperator(Client *client)
 {
-	if (_operators.find(client) == _operators.end())
+	if (_operators.find(client->getNickname()) == _operators.end())
 		return false;
 	return true;
 }
 
+void	Channel::rmOperator(Client *client)
+{
+	if (isOperator(client))
+		_operators.erase(client->getNickname());
+}
+
 void	Channel::kickUser(Client *client)
 {
-	std::map<std::string, Client*>::iterator it = _users.find(client->getNickname());
-	if (it == _users.end())
-		return;
-	_users.erase(it);
+	rmOperator(client);
+	if (isUser(client))
+		_users.erase(client->getNickname());
 }
 
 bool Channel::invite(Client *client)
@@ -174,7 +185,6 @@ void	Channel::handleModes(Server *serv, Client *client, std::string const &modes
 	bool add;
 	size_t idxParams = 0;
 
-
 	for (size_t i = 0; i < modes.size(); ++i)
 	{
 		char mode = modes[i];
@@ -192,19 +202,97 @@ void	Channel::handleModes(Server *serv, Client *client, std::string const &modes
 			_hasTopicRestric = add;
 			break;
 		case 'k':
-			/* code */
+			handleKeyMode(serv, client, add, modesParams, idxParams);
 			break;
 		case 'o':
-			/* code */
+			handleOpMode(serv, client, add, modesParams, idxParams);
 			break;
 		case 'l':
-			/* code */
+			handleLimitMode(serv, client, add, modesParams, idxParams);
 			break;
 		default:
 			serv->sendError(*client, ERR_UNKNOWNMODE);
 			break;
 		}
 	}
+}
+
+void	Channel::handleKeyMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx)
+{
+	if (add)
+	{
+		if (idx >= params.size() || params[idx].empty())
+		{
+			serv->sendError(*client, ERR_NEEDMOREPARAMS);
+			return;
+		}
+		else
+		{
+			_key = params[idx++];
+			_hasKey = true;
+		}
+	}
+	else
+	{
+		_key.clear();
+		_hasKey = false;
+	}
+}
+
+void	Channel::handleOpMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx)
+{
+	if (add)
+	{
+		if (idx >= params.size() || params[idx].empty())
+		{
+			serv->sendError(*client, ERR_NEEDMOREPARAMS);
+			return;
+		}
+		else
+		{
+			if (!isUser(params[idx]))
+				serv->sendError(*client, ERR_USERNOTINCHANNEL);
+			else
+				addOperator(_users[params[idx]]);
+			
+		}
+	}
+	else
+	{
+		if (idx >= params.size() || params[idx].empty())
+		{
+			serv->sendError(*client, ERR_NEEDMOREPARAMS);
+			return;
+		}
+		else
+		{
+			if (!isUser(params[idx++]))
+				serv->sendError(*client, ERR_USERNOTINCHANNEL);
+			else
+				rmOperator(_users[params[idx]]);
+		}
+	}
+}
+
+void	Channel::handleLimitMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx)
+{
+	int limit;
+
+	if (add)
+	{
+		if (idx >= params.size() || params[idx].empty() || !serv->convertToInt(params[idx++], limit) || limit <= 0)
+		{
+			serv->sendError(*client, ERR_NEEDMOREPARAMS);
+			return;
+		}
+		else
+		{
+			_userLimit = limit;
+			_hasUserLimit = true;
+		}
+	}
+	else
+		_hasUserLimit =  false;
 }
 
 

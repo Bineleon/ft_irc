@@ -39,6 +39,7 @@ void Server::joinCmd(fullCmd cmd, Client *client)
 		{
 			channel = new Channel(splitChan[i], key);
 			channel->addOperator(client);
+			channel->addUser(client);
 			_channels[splitChan[i]] = channel;
 		}
 		else
@@ -59,7 +60,7 @@ void Server::joinCmd(fullCmd cmd, Client *client)
 
 JoinStatus Server::checkJoinStatus(Channel *channel, Client *client, std::string const &key) const
 {
-	if (channel->getUsers().size() == channel->getUserLimit())
+	if (channel->getHasUserLimit() && (channel->getUsers().size() >= channel->getUserLimit()))
 		return J_FULL;
 	else if (channel->getBanned().find(client) != channel->getBanned().end())
 		return J_BANNED;
@@ -111,7 +112,7 @@ void Server::kickCmd(fullCmd cmd, Client *client)
 
 	Client	*client;
 	Channel *channel = _channels[cmd.params[0]];
-	if (channel->getOperators().find(client) == channel->getOperators().end())
+	if (channel->getOperators().find(client->getNickname()) == channel->getOperators().end())
 	{
 		sendError(*client, ERR_CHANOPRIVSNEEDED);
 		return;
@@ -215,4 +216,24 @@ void Server::modeCmd(fullCmd cmd, Client *client)
 	std::vector<std::string> modesParams(cmd.params.begin() + 2, cmd.params.end());
 
 	targetChannel->handleModes(this, client, modes, modesParams);
+}
+
+
+bool Server::convertToInt(std::string const &str, int &result)
+{
+	long long tmp;
+	std::stringstream ss(str);
+
+	if (str.empty())
+		return false;
+
+	ss >> tmp;
+	if (ss.fail() || ss.eof())
+		return false;
+
+	if (tmp > std::numeric_limits<int>::min() || tmp < std::numeric_limits<int>::max())
+		return false;
+
+	result = static_cast<int>(tmp);
+	return true;
 }
