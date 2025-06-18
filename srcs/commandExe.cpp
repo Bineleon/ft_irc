@@ -14,10 +14,7 @@ std::vector<std::string> splitCmds(std::string const &param)
 bool Server::checkNeedMoreParams(fullCmd cmd, Client *client)
 {
 	if (cmd.params.empty() || cmd.params[0].empty())
-	{
-		sendError(*client, ERR_NEEDMOREPARAMS);
 		return true;
-	}
 	return false;
 }
 
@@ -37,18 +34,18 @@ Channel* Server::handleJoinChan(Client *client, std::string const &key, std::str
 	{
 		Channel *channel = new Channel(chanName, key);
 		channel->addOperator(client);
-		channel->addUser(client);
 		_channels[chanName] = channel;
-		return channel;
 	}
-	else
-		return _channels[chanName];
+	return _channels[chanName];
 }
 
 void Server::joinCmd(fullCmd cmd, Client *client)
 {
 	if (checkNeedMoreParams(cmd, client))
+	{
+		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
+	}
 
 	std::vector<std::string> splitChan = splitCmds(cmd.params[0]);
 	bool keys = cmd.params.size() > 1 ? true : false;
@@ -58,7 +55,7 @@ void Server::joinCmd(fullCmd cmd, Client *client)
 
 	for (size_t i = 0; i < splitChan.size(); ++i)
 	{
-		std::string key = (keys && (i <= splitKeys.size())) ? splitKeys[i] : "";
+		std::string key = (keys && (i < splitKeys.size())) ? splitKeys[i] : "";
 
 		if (checkInValidChanName(client, splitChan[i]))
 			continue;
@@ -115,7 +112,7 @@ void Server::handleJoinErr(Client *client, JoinStatus status)
 
 void Server::kickCmd(fullCmd cmd, Client *client)
 {
-	if (cmd.params.empty() || cmd.params[0].empty())
+	if (checkNeedMoreParams(cmd, client))
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
@@ -125,7 +122,6 @@ void Server::kickCmd(fullCmd cmd, Client *client)
 		sendError(*client, ERR_NOSUCHCHANNEL);
 		return;
 	}
-
 	Client	*client;
 	Channel *channel = _channels[cmd.params[0]];
 	if (channel->getOperators().find(client->getNickname()) == channel->getOperators().end())
@@ -144,7 +140,7 @@ void Server::kickCmd(fullCmd cmd, Client *client)
 
 void Server::inviteCmd(fullCmd cmd, Client *client)
 {
-	if (cmd.params.empty() || cmd.params[0].empty() || cmd.params[1].empty())
+	if (checkNeedMoreParams(cmd, client) || cmd.params[1].empty())
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
@@ -178,7 +174,7 @@ void Server::inviteCmd(fullCmd cmd, Client *client)
 
 void Server::topicCmd(fullCmd cmd, Client *client)
 {
-	if (cmd.params.empty() || cmd.params[0].empty())
+	if (checkNeedMoreParams(cmd, client))
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
@@ -211,7 +207,7 @@ void Server::topicCmd(fullCmd cmd, Client *client)
 
 void Server::modeCmd(fullCmd cmd, Client *client)
 {
-	if (cmd.params.empty() || cmd.params[0].empty() || cmd.params.size() < 2)
+	if (checkNeedMoreParams(cmd, client) || cmd.params.size() < 2)
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
