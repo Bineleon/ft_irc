@@ -11,13 +11,44 @@ std::vector<std::string> splitCmds(std::string const &param)
 	return splitParams;
 }
 
-void Server::joinCmd(fullCmd cmd, Client *client)
+bool Server::checkNeedMoreParams(fullCmd cmd, Client *client)
 {
 	if (cmd.params.empty() || cmd.params[0].empty())
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
-		return;
+		return true;
 	}
+	return false;
+}
+
+bool Server::checkInValidChanName(Client *client, std::string const &chanName)
+{
+	if (chanName.empty() || chanName[0] != '#')
+	{
+		sendError(*client, ERR_NOSUCHCHANNEL);
+		return true;
+	}
+	return false;
+}
+
+Channel* Server::handleJoinChan(Client *client, std::string const &key, std::string chanName)
+{
+	if (_channels.find(chanName) == _channels.end())
+	{
+		Channel *channel = new Channel(chanName, key);
+		channel->addOperator(client);
+		channel->addUser(client);
+		_channels[chanName] = channel;
+		return channel;
+	}
+	else
+		return _channels[chanName];
+}
+
+void Server::joinCmd(fullCmd cmd, Client *client)
+{
+	if (checkNeedMoreParams(cmd, client))
+		return;
 
 	std::vector<std::string> splitChan = splitCmds(cmd.params[0]);
 	bool keys = cmd.params.size() > 1 ? true : false;
@@ -29,32 +60,17 @@ void Server::joinCmd(fullCmd cmd, Client *client)
 	{
 		std::string key = (keys && (i <= splitKeys.size())) ? splitKeys[i] : "";
 
-		if (splitChan[i].empty() || splitChan[i][0] != '#')
-		{
-			sendError(*client, ERR_NOSUCHCHANNEL);
+		if (checkInValidChanName(client, splitChan[i]))
 			continue;
-		}
-
-		if (_channels.find(splitChan[i]) == _channels.end())
-		{
-			channel = new Channel(splitChan[i], key);
-			channel->addOperator(client);
-			channel->addUser(client);
-			_channels[splitChan[i]] = channel;
-		}
-		else
-			channel = _channels[splitChan[i]];
-
+		Channel *channel = handleJoinChan(client, key, splitChan[i]);
 		JoinStatus status = checkJoinStatus(channel, client, key);
-
 		if (status != J_OK)
 		{
 			handleJoinErr(client, status);
 			continue;
 		}
-
 		channel->addUser(client);
-		// add RPL
+		joinRPLs(client, channel);
 	}
 }
 
