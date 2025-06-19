@@ -58,6 +58,8 @@ void Server::readFromSocket(struct pollfd pfdClient)
 		{
 			fullCmd cmd = parseCmd(toParse);
 			printCmd(cmd);
+			std::map<int, Client*>::iterator it = this->_clients.find(pfdClient.fd);
+			execCmd(cmd, *this, *it->second);
 		}
 	}
 }
@@ -70,17 +72,6 @@ bool Server::chanIsOnServer(std::string chanName)
 	return true;
 }
 
+void	execCmd(fullCmd& cmd, const Server& server, Client& client) {
 
-// void Server::executeCmd(fullCmd cmd, Client client)
-// {
-
-// 	if (client.getStatus() != AUTHENTICATED)
-// 	{
-// 		// authenticate
-// 	}
-// 	else
-// 	{
-		
-// 	}
-
-// }
+}
