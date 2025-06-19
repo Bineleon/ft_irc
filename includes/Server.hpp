@@ -1,13 +1,16 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
+class Channel;
+class Client;
+
+# include "errorMsgs.hpp"
+# include "Channel.hpp"
 # include "Client.hpp"
 # include "Command.hpp"
-# include "Channel.hpp"
-# include "errorMsgs.hpp"
 # include "replies.hpp"
-#include "utils.hpp"
-
+# include "utils.hpp"
+# include "JoinStatus.hpp"
 
 # include <iostream>
 # include <vector>
@@ -31,6 +34,14 @@
 
 # define BACKLOG 10
 # define BUFFER_SIZE 1024
+
+enum ErrorFormat {
+	NOTHING,
+	NICK,
+	CMD,
+	CHANNEL,
+	NICK_CHANNEL
+};
 
 class Server
 {
@@ -66,7 +77,7 @@ class Server
 
 		void initErrorMessages();
 		void sendError(const Client& client, int error);
-		void executeCmd(fullCmd cmd, Client client);
+		void executeCmd(fullCmd cmd, Client *client);
 		CMD_TYPE checkCMD(fullCmd cmd);
 
 		void privmsgCmd(fullCmd cmd, Client *client);

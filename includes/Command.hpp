@@ -20,7 +20,8 @@ enum CMD_TYPE
 	KICK,
 	INVITE,
 	TOPIC,
-	MODE
+	MODE,
+	UNKNOWN
 };
 
 fullCmd parseCmd(std::string const & msg);

@@ -1,25 +1,17 @@
 #ifndef CHANNEL_HPP
 #define CHANNEL_HPP
 
+class Server;
+class Client;
+
 #include <iostream>
 #include <set>
 #include <map>
 #include <vector>
-#include "Client.hpp"
 #include "Server.hpp"
+#include "Client.hpp"
 #include "utils.hpp"
-
-class Client;
-
-enum JoinStatus
-{
-	J_OK,
-	J_FULL,
-	J_INVIT_O,
-	J_BANNED,
-	J_BAD_K,
-	J_ALRDYIN
-};
+# include "JoinStatus.hpp"
 
 class Channel
 {
@@ -77,10 +69,10 @@ class Channel
 		std::set<Client*>	_banned;
 		std::set<Client*>	_invited;
 		size_t				_userLimit;
+		bool				_hasKey;
 		bool				_hasUserLimit;
 		bool				_hasTopicRestric;
 		bool				_hasTopic;
-		bool				_hasKey;
 		bool				_isInviteOnly;
 };
 
