@@ -60,7 +60,7 @@ class Channel
 		void				handleOpMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx);
 		void				handleLimitMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx);
 
-		void				broadcast(std::string const &msg);
+		void				broadcast(std::string const &msg, Client *except);
 
 		// JoinStatus	checkJoinStatus(Client *client, std::string const &key) const;
 		// void		handleJoinErr(Client *client, JoinStatus status) const;

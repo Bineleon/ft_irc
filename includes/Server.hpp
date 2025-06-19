@@ -69,12 +69,14 @@ class Server
 		void executeCmd(fullCmd cmd, Client client);
 		CMD_TYPE checkCMD(fullCmd cmd);
 
+		void privmsgCmd(fullCmd cmd, Client *client);
+		void handleChanPrivmsg(fullCmd cmd, Client *client);
+		void handleUserPrivmsg(fullCmd cmd, Client *client);
+		std::string buildPrivmsg(fullCmd cmd, Client *client);
 
 		void joinCmd(fullCmd cmd, Client *client);
 		JoinStatus	checkJoinStatus(Channel *channel, Client *client, std::string const &key) const;
 		void handleJoinErr(Client *client, JoinStatus status);
-		bool checkNeedMoreParams(fullCmd cmd, Client *client);
-		bool checkInValidChanName(Client *client, std::string const &chanName);
 		Channel* handleJoinChan(Client *client, std::string const &key, std::string chanName);
 
 		void topicRPL(Client *client, Channel *channel);

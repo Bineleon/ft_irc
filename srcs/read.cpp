@@ -73,7 +73,9 @@ bool Server::chanIsOnServer(std::string chanName)
 
 CMD_TYPE Server::checkCMD(fullCmd cmd)
 {
-	if (cmd.verb == "/JOIN")
+	if (cmd.verb == "/PRIVMSG")
+		return PRIVMSG;
+	else if (cmd.verb == "/JOIN")
 		return JOIN;
 	else if (cmd.verb == "/KICK")
 		return KICK;

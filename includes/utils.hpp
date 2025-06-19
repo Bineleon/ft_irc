@@ -6,5 +6,7 @@
 # include "Server.hpp"
 
 bool convertToInt(std::string const &str, int &result);
+bool checkNeedMoreParams(fullCmd cmd);
+bool isValidChanName(std::string const &chanName);
 
 # endif
