@@ -11,9 +11,37 @@ std::vector<std::string> splitCmds(std::string const &param)
 	return splitParams;
 }
 
-void Server::joinCmd(fullCmd cmd, Client *client)
+bool Server::checkNeedMoreParams(fullCmd cmd, Client *client)
 {
 	if (cmd.params.empty() || cmd.params[0].empty())
+		return true;
+	return false;
+}
+
+bool Server::checkInValidChanName(Client *client, std::string const &chanName)
+{
+	if (chanName.empty() || chanName[0] != '#')
+	{
+		sendError(*client, ERR_NOSUCHCHANNEL);
+		return true;
+	}
+	return false;
+}
+
+Channel* Server::handleJoinChan(Client *client, std::string const &key, std::string chanName)
+{
+	if (_channels.find(chanName) == _channels.end())
+	{
+		Channel *channel = new Channel(chanName, key);
+		channel->addOperator(client);
+		_channels[chanName] = channel;
+	}
+	return _channels[chanName];
+}
+
+void Server::joinCmd(fullCmd cmd, Client *client)
+{
+	if (checkNeedMoreParams(cmd, client))
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
@@ -27,34 +55,19 @@ void Server::joinCmd(fullCmd cmd, Client *client)
 
 	for (size_t i = 0; i < splitChan.size(); ++i)
 	{
-		std::string key = (keys && (i <= splitKeys.size())) ? splitKeys[i] : "";
+		std::string key = (keys && (i < splitKeys.size())) ? splitKeys[i] : "";
 
-		if (splitChan[i].empty() || splitChan[i][0] != '#')
-		{
-			sendError(*client, ERR_NOSUCHCHANNEL);
+		if (checkInValidChanName(client, splitChan[i]))
 			continue;
-		}
-
-		if (_channels.find(splitChan[i]) == _channels.end())
-		{
-			channel = new Channel(splitChan[i], key);
-			channel->addOperator(client);
-			channel->addUser(client);
-			_channels[splitChan[i]] = channel;
-		}
-		else
-			channel = _channels[splitChan[i]];
-
+		Channel *channel = handleJoinChan(client, key, splitChan[i]);
 		JoinStatus status = checkJoinStatus(channel, client, key);
-
 		if (status != J_OK)
 		{
 			handleJoinErr(client, status);
 			continue;
 		}
-
 		channel->addUser(client);
-		// add RPL
+		joinRPLs(client, channel);
 	}
 }
 
@@ -99,7 +112,7 @@ void Server::handleJoinErr(Client *client, JoinStatus status)
 
 void Server::kickCmd(fullCmd cmd, Client *client)
 {
-	if (cmd.params.empty() || cmd.params[0].empty())
+	if (checkNeedMoreParams(cmd, client))
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
@@ -109,7 +122,6 @@ void Server::kickCmd(fullCmd cmd, Client *client)
 		sendError(*client, ERR_NOSUCHCHANNEL);
 		return;
 	}
-
 	Client	*client;
 	Channel *channel = _channels[cmd.params[0]];
 	if (channel->getOperators().find(client->getNickname()) == channel->getOperators().end())
@@ -128,7 +140,7 @@ void Server::kickCmd(fullCmd cmd, Client *client)
 
 void Server::inviteCmd(fullCmd cmd, Client *client)
 {
-	if (cmd.params.empty() || cmd.params[0].empty() || cmd.params[1].empty())
+	if (checkNeedMoreParams(cmd, client) || cmd.params[1].empty())
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
@@ -162,7 +174,7 @@ void Server::inviteCmd(fullCmd cmd, Client *client)
 
 void Server::topicCmd(fullCmd cmd, Client *client)
 {
-	if (cmd.params.empty() || cmd.params[0].empty())
+	if (checkNeedMoreParams(cmd, client))
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
@@ -195,7 +207,7 @@ void Server::topicCmd(fullCmd cmd, Client *client)
 
 void Server::modeCmd(fullCmd cmd, Client *client)
 {
-	if (cmd.params.empty() || cmd.params[0].empty() || cmd.params.size() < 2)
+	if (checkNeedMoreParams(cmd, client) || cmd.params.size() < 2)
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;

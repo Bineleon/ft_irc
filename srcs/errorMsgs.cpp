@@ -1,6 +1,6 @@
 #include "../includes/errorMsgs.hpp"
 
-std::map<int, std::pair<ErrorFormat, std::string> > clientMessages;
+std::map<int, std::string> rplMessages;
 
 // void	initErrorMessages()
 // {

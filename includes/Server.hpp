@@ -71,13 +71,21 @@ class Server
 		void joinCmd(fullCmd cmd, Client *client);
 		JoinStatus	checkJoinStatus(Channel *channel, Client *client, std::string const &key) const;
 		void handleJoinErr(Client *client, JoinStatus status);
+		bool checkNeedMoreParams(fullCmd cmd, Client *client);
+		bool checkInValidChanName(Client *client, std::string const &chanName);
+		Channel* handleJoinChan(Client *client, std::string const &key, std::string chanName);
+
+		void topicRPL(Client *client, Channel *channel);
+		void nameRPL(Client *client, Channel *channel);
+		void eofNamesRPL(Client *client, Channel *channel);
 
 		void kickCmd(fullCmd cmd, Client *client);
 		void inviteCmd(fullCmd cmd, Client *client);
 		void topicCmd(fullCmd cmd, Client *client);
 		void modeCmd(fullCmd cmd, Client *client);
 
-		void sendReply(const Client& client, int code, std::string const & param);
+		void sendReply(Client *client, int code, std::vector<std::string> &params, std::string const &trailing);
+		void joinRPLs(Client *client, Channel *channel);
 
 		bool chanIsOnServer(std::string chanName);
 

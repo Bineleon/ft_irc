@@ -284,3 +284,9 @@ void	Channel::handleLimitMode(Server *serv, Client *client, bool add, std::vecto
 	else
 		_hasUserLimit =  false;
 }
+
+void	Channel::broadcast(std::string const &msg)
+{
+	for (std::map<std::string, Client*>::iterator it = _users.begin(); it != _users.end(); ++it)
+		it->second->sendMessage(msg);
+}

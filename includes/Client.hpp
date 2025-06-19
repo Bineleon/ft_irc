@@ -37,11 +37,11 @@ class Client
 		const std::string&	getUsername() const;
 		const std::string&	getNickname() const;
 		const std::string&	getNickname() const;
-		void	setStatus(const ClientStatus& newStatus);
-		const Channel*	getCurrentChannel() const;
-		void	setCurrentChannel(Channel* channel);
+		void				setStatus(const ClientStatus& newStatus);
+		const Channel*		getCurrentChannel() const;
+		void				setCurrentChannel(Channel* channel);
 		const std::string&	getLastCmd() const;
-		void	setLastCmd(const std::string& cmd);
+		void				setLastCmd(const std::string& cmd);
 		const std::string&	getNickname() const;
 
 		void				sendMessage(const std::string& msg) const;
@@ -51,9 +51,9 @@ class Client
 		void				NICK(const std::string nickname);
 		void				setUsername(const std::string username);
 		void				appendToMsgBuf(std::string msg);
-		std::string const &getmsgBuffer(void) const;
-		// std::string const &getMask(void) const;
-		ClientStatus const &getStatus(void) const;
+		std::string const 	&getmsgBuffer(void) const;
+		std::string			getMask(void) const;
+		ClientStatus const 	&getStatus(void) const;
 
 		void setMsgBuffer(const std::string& buffer);
 
