@@ -73,5 +73,6 @@ bool Server::chanIsOnServer(std::string chanName)
 }
 
 void	execCmd(fullCmd& cmd, const Server& server, Client& client) {
-
+	if (cmd.verb == "PASS")
+		
 }
