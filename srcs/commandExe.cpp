@@ -132,7 +132,7 @@ void Server::handleJoinErr(Client *client, JoinStatus status)
 	switch (status)
 	{
 		case J_FULL:
-			
+
 			break;
 		case J_BANNED:
 			sendError(*client, ERR_BANNEDFROMCHAN);
@@ -207,10 +207,10 @@ void Server::inviteCmd(fullCmd cmd, Client *client)
 	}
 	if (chanToInviteTo->invite(toInvite))
 	{
-		// sendReply(client, ) // TODO 
+		// sendReply(client, ) // TODO
 
 	}
-	
+
 }
 
 void Server::topicCmd(fullCmd cmd, Client *client)
@@ -269,4 +269,31 @@ void Server::modeCmd(fullCmd cmd, Client *client)
 	std::vector<std::string> modesParams(cmd.params.begin() + 2, cmd.params.end());
 
 	targetChannel->handleModes(this, client, modes, modesParams);
+}
+
+void	Server::passCmd(fullCmd cmd, Client *client) {
+	if (checkNeedMoreParams(cmd)) {
+		sendError(*client, ERR_NEEDMOREPARAMS);
+		return ;
+	}
+
+	if (cmd.params[0] != getPwd()) {
+		sendError(*client, ERR_PASSWDMISMATCH);
+		return ;
+	}
+
+	client->setStatus(NICKNAME_NEEDED);
+}
+
+void	Server::passNick(fullCmd cmd, Client *client) {
+	if (checkNeedMoreParams(cmd)) {
+		sendError(*client, ERR_NEEDMOREPARAMS);
+		return ;
+	}
+
+	std::map<std::string, Client*>::iterator it = _nickClients.find(cmd.params[0]);
+	if (it != _nickClients.end()) {
+		sendError(*client, ERR_NICKNAMEINUSE); ERR_NONICKNAMEGIVEN
+	}
+
 }

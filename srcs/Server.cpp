@@ -24,6 +24,10 @@ int	const & Server::getFd() const { return _fd; }
 
 int	const & Server::getPort() const { return _port; }
 
+const std::string&	Server::getPwd() const {
+	return this->_pwd;
+}
+
 void Server::initServerSocket()
 {
 	struct sockaddr_in server_addr;

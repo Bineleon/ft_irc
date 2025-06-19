@@ -54,6 +54,7 @@ class Server
 		~Server();
 		int	const &getFd() const;
 		int const &getPort() const;
+		const std::string&	getPwd() const;
 		void initServerSocket();
 		void runIRC();
 
@@ -92,6 +93,9 @@ class Server
 		void joinRPLs(Client *client, Channel *channel);
 
 		bool chanIsOnServer(std::string chanName);
+
+		void	passCmd(fullCmd cmd, Client *client);
+		void	passNick(fullCmd cmd, Client *client);
 
 		// void	handleCommands(Client *client, const std::string& cmd, const std::vector<std::string>& args);
 		// void	PASS(Client *client, const std::string pass);
