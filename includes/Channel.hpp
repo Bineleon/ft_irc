@@ -72,15 +72,14 @@ class Channel
 		std::string			_name;
 		std::string			_topic;
 		std::string			_key;
-		// std::set<Client*>	_users;
 		std::map<std::string, Client*>	_users;
 		std::map<std::string, Client*>	_operators;
-		// std::set<Client*>	_operators;
 		std::set<Client*>	_banned;
 		std::set<Client*>	_invited;
 		size_t				_userLimit;
 		bool				_hasUserLimit;
 		bool				_hasTopicRestric;
+		bool				_hasTopic;
 		bool				_hasKey;
 		bool				_isInviteOnly;
 };

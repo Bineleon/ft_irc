@@ -13,6 +13,16 @@ struct fullCmd
 	std::string trailing;
 };
 
+enum CMD_TYPE
+{
+	PRIVMSG,
+	JOIN,
+	KICK,
+	INVITE,
+	TOPIC,
+	MODE
+};
+
 fullCmd parseCmd(std::string const & msg);
 std::string const & whichCmd();
 void printCmd(fullCmd cmd);

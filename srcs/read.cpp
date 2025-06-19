@@ -71,16 +71,29 @@ bool Server::chanIsOnServer(std::string chanName)
 }
 
 
-// void Server::executeCmd(fullCmd cmd, Client client)
-// {
+CMD_TYPE Server::checkCMD(fullCmd cmd)
+{
+	if (cmd.verb == "/JOIN")
+		return JOIN;
+	else if (cmd.verb == "/KICK")
+		return KICK;
+	else if (cmd.verb == "/INVITE")
+		return INVITE;
+	else if (cmd.verb == "/MODE")
+		return MODE;
+}
 
-// 	if (client.getStatus() != AUTHENTICATED)
-// 	{
-// 		// authenticate
-// 	}
-// 	else
-// 	{
+
+void Server::executeCmd(fullCmd cmd, Client client)
+{
+
+	if (client.getStatus() != AUTHENTICATED)
+	{
+		// authenticate
+	}
+	else
+	{
 		
-// 	}
+	}
 
-// }
+}

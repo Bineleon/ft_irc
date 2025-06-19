@@ -4,11 +4,11 @@ Channel::Channel(void)
 {
 }
 
-Channel::Channel(std::string name): _name(name), _hasUserLimit(false), _hasTopicRestric(false)
+Channel::Channel(std::string name): _name(name), _hasKey(false), _hasUserLimit(false), _hasTopicRestric(false), _hasTopic(false), _isInviteOnly(false)
 {
 }
 
-Channel::Channel(std::string name, std::string key): _name(name), _key(key), _hasUserLimit(false), _hasTopicRestric(false)
+Channel::Channel(std::string name, std::string key): _name(name), _key(key), _hasKey(true), _hasUserLimit(false), _hasTopicRestric(false), _hasTopic(false), _isInviteOnly(false)
 {
 }
 

@@ -67,6 +67,8 @@ class Server
 		void initErrorMessages();
 		void sendError(const Client& client, int error);
 		void executeCmd(fullCmd cmd, Client client);
+		CMD_TYPE checkCMD(fullCmd cmd);
+
 
 		void joinCmd(fullCmd cmd, Client *client);
 		JoinStatus	checkJoinStatus(Channel *channel, Client *client, std::string const &key) const;
