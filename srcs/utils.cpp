@@ -19,3 +19,16 @@ bool convertToInt(std::string const &str, int &result)
 	return true;
 }
 
+bool checkNeedMoreParams(fullCmd cmd)
+{
+	if (cmd.params.empty() || cmd.params[0].empty())
+		return true;
+	return false;
+}
+
+bool isValidChanName(std::string const &chanName)
+{
+	if (chanName.empty() || chanName[0] != '#')
+		return false;
+	return true;
+}

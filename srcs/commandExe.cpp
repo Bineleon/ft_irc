@@ -11,21 +11,60 @@ std::vector<std::string> splitCmds(std::string const &param)
 	return splitParams;
 }
 
-bool Server::checkNeedMoreParams(fullCmd cmd, Client *client)
+std::string Server::buildPrivmsg(fullCmd cmd, Client *client)
 {
-	if (cmd.params.empty() || cmd.params[0].empty())
-		return true;
-	return false;
+	std::ostringstream oss;
+	oss << ":" << client->getMask() << " " << "PRIVMSG " << cmd.params[0] << " :" << cmd.trailing;
+	return oss.str();
 }
 
-bool Server::checkInValidChanName(Client *client, std::string const &chanName)
+void Server::handleChanPrivmsg(fullCmd cmd, Client *client)
 {
-	if (chanName.empty() || chanName[0] != '#')
+	std::string const &chanName = cmd.params[0];
+	if (_channels.find(chanName) == _channels.end())
 	{
 		sendError(*client, ERR_NOSUCHCHANNEL);
-		return true;
+		return;
 	}
-	return false;
+	if (cmd.trailing.empty())
+	{
+		sendError(*client, ERR_NOTEXTTOSEND);
+		return;
+	}
+	std::string pvMsg = buildPrivmsg(cmd, client);
+	_channels[chanName]->broadcast(pvMsg, client);
+}
+
+void Server::handleUserPrivmsg(fullCmd cmd, Client *client)
+{
+	std::string const &target = cmd.params[0];
+	if (_nickClients.find(target) == _nickClients.end())
+	{
+		sendError(*client, ERR_NOSUCHNICK);
+		return;
+	}
+	if (cmd.trailing.empty())
+	{
+		sendError(*client, ERR_NOTEXTTOSEND);
+		return;
+	}
+	std::string pvMsg = buildPrivmsg(cmd, client);
+	_nickClients[target]->sendMessage(pvMsg);
+}
+
+
+void Server::privmsgCmd(fullCmd cmd, Client *client)
+{
+	if (checkNeedMoreParams(cmd))
+	{
+		sendError(*client, ERR_NORECIPIENT);
+		return;
+	}
+	if (isValidChanName(cmd.params[0]))
+		handleChanPrivmsg(cmd, client);
+	else
+		handleUserPrivmsg(cmd, client);
+
 }
 
 Channel* Server::handleJoinChan(Client *client, std::string const &key, std::string chanName)
@@ -41,12 +80,11 @@ Channel* Server::handleJoinChan(Client *client, std::string const &key, std::str
 
 void Server::joinCmd(fullCmd cmd, Client *client)
 {
-	if (checkNeedMoreParams(cmd, client))
+	if (checkNeedMoreParams(cmd))
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
 	}
-
 	std::vector<std::string> splitChan = splitCmds(cmd.params[0]);
 	bool keys = cmd.params.size() > 1 ? true : false;
 
@@ -57,8 +95,11 @@ void Server::joinCmd(fullCmd cmd, Client *client)
 	{
 		std::string key = (keys && (i < splitKeys.size())) ? splitKeys[i] : "";
 
-		if (checkInValidChanName(client, splitChan[i]))
+		if (!isValidChanName(splitChan[i]))
+		{
+			sendError(*client, ERR_NOSUCHCHANNEL);
 			continue;
+		}
 		Channel *channel = handleJoinChan(client, key, splitChan[i]);
 		JoinStatus status = checkJoinStatus(channel, client, key);
 		if (status != J_OK)
@@ -112,12 +153,12 @@ void Server::handleJoinErr(Client *client, JoinStatus status)
 
 void Server::kickCmd(fullCmd cmd, Client *client)
 {
-	if (checkNeedMoreParams(cmd, client))
+	if (checkNeedMoreParams(cmd))
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
 	}
-	if (cmd.params[0][0] != '#' || _channels.find(cmd.params[0]) == _channels.end())
+	if (!isValidChanName(cmd.params[0]) || _channels.find(cmd.params[0]) == _channels.end())
 	{
 		sendError(*client, ERR_NOSUCHCHANNEL);
 		return;
@@ -140,7 +181,7 @@ void Server::kickCmd(fullCmd cmd, Client *client)
 
 void Server::inviteCmd(fullCmd cmd, Client *client)
 {
-	if (checkNeedMoreParams(cmd, client) || cmd.params[1].empty())
+	if (checkNeedMoreParams(cmd) || cmd.params[1].empty())
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
@@ -174,7 +215,7 @@ void Server::inviteCmd(fullCmd cmd, Client *client)
 
 void Server::topicCmd(fullCmd cmd, Client *client)
 {
-	if (checkNeedMoreParams(cmd, client))
+	if (checkNeedMoreParams(cmd))
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
@@ -207,7 +248,7 @@ void Server::topicCmd(fullCmd cmd, Client *client)
 
 void Server::modeCmd(fullCmd cmd, Client *client)
 {
-	if (checkNeedMoreParams(cmd, client) || cmd.params.size() < 2)
+	if (checkNeedMoreParams(cmd) || cmd.params.size() < 2)
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;

@@ -60,7 +60,7 @@ class Channel
 		void				handleOpMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx);
 		void				handleLimitMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx);
 
-		void				broadcast(std::string const &msg);
+		void				broadcast(std::string const &msg, Client *except);
 
 		// JoinStatus	checkJoinStatus(Client *client, std::string const &key) const;
 		// void		handleJoinErr(Client *client, JoinStatus status) const;
@@ -72,15 +72,14 @@ class Channel
 		std::string			_name;
 		std::string			_topic;
 		std::string			_key;
-		// std::set<Client*>	_users;
 		std::map<std::string, Client*>	_users;
 		std::map<std::string, Client*>	_operators;
-		// std::set<Client*>	_operators;
 		std::set<Client*>	_banned;
 		std::set<Client*>	_invited;
 		size_t				_userLimit;
 		bool				_hasUserLimit;
 		bool				_hasTopicRestric;
+		bool				_hasTopic;
 		bool				_hasKey;
 		bool				_isInviteOnly;
 };

@@ -12,7 +12,9 @@ std::string toUpper(std::string &str)
 {
 	std::string up = str;
 	for (size_t i = 0; i < up.length(); ++i)
+	{
 		up[i] = std::toupper(up[i]);
+	}
 	return up;
 }
 
@@ -35,7 +37,7 @@ fullCmd parseCmd(std::string const & msg)
 			cmd.trailing = word.substr(1) + restOfTrail;
 			break;
 		}
-		std::cout << "word: " << word << std::endl;
+		// std::cout << "word: " << word << std::endl;
 		cmd.params.push_back(word);
 	}
 	return cmd;

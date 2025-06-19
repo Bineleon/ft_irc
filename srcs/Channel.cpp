@@ -4,11 +4,11 @@ Channel::Channel(void)
 {
 }
 
-Channel::Channel(std::string name): _name(name), _hasUserLimit(false), _hasTopicRestric(false)
+Channel::Channel(std::string name): _name(name), _hasKey(false), _hasUserLimit(false), _hasTopicRestric(false), _hasTopic(false), _isInviteOnly(false)
 {
 }
 
-Channel::Channel(std::string name, std::string key): _name(name), _key(key), _hasUserLimit(false), _hasTopicRestric(false)
+Channel::Channel(std::string name, std::string key): _name(name), _key(key), _hasKey(true), _hasUserLimit(false), _hasTopicRestric(false), _hasTopic(false), _isInviteOnly(false)
 {
 }
 
@@ -285,8 +285,11 @@ void	Channel::handleLimitMode(Server *serv, Client *client, bool add, std::vecto
 		_hasUserLimit =  false;
 }
 
-void	Channel::broadcast(std::string const &msg)
+void	Channel::broadcast(std::string const &msg, Client *except)
 {
 	for (std::map<std::string, Client*>::iterator it = _users.begin(); it != _users.end(); ++it)
-		it->second->sendMessage(msg);
+	{
+		if (it->second != except)
+			it->second->sendMessage(msg);
+	}
 }

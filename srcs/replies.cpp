@@ -59,7 +59,7 @@ void Server::joinRPLs(Client *client, Channel *channel)
 {
 	std::ostringstream joinMsg;
 	joinMsg << ":" << client->getMask() << " JOIN " << channel->getName();
-	channel->broadcast(joinMsg.str());
+	channel->broadcast(joinMsg.str(), NULL);
 	
 	topicRPL(client, channel);
 	nameRPL(client, channel);
