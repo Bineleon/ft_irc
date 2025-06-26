@@ -85,19 +85,42 @@ CMD_TYPE Server::checkCMD(fullCmd cmd)
 		return INVITE;
 	else if (cmd.verb == "/MODE")
 		return MODE;
+	else
+		return UNKNOWN;
 }
 
 
-void Server::executeCmd(fullCmd cmd, Client client)
+void Server::executeCmd(fullCmd cmd, Client *client)
 {
 
-	if (client.getStatus() != AUTHENTICATED)
+	if (client->getStatus() != AUTHENTICATED)
 	{
 		// authenticate
 	}
 	else
 	{
-
+		CMD_TYPE cmdType = checkCMD(cmd);
+		switch (cmdType)
+		{
+		case PRIVMSG:
+			privmsgCmd(cmd, client);
+			break;
+		case JOIN:
+			joinCmd(cmd, client);
+			break;
+		case KICK:
+			kickCmd(cmd, client);
+			break;
+		case INVITE:
+			inviteCmd(cmd, client);
+			break;
+		case MODE:
+			modeCmd(cmd, client);
+			break;
+		default:
+			sendError(*client, ERR_UNKNOWNCOMMAND);
+			break;
+		}
 	}
 
 }
