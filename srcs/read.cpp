@@ -71,3 +71,33 @@ bool Server::chanIsOnServer(std::string chanName)
 		return false;
 	return true;
 }
+
+
+CMD_TYPE Server::checkCMD(fullCmd cmd)
+{
+	if (cmd.verb == "/PRIVMSG")
+		return PRIVMSG;
+	else if (cmd.verb == "/JOIN")
+		return JOIN;
+	else if (cmd.verb == "/KICK")
+		return KICK;
+	else if (cmd.verb == "/INVITE")
+		return INVITE;
+	else if (cmd.verb == "/MODE")
+		return MODE;
+}
+
+
+void Server::executeCmd(fullCmd cmd, Client client)
+{
+
+	if (client.getStatus() != AUTHENTICATED)
+	{
+		// authenticate
+	}
+	else
+	{
+
+	}
+
+}

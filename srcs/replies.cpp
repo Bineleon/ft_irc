@@ -6,7 +6,7 @@ void Server::sendReply(Client *client, int code, std::vector<std::string> &param
 	std::ostringstream oss;
 	oss << ":" << _name << " " << code << " " << client->getNickname();
 
-	for (int i = 0; i < params.size(); ++i)
+	for (size_t i = 0; i < params.size(); ++i)
 		oss << " " << params[i];
 
 	if (!trailing.empty())
@@ -35,15 +35,17 @@ void Server::nameRPL(Client *client, Channel *channel)
 
 	std::ostringstream nameList;
 	std::map<std::string, Client*> users = channel->getUsers();
+	bool first = true;
+
 	for (std::map<std::string, Client*>::const_iterator it = users.begin(); it != users.end(); ++it)
 	{
+		if (!first)
+			nameList << " ";
+		first = false;
 		if (channel->isOperator(it->second))
 			nameList << "@" << it->second->getNickname();
 		else
 			nameList << it->second->getNickname();
-
-		if (std::next(it) != users.end())
-			nameList << " ";
 	}
 	sendReply(client, RPL_NAMREPLY, nameParams, nameList.str());
 }

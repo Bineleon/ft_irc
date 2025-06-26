@@ -36,13 +36,11 @@ class Client
 
 		const std::string&	getUsername() const;
 		const std::string&	getNickname() const;
-		const std::string&	getNickname() const;
 		void				setStatus(const ClientStatus& newStatus);
 		const Channel*		getCurrentChannel() const;
 		void				setCurrentChannel(Channel* channel);
 		const std::string&	getLastCmd() const;
 		void				setLastCmd(const std::string& cmd);
-		const std::string&	getNickname() const;
 
 		void				sendMessage(const std::string& msg) const;
 		// void	sendError(int error);

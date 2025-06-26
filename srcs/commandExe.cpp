@@ -52,7 +52,6 @@ void Server::handleUserPrivmsg(fullCmd cmd, Client *client)
 	_nickClients[target]->sendMessage(pvMsg);
 }
 
-
 void Server::privmsgCmd(fullCmd cmd, Client *client)
 {
 	if (checkNeedMoreParams(cmd))
@@ -89,8 +88,8 @@ void Server::joinCmd(fullCmd cmd, Client *client)
 	bool keys = cmd.params.size() > 1 ? true : false;
 
 	std::vector<std::string> splitKeys = splitCmds(cmd.params[1]);
-	Channel *channel = NULL;
-
+	
+	// Channel *channel = NULL;
 	for (size_t i = 0; i < splitChan.size(); ++i)
 	{
 		std::string key = (keys && (i < splitKeys.size())) ? splitKeys[i] : "";
@@ -153,7 +152,7 @@ void Server::handleJoinErr(Client *client, JoinStatus status)
 
 void Server::kickCmd(fullCmd cmd, Client *client)
 {
-	if (checkNeedMoreParams(cmd))
+	if (checkNeedMoreParams(cmd) || cmd.params[1].empty())
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
@@ -163,7 +162,6 @@ void Server::kickCmd(fullCmd cmd, Client *client)
 		sendError(*client, ERR_NOSUCHCHANNEL);
 		return;
 	}
-	Client	*client;
 	Channel *channel = _channels[cmd.params[0]];
 	if (channel->getOperators().find(client->getNickname()) == channel->getOperators().end())
 	{
@@ -175,7 +173,8 @@ void Server::kickCmd(fullCmd cmd, Client *client)
 		sendError(*client, ERR_USERNOTINCHANNEL);
 		return;
 	}
-	channel->kickUser(client);
+	Client *clientToKick = channel->getUsers().find(cmd.params[1])->second;
+	channel->kickUser(clientToKick);
 	// add RPL
 }
 
