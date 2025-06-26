@@ -58,8 +58,7 @@ void Server::readFromSocket(struct pollfd pfdClient)
 		{
 			fullCmd cmd = parseCmd(toParse);
 			printCmd(cmd);
-			std::map<int, Client*>::iterator it = this->_clients.find(pfdClient.fd);
-			execCmd(cmd, *this, *it->second);
+			executeCmd(cmd, _clients[pfdClient.fd]);
 		}
 	}
 }

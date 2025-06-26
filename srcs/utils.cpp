@@ -32,3 +32,10 @@ bool isValidChanName(std::string const &chanName)
 		return false;
 	return true;
 }
+
+bool	isValidNickname(const std::string& nickname) {
+	std::size_t	found = nickname.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789[]{}\\|");
+	if (found != std::string::npos)
+		return false;
+	return true;
+}

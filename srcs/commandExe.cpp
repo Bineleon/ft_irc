@@ -88,7 +88,7 @@ void Server::joinCmd(fullCmd cmd, Client *client)
 	bool keys = cmd.params.size() > 1 ? true : false;
 
 	std::vector<std::string> splitKeys = splitCmds(cmd.params[1]);
-	
+
 	// Channel *channel = NULL;
 	for (size_t i = 0; i < splitChan.size(); ++i)
 	{
@@ -286,13 +286,13 @@ void	Server::passCmd(fullCmd cmd, Client *client) {
 
 void	Server::passNick(fullCmd cmd, Client *client) {
 	if (checkNeedMoreParams(cmd)) {
-		sendError(*client, ERR_NEEDMOREPARAMS);
+		sendError(*client, ERR_NONICKNAMEGIVEN);
 		return ;
 	}
 
 	std::map<std::string, Client*>::iterator it = _nickClients.find(cmd.params[0]);
 	if (it != _nickClients.end()) {
-		sendError(*client, ERR_NICKNAMEINUSE); ERR_NONICKNAMEGIVEN
+		sendError(*client, ERR_NICKNAMEINUSE);
+		return ;
 	}
-
 }
