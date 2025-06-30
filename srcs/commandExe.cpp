@@ -271,6 +271,11 @@ void Server::modeCmd(fullCmd cmd, Client *client)
 }
 
 void	Server::passCmd(fullCmd cmd, Client *client) {
+	if (client->getStatus() != PASSWORD_NEEDED) {
+		sendError(*client, ERR_ALREADYREGISTERED);
+		return ;
+	}
+
 	if (checkNeedMoreParams(cmd)) {
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return ;
@@ -284,7 +289,7 @@ void	Server::passCmd(fullCmd cmd, Client *client) {
 	client->setStatus(NICKNAME_NEEDED);
 }
 
-void	Server::passNick(fullCmd cmd, Client *client) {
+void	Server::nickCmd(fullCmd cmd, Client *client) {
 	if (checkNeedMoreParams(cmd)) {
 		sendError(*client, ERR_NONICKNAMEGIVEN);
 		return ;
@@ -295,4 +300,26 @@ void	Server::passNick(fullCmd cmd, Client *client) {
 		sendError(*client, ERR_NICKNAMEINUSE);
 		return ;
 	}
+
+	if (isValidNickname(cmd.params[0]) == false) {
+		sendError(*client, ERR_ERRONEUSNICKNAME);
+		return ;
+	}
+
+	std::string	msg;
+
+	if (client->getStatus() == NICKNAME_NEEDED) {
+		msg = "Requesting the new nick \"" + cmd.params[0] + "\".";
+		client->sendMessage(msg);
+		client->setNickname(cmd.params[0]);
+		client->setStatus(USERNAME_NEEDED);
+		msg = "Nickname set to " + client->getNickname() + ".";
+		client->sendMessage(msg);
+	}
+	else {
+		msg = client->getNickname() + " changed his nickname to " + cmd.params[0] + ".";
+		client->sendMessage(msg);
+	}
+
+	client->setUsername(cmd.params[0]);
 }

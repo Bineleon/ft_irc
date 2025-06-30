@@ -35,7 +35,9 @@ class Client
 		Client(const int fd, const std::string& IP);
 
 		const std::string&	getUsername() const;
+		void	setUsername(const std::string username);
 		const std::string&	getNickname() const;
+		void	setNickname(const std::string username);
 		void				setStatus(const ClientStatus& newStatus);
 		const Channel*		getCurrentChannel() const;
 		void				setCurrentChannel(Channel* channel);
@@ -45,9 +47,8 @@ class Client
 		void				sendMessage(const std::string& msg) const;
 		// void	sendError(int error);
 
-		void				PASS();
-		void				NICK(const std::string nickname);
-		void				setUsername(const std::string username);
+		// void				PASS();
+		// void				NICK(const std::string nickname);
 		void				appendToMsgBuf(std::string msg);
 		std::string const 	&getmsgBuffer(void) const;
 		std::string			getMask(void) const;

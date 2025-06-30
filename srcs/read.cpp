@@ -74,7 +74,13 @@ bool Server::chanIsOnServer(std::string chanName)
 
 CMD_TYPE Server::checkCMD(fullCmd cmd)
 {
-	if (cmd.verb == "/PRIVMSG")
+	if (cmd.verb == "/PASS")
+		return PASS;
+	else if (cmd.verb == "/NICK")
+		return NICK;
+	else if (cmd.verb == "/USER")
+		return USER;
+	else if (cmd.verb == "/PRIVMSG")
 		return PRIVMSG;
 	else if (cmd.verb == "/JOIN")
 		return JOIN;
@@ -91,34 +97,35 @@ CMD_TYPE Server::checkCMD(fullCmd cmd)
 
 void Server::executeCmd(fullCmd cmd, Client *client)
 {
+	CMD_TYPE cmdType = checkCMD(cmd);
 
-	if (client->getStatus() != AUTHENTICATED)
-	{
-		// authenticate
+	if (client->getStatus() == PASSWORD_NEEDED && cmdType != PASS) {
+		client->sendMessage("ERROR :Password required");
+		return ;
 	}
+
 	else
 	{
-		CMD_TYPE cmdType = checkCMD(cmd);
 		switch (cmdType)
 		{
-		case PRIVMSG:
-			privmsgCmd(cmd, client);
-			break;
-		case JOIN:
-			joinCmd(cmd, client);
-			break;
-		case KICK:
-			kickCmd(cmd, client);
-			break;
-		case INVITE:
-			inviteCmd(cmd, client);
-			break;
-		case MODE:
-			modeCmd(cmd, client);
-			break;
-		default:
-			sendError(*client, ERR_UNKNOWNCOMMAND);
-			break;
+			case PRIVMSG:
+				privmsgCmd(cmd, client);
+				break;
+			case JOIN:
+				joinCmd(cmd, client);
+				break;
+			case KICK:
+				kickCmd(cmd, client);
+				break;
+			case INVITE:
+				inviteCmd(cmd, client);
+				break;
+			case MODE:
+				modeCmd(cmd, client);
+				break;
+			default:
+				sendError(*client, ERR_UNKNOWNCOMMAND);
+				break;
 		}
 	}
 

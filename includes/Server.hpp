@@ -106,7 +106,7 @@ class Server
 		bool chanIsOnServer(std::string chanName);
 
 		void	passCmd(fullCmd cmd, Client *client);
-		void	passNick(fullCmd cmd, Client *client);
+		void	nickCmd(fullCmd cmd, Client *client);
 
 		// void	handleCommands(Client *client, const std::string& cmd, const std::vector<std::string>& args);
 		// void	PASS(Client *client, const std::string pass);

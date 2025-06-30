@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <sstream>  
+#include <sstream>
 
 struct fullCmd
 {
@@ -15,6 +15,9 @@ struct fullCmd
 
 enum CMD_TYPE
 {
+	PASS,
+	NICK,
+	USER,
 	PRIVMSG,
 	JOIN,
 	KICK,

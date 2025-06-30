@@ -82,3 +82,8 @@ void	Client::setLastCmd(const std::string& cmd) {
 const std::string&	Client::getNickname() const {
 	return this->_nickname;
 }
+
+void	Client::setNickname(const std::string username) {
+	this->_username = username;
+}
+
