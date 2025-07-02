@@ -37,7 +37,7 @@ class Client;
 
 enum ErrorFormat {
 	NOTHING,
-	NICK,
+	NICK_ERR,
 	CMD,
 	CHANNEL,
 	NICK_CHANNEL

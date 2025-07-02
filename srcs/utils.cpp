@@ -39,3 +39,8 @@ bool	isValidNickname(const std::string& nickname) {
 		return false;
 	return true;
 }
+
+void debug(std::string msg)
+{
+	std::cout << "\nDebug: " << msg << "\n";
+}

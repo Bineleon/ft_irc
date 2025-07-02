@@ -1,11 +1,11 @@
 #include "../includes/Server.hpp"
 
 std::vector<std::string> splitCmds(std::string const &param)
-{
+{	
 	std::vector<std::string> splitParams;
 	std::istringstream s(param);
 	std::string word;
-
+	
 	while (getline(s, word, ','))
 		splitParams.push_back(word);
 	return splitParams;
@@ -70,7 +70,11 @@ Channel* Server::handleJoinChan(Client *client, std::string const &key, std::str
 {
 	if (_channels.find(chanName) == _channels.end())
 	{
-		Channel *channel = new Channel(chanName, key);
+		Channel *channel;
+		if (key.empty())
+			channel = new Channel(chanName);
+		else
+			channel = new Channel(chanName, key);
 		channel->addOperator(client);
 		_channels[chanName] = channel;
 	}
@@ -84,10 +88,12 @@ void Server::joinCmd(fullCmd cmd, Client *client)
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
 	}
+	
 	std::vector<std::string> splitChan = splitCmds(cmd.params[0]);
 	bool keys = cmd.params.size() > 1 ? true : false;
-
-	std::vector<std::string> splitKeys = splitCmds(cmd.params[1]);
+	std::vector<std::string> splitKeys;
+	if (keys)
+		splitKeys = splitCmds(cmd.params[1]);
 
 	// Channel *channel = NULL;
 	for (size_t i = 0; i < splitChan.size(); ++i)
@@ -247,26 +253,29 @@ void Server::topicCmd(fullCmd cmd, Client *client)
 
 void Server::modeCmd(fullCmd cmd, Client *client)
 {
+	debug("handleCmd");
 	if (checkNeedMoreParams(cmd) || cmd.params.size() < 2)
 	{
+		debug("needmodeparams");
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
 	}
 	if (!chanIsOnServer(cmd.params[0]))
 	{
+		debug("channotonserv");
 		sendError(*client, ERR_NOSUCHCHANNEL);
 		return;
 	}
 	Channel *targetChannel = _channels[cmd.params[0]];
 	if (!targetChannel->isOperator(client))
 	{
+		debug("not op client");
 		sendError(*client, ERR_CHANOPRIVSNEEDED);
 		return;
 	}
 
 	std::string modes = cmd.params[1];
 	std::vector<std::string> modesParams(cmd.params.begin() + 2, cmd.params.end());
-
 	targetChannel->handleModes(this, client, modes, modesParams);
 }
 
@@ -321,5 +330,6 @@ void	Server::nickCmd(fullCmd cmd, Client *client) {
 		client->sendMessage(msg);
 	}
 
-	client->setUsername(cmd.params[0]);
+	client->setNickname(cmd.params[0]);
+	_nickClients[cmd.params[0]] = client;
 }

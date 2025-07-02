@@ -50,7 +50,7 @@ class Client
 		// void				PASS();
 		// void				NICK(const std::string nickname);
 		void				appendToMsgBuf(std::string msg);
-		std::string const 	&getmsgBuffer(void) const;
+		std::string	&getmsgBuffer(void);
 		std::string			getMask(void) const;
 		ClientStatus const 	&getStatus(void) const;
 
