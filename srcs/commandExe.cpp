@@ -180,7 +180,7 @@ void Server::kickCmd(fullCmd cmd, Client *client)
 	}
 	Client *clientToKick = channel->getUsers().find(cmd.params[1])->second;
 	std::string comment = cmd.trailing.empty() ? "Ciao loser!" : cmd.trailing;
-	kickRPL(channel, client, clientToKick, comment);
+	kickRPL(client, clientToKick, channel, comment);
 	channel->kickUser(clientToKick);
 }
 
@@ -212,8 +212,8 @@ void Server::inviteCmd(fullCmd cmd, Client *client)
 	}
 	if (chanToInviteTo->invite(toInvite))
 	{
-		// sendReply(client, ) // TODO
-
+		inviteRPL(client, toInvite, chanToInviteTo);
+		sendInvite(client, toInvite, chanToInviteTo);
 	}
 
 }

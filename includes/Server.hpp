@@ -102,7 +102,9 @@ class Server
 
 		void sendReply(Client *client, int code, std::vector<std::string> &params, std::string const &trailing);
 		void joinRPLs(Client *client, Channel *channel);
-		void kickRPL(Channel *channel, Client *source, Client *target, std::string const &comment);
+		void kickRPL(Client *source, Client *target, Channel *channel, std::string const &comment);
+		void inviteRPL(Client *client, Client *toInvite, Channel *channel);
+		void sendInvite(Client *client, Client *toInvite, Channel *channel);
 
 
 		bool chanIsOnServer(std::string chanName);

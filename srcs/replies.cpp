@@ -68,10 +68,26 @@ void Server::joinRPLs(Client *client, Channel *channel)
 	eofNamesRPL(client, channel);
 }
 
-void Server::kickRPL(Channel *channel, Client *source, Client *target, std::string const &comment)
+void Server::kickRPL(Client *source, Client *target, Channel *channel, std::string const &comment)
 {
 	std::ostringstream oss;
 	oss << ":" << source->getMask() << " KICK " << channel->getName() << " " << target->getNickname() << " :" << comment;
-	
+
 	channel->broadcast(oss.str(), NULL);
+}
+
+void Server::inviteRPL(Client *client, Client *toInvite, Channel *channel)
+{
+	std::vector<std::string> inviteParams;
+	inviteParams.push_back(toInvite->getNickname());
+	inviteParams.push_back(channel->getName());
+	sendReply(client, RPL_INVITING, inviteParams, "");
+}
+
+void Server::sendInvite(Client *client, Client *toInvite, Channel *channel)
+{
+	std::ostringstream inviteMsg;
+	
+	inviteMsg << ":" << client->getMask() << " INVITE " << toInvite->getNickname() << " " << channel->getName();
+	toInvite->sendMessage(inviteMsg.str());
 }
