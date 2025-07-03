@@ -88,8 +88,8 @@ void Server::runIRC()
 			else
 			{
 				readFromSocket(_pollFds[i]);
-				std::string	reply = "Hello from server!\r\n";
-				send(_pollFds[i].fd, reply.c_str(), reply.length(), 0);
+				// std::string	reply = "Hello from server!\r\n";
+				// send(_pollFds[i].fd, reply.c_str(), reply.length(), 0);
 				// std::map<int, Client*>::iterator it = this->_clients.find(_pollFds[i].fd);
 				// sendError(*it->second, 464);
 				//parse msg

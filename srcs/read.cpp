@@ -51,56 +51,17 @@ void Server::readFromSocket(struct pollfd pfdClient)
 		{
 			toParse = clientMsgBuf.substr(0, pos);
 			clientMsgBuf.erase(0, pos + 2);
-			std::cout << "Msg from fd [" << pfdClient.fd << "]: " << toParse << std::endl;
+			// std::cout << "Msg from fd [" << pfdClient.fd << "]: " << toParse << std::endl;
             _clients[pfdClient.fd]->setMsgBuffer(clientMsgBuf);
 		}
 		if (!toParse.empty())
 		{
 			fullCmd cmd = parseCmd(toParse);
-			printCmd(cmd);
+			// printCmd(cmd);
 			executeCmd(cmd, _clients[pfdClient.fd]);
 		}
 	}
 }
-
-// void Server::readFromSocket(struct pollfd pfdClient)
-// {
-// 	char buffer[BUFFER_SIZE];
-// 	int bytesRead;
-
-// 	std::memset(&buffer, 0, sizeof buffer);
-// 	bytesRead = recv(pfdClient.fd, buffer, BUFFER_SIZE, 0);
-// 	if (bytesRead <= 0)
-// 	{
-// 		if (bytesRead == 0)
-// 		{
-// 			std::cout << "[" << pfdClient.fd << "] Client socket closed connection." << std::endl;
-// 			closeClient(pfdClient);
-// 		}
-// 		else
-// 			perror("recv()");
-// 	}
-// 	else
-// 	{
-// 		Client* client = _clients[pfdClient.fd];
-// 		client->appendToMsgBuf(buffer);
-// 		std::string& clientMsgBuf = client->getmsgBuffer();
-// 		size_t pos;
-
-// 		while ((pos = clientMsgBuf.find("\r\n")) != std::string::npos)
-// 		{
-// 			std::string toParse = clientMsgBuf.substr(0, pos);
-// 			clientMsgBuf.erase(0, pos + 2);
-// 			client->setMsgBuffer(clientMsgBuf);
-
-// 			std::cout << "Msg from fd [" << pfdClient.fd << "]: " << toParse << std::endl;
-
-// 			fullCmd cmd = parseCmd(toParse);
-// 			printCmd(cmd);
-// 			executeCmd(cmd, client);
-// 		}
-// 	}
-// }
 
 
 bool Server::chanIsOnServer(std::string chanName)

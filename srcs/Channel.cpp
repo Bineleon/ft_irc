@@ -6,7 +6,6 @@ Channel::Channel(void)
 
 Channel::Channel(std::string name): _name(name), _hasKey(false), _hasUserLimit(false), _hasTopicRestric(false), _hasTopic(false), _isInviteOnly(false)
 {
-	debug("no key chan");
 }
 
 Channel::Channel(std::string name, std::string key): _name(name), _key(key), _hasKey(true), _hasUserLimit(false), _hasTopicRestric(false), _hasTopic(false), _isInviteOnly(false)
@@ -187,7 +186,6 @@ void	Channel::handleModes(Server *serv, Client *client, std::string const &modes
 {
 	if (modes.empty() || (modes[0] != '-' && modes[0] != '+'))
 	{
-		debug("bad mode");
 		serv->sendError(*client, ERR_UNKNOWNMODE);
 		return;
 	}
@@ -198,8 +196,11 @@ void	Channel::handleModes(Server *serv, Client *client, std::string const &modes
 	for (size_t i = 0; i < modes.size(); ++i)
 	{
 		char mode = modes[i];
-
-		checkSign(mode, add);
+		if (mode == '+' || mode == '-')
+		{
+			checkSign(mode, add);
+			continue;
+		}
 
 		switch (mode)
 		{
@@ -248,7 +249,6 @@ void	Channel::handleOpMode(Server *serv, Client *client, bool add, std::vector<s
 {
 	if (idx >= params.size() || params[idx].empty())
 	{
-		debug("need params");
 		serv->sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
 	}
@@ -256,7 +256,6 @@ void	Channel::handleOpMode(Server *serv, Client *client, bool add, std::vector<s
 	std::string nickname = params[idx++];
 	if (!isUser(nickname))
 	{
-		debug("handleOpModes");
 		serv->sendError(*client, ERR_USERNOTINCHANNEL);
 		return;
 	}

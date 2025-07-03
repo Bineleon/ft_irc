@@ -18,6 +18,8 @@
 #define RPL_CHANNELMODEIS		324  // "<client> <channel> <modestring> <mode arguments>..."
 #define RPL_CREATIONTIME		329  // "<client> <channel> <creationtime>"
 
+#define RPL_INVITING			341  // "<client> <nick> <channel>"
+
 // Ping/Pong
 #define RPL_PING				0    // PING/PONG
 

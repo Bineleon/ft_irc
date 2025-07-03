@@ -95,7 +95,6 @@ void Server::joinCmd(fullCmd cmd, Client *client)
 	if (keys)
 		splitKeys = splitCmds(cmd.params[1]);
 
-	// Channel *channel = NULL;
 	for (size_t i = 0; i < splitChan.size(); ++i)
 	{
 		std::string key = (keys && (i < splitKeys.size())) ? splitKeys[i] : "";
@@ -180,8 +179,9 @@ void Server::kickCmd(fullCmd cmd, Client *client)
 		return;
 	}
 	Client *clientToKick = channel->getUsers().find(cmd.params[1])->second;
+	std::string comment = cmd.trailing.empty() ? "Ciao loser!" : cmd.trailing;
+	kickRPL(channel, client, clientToKick, comment);
 	channel->kickUser(clientToKick);
-	// add RPL
 }
 
 void Server::inviteCmd(fullCmd cmd, Client *client)
@@ -253,27 +253,22 @@ void Server::topicCmd(fullCmd cmd, Client *client)
 
 void Server::modeCmd(fullCmd cmd, Client *client)
 {
-	debug("handleCmd");
 	if (checkNeedMoreParams(cmd) || cmd.params.size() < 2)
 	{
-		debug("needmodeparams");
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
 	}
 	if (!chanIsOnServer(cmd.params[0]))
 	{
-		debug("channotonserv");
 		sendError(*client, ERR_NOSUCHCHANNEL);
 		return;
 	}
 	Channel *targetChannel = _channels[cmd.params[0]];
 	if (!targetChannel->isOperator(client))
 	{
-		debug("not op client");
 		sendError(*client, ERR_CHANOPRIVSNEEDED);
 		return;
 	}
-
 	std::string modes = cmd.params[1];
 	std::vector<std::string> modesParams(cmd.params.begin() + 2, cmd.params.end());
 	targetChannel->handleModes(this, client, modes, modesParams);

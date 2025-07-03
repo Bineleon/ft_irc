@@ -67,3 +67,11 @@ void Server::joinRPLs(Client *client, Channel *channel)
 	nameRPL(client, channel);
 	eofNamesRPL(client, channel);
 }
+
+void Server::kickRPL(Channel *channel, Client *source, Client *target, std::string const &comment)
+{
+	std::ostringstream oss;
+	oss << ":" << source->getMask() << " KICK " << channel->getName() << " " << target->getNickname() << " :" << comment;
+	
+	channel->broadcast(oss.str(), NULL);
+}
