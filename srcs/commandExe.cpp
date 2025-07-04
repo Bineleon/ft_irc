@@ -136,7 +136,7 @@ void Server::handleJoinErr(Client *client, JoinStatus status)
 	switch (status)
 	{
 		case J_FULL:
-
+			sendError(*client, ERR_CHANNELISFULL);
 			break;
 		case J_BANNED:
 			sendError(*client, ERR_BANNEDFROMCHAN);
@@ -212,10 +212,9 @@ void Server::inviteCmd(fullCmd cmd, Client *client)
 	}
 	if (chanToInviteTo->invite(toInvite))
 	{
-		inviteRPL(client, toInvite, chanToInviteTo);
+ 		inviteRPL(client, toInvite, chanToInviteTo);
 		sendInvite(client, toInvite, chanToInviteTo);
 	}
-
 }
 
 void Server::topicCmd(fullCmd cmd, Client *client)
@@ -241,14 +240,16 @@ void Server::topicCmd(fullCmd cmd, Client *client)
 		sendError(*client, ERR_CHANOPRIVSNEEDED);
 		return;
 	}
-	if (cmd.params.size() < 2)
+	if (cmd.params.size() < 2 && cmd.trailing.empty())
 	{
-		// sendRplTopic
+		topicRPL(client, targetChannel);
 		return;
 	}
-	targetChannel->setTopic(cmd.params[1]);
-	// sendPlyTopic
-
+	if (cmd.trailing.empty())
+		targetChannel->setTopic(cmd.params[1]);
+	else
+		targetChannel->setTopic(cmd.trailing);
+	topicRPL(client, targetChannel);
 }
 
 void Server::modeCmd(fullCmd cmd, Client *client)

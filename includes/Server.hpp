@@ -91,20 +91,20 @@ class Server
 		void handleJoinErr(Client *client, JoinStatus status);
 		Channel* handleJoinChan(Client *client, std::string const &key, std::string chanName);
 
-		void topicRPL(Client *client, Channel *channel);
-		void nameRPL(Client *client, Channel *channel);
-		void eofNamesRPL(Client *client, Channel *channel);
-
 		void kickCmd(fullCmd cmd, Client *client);
 		void inviteCmd(fullCmd cmd, Client *client);
 		void topicCmd(fullCmd cmd, Client *client);
 		void modeCmd(fullCmd cmd, Client *client);
-
+		
 		void sendReply(Client *client, int code, std::vector<std::string> &params, std::string const &trailing);
+		void topicRPL(Client *client, Channel *channel);
+		void nameRPL(Client *client, Channel *channel);
+		void eofNamesRPL(Client *client, Channel *channel);
 		void joinRPLs(Client *client, Channel *channel);
 		void kickRPL(Client *source, Client *target, Channel *channel, std::string const &comment);
 		void inviteRPL(Client *client, Client *toInvite, Channel *channel);
 		void sendInvite(Client *client, Client *toInvite, Channel *channel);
+
 
 
 		bool chanIsOnServer(std::string chanName);

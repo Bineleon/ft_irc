@@ -182,6 +182,17 @@ void checkSign(char mode, bool &add)
 		add = false;
 }
 
+void Channel::modeRPL(Client *client, char mode, bool add, std::string const &param)
+{
+	std::ostringstream modeMsg;
+	
+	modeMsg << ":" << client->getMask() << " MODE " << _name << " " << (add ? "+" : "-") << mode;
+
+	if (mode == 'k' || mode == 'o' || mode == 'l')
+		modeMsg << " " << param;
+	broadcast(modeMsg.str(), NULL);
+}
+
 void	Channel::handleModes(Server *serv, Client *client, std::string const &modes, std::vector<std::string> const &modesParams)
 {
 	if (modes.empty() || (modes[0] != '-' && modes[0] != '+'))
@@ -206,18 +217,20 @@ void	Channel::handleModes(Server *serv, Client *client, std::string const &modes
 		{
 		case 'i':
 			_isInviteOnly = add;
+			modeRPL(client, mode, add, "");
 			break;
 		case 't':
 			_hasTopicRestric = add;
+			modeRPL(client, mode, add, "");
 			break;
 		case 'k':
-			handleKeyMode(serv, client, add, modesParams, idxParams);
+			handleKeyMode(serv, client, add, modesParams, idxParams, mode);
 			break;
 		case 'o':
-			handleOpMode(serv, client, add, modesParams, idxParams);
+			handleOpMode(serv, client, add, modesParams, idxParams, mode);
 			break;
 		case 'l':
-			handleLimitMode(serv, client, add, modesParams, idxParams);
+			handleLimitMode(serv, client, add, modesParams, idxParams, mode);
 			break;
 		default:
 			serv->sendError(*client, ERR_UNKNOWNMODE);
@@ -226,7 +239,7 @@ void	Channel::handleModes(Server *serv, Client *client, std::string const &modes
 	}
 }
 
-void	Channel::handleKeyMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx)
+void	Channel::handleKeyMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx, char mode)
 {
 	if (add)
 	{
@@ -237,15 +250,17 @@ void	Channel::handleKeyMode(Server *serv, Client *client, bool add, std::vector<
 		}
 		_key = params[idx++];
 		_hasKey = true;
+		modeRPL(client, mode, add, _key);
 	}
 	else
 	{
 		_key.clear();
 		_hasKey = false;
+		modeRPL(client, mode, add, "");
 	}
 }
 
-void	Channel::handleOpMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx)
+void	Channel::handleOpMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx, char mode)
 {
 	if (idx >= params.size() || params[idx].empty())
 	{
@@ -263,9 +278,10 @@ void	Channel::handleOpMode(Server *serv, Client *client, bool add, std::vector<s
 		addOperator(_users[nickname]);
 	else
 		rmOperator(_users[nickname]);
+	modeRPL(client, mode, add, nickname);
 }
 
-void	Channel::handleLimitMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx)
+void	Channel::handleLimitMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx, char mode)
 {
 	int limit;
 
@@ -273,19 +289,25 @@ void	Channel::handleLimitMode(Server *serv, Client *client, bool add, std::vecto
 	{
 		if (idx >= params.size() || params[idx].empty())
 		{
+			debug("lim1");
 			serv->sendError(*client, ERR_NEEDMOREPARAMS);
 			return;
 		}
-		if (!convertToInt(params[idx++], limit) || limit <= 0)
+		if (!convertToInt(params[idx], limit) || limit <= 0)
 		{
+			debug("lim2");
 			serv->sendError(*client, ERR_NEEDMOREPARAMS);
 			return;
 		}
 		_userLimit = limit;
 		_hasUserLimit = true;
+		modeRPL(client, mode, add, params[idx++]);
 	}
 	else
+	{
 		_hasUserLimit =  false;
+		modeRPL(client, mode, add, "");
+	}
 }
 
 void	Channel::broadcast(std::string const &msg, Client *except)

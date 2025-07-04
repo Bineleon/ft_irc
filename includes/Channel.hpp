@@ -48,9 +48,11 @@ class Channel
 		bool				invite(Client *client);
 
 		void				handleModes(Server *serv, Client *client, std::string const &modes, std::vector<std::string> const &modesParams);
-		void				handleKeyMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx);
-		void				handleOpMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx);
-		void				handleLimitMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx);
+		void				handleKeyMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx, char mode);
+		void				handleOpMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx, char mode);
+		void				handleLimitMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx, char mode);
+		void				modeRPL(Client *client, char mode, bool add, std::string const &param);
+
 
 		void				broadcast(std::string const &msg, Client *except);
 

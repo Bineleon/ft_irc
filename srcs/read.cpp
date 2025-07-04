@@ -88,6 +88,8 @@ CMD_TYPE Server::checkCMD(fullCmd cmd)
 		return KICK;
 	else if (cmd.verb == "/INVITE")
 		return INVITE;
+	else if (cmd.verb == "/TOPIC")
+		return TOPIC;
 	else if (cmd.verb == "/MODE")
 		return MODE;
 	else
@@ -124,6 +126,9 @@ void Server::executeCmd(fullCmd cmd, Client *client)
 				break;
 			case INVITE:
 				inviteCmd(cmd, client);
+				break;
+			case TOPIC:
+				topicCmd(cmd, client);
 				break;
 			case MODE:
 				modeCmd(cmd, client);

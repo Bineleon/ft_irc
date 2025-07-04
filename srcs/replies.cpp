@@ -91,3 +91,4 @@ void Server::sendInvite(Client *client, Client *toInvite, Channel *channel)
 	inviteMsg << ":" << client->getMask() << " INVITE " << toInvite->getNickname() << " " << channel->getName();
 	toInvite->sendMessage(inviteMsg.str());
 }
+
