@@ -91,3 +91,11 @@ void	Client::setUsername(const std::string username)
 {
 	this->_username = username;
 }
+
+const std::string&	Client::getRealname() const {
+	return this->_realname;
+}
+
+void	Client::setRealname(const std::string realname) {
+	this->_realname = realname;
+}

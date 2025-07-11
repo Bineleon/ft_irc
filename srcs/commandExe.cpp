@@ -54,6 +54,8 @@ void Server::handleUserPrivmsg(fullCmd cmd, Client *client)
 
 void Server::privmsgCmd(fullCmd cmd, Client *client)
 {
+	if (!checkAuthenticated(client))
+		return;
 	if (checkNeedMoreParams(cmd))
 	{
 		sendError(*client, ERR_NORECIPIENT);
@@ -83,6 +85,8 @@ Channel* Server::handleJoinChan(Client *client, std::string const &key, std::str
 
 void Server::joinCmd(fullCmd cmd, Client *client)
 {
+	if (!checkAuthenticated(client))
+		return;
 	if (checkNeedMoreParams(cmd))
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
@@ -157,6 +161,8 @@ void Server::handleJoinErr(Client *client, JoinStatus status)
 
 void Server::kickCmd(fullCmd cmd, Client *client)
 {
+	if (!checkAuthenticated(client))
+		return;
 	if (checkNeedMoreParams(cmd) || cmd.params[1].empty())
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
@@ -186,6 +192,8 @@ void Server::kickCmd(fullCmd cmd, Client *client)
 
 void Server::inviteCmd(fullCmd cmd, Client *client)
 {
+	if (!checkAuthenticated(client))
+		return;
 	if (checkNeedMoreParams(cmd) || cmd.params[1].empty())
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
@@ -219,6 +227,8 @@ void Server::inviteCmd(fullCmd cmd, Client *client)
 
 void Server::topicCmd(fullCmd cmd, Client *client)
 {
+	if (!checkAuthenticated(client))
+		return;
 	if (checkNeedMoreParams(cmd))
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
@@ -254,6 +264,8 @@ void Server::topicCmd(fullCmd cmd, Client *client)
 
 void Server::modeCmd(fullCmd cmd, Client *client)
 {
+	if (!checkAuthenticated(client))
+		return;
 	if (checkNeedMoreParams(cmd) || cmd.params.size() < 2)
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
@@ -317,9 +329,12 @@ void	Server::nickCmd(fullCmd cmd, Client *client) {
 		msg = "Requesting the new nick \"" + cmd.params[0] + "\".";
 		client->sendMessage(msg);
 		client->setNickname(cmd.params[0]);
-		client->setStatus(USERNAME_NEEDED);
 		msg = "Nickname set to " + client->getNickname() + ".";
 		client->sendMessage(msg);
+		if (client->getUsername().empty())
+			client->setStatus(USERNAME_NEEDED);
+		else
+			client->setStatus(AUTHENTICATED);
 	}
 	else {
 		msg = client->getNickname() + " changed his nickname to " + cmd.params[0] + ".";
@@ -328,4 +343,58 @@ void	Server::nickCmd(fullCmd cmd, Client *client) {
 
 	client->setNickname(cmd.params[0]);
 	_nickClients[cmd.params[0]] = client;
+}
+
+void	Server::userCmd(fullCmd cmd, Client *client)
+{
+	if (checkNeedMoreParams(cmd) || cmd.params.size() < 3
+		|| (cmd.trailing.empty() && cmd.params.size() < 4)) 
+	{
+		sendError(*client, ERR_NEEDMOREPARAMS);
+		return ;
+	}
+	if (client->getStatus() == AUTHENTICATED)
+	{
+		sendError(*client, ERR_ALREADYREGISTERED);
+		return;
+	}
+	client->setUsername(cmd.params[0]);
+	if (cmd.trailing.empty())
+		client->setRealname(cmd.params[3]);
+	else
+		client->setRealname(cmd.trailing);
+
+	if (client->getNickname().empty())
+		client->setStatus(NICKNAME_NEEDED);
+	else
+		client->setStatus(AUTHENTICATED);
+}
+
+void	Server::pongCmd(fullCmd cmd, Client *client)
+{
+	if (cmd.params.empty() && cmd.trailing.empty())
+	{
+		sendError(*client, ERR_NOORIGIN);
+		return;
+	}
+	
+	std::string target;
+	if (cmd.trailing.empty())
+		target = cmd.params[0];
+	else
+		target = cmd.trailing;
+
+	std::string rpl = "PONG: " + target;
+	client->sendMessage(rpl);
+
+}
+
+bool	Server::checkAuthenticated(Client *client)
+{
+	if (client->getStatus() != AUTHENTICATED)
+	{
+		sendError(*client, ERR_NOTREGISTERED);
+		return false;
+	}
+	return true;
 }

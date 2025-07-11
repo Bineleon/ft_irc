@@ -26,6 +26,8 @@ void	Server::initErrorMessages() {
 	this->_errorMessages[ERR_BADCHANNELKEY]    = std::make_pair(CHANNEL, "Cannot join channel (+k)");
 	this->_errorMessages[ERR_CHANOPRIVSNEEDED] = std::make_pair(CHANNEL, "You're not channel operator");
 	this->_errorMessages[ERR_UNKNOWNMODE]		= std::make_pair(CHANNEL, "<client> <modechar> :is unknown mode char to me");
+	this->_errorMessages[ERR_NOORIGIN]			= std::make_pair(NOTHING, "No origin specified");
+
 }
 
 void	Server::sendError(const Client& client, int error) {

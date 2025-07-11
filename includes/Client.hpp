@@ -38,6 +38,8 @@ class Client
 		void	setUsername(const std::string username);
 		const std::string&	getNickname() const;
 		void	setNickname(const std::string username);
+		const std::string&	getRealname() const;
+		void	setRealname(const std::string username);
 		void				setStatus(const ClientStatus& newStatus);
 		const Channel*		getCurrentChannel() const;
 		void				setCurrentChannel(Channel* channel);
