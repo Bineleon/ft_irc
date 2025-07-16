@@ -1,6 +1,8 @@
 // #include "../includes/minitcp.hpp"
 #include "../includes/Server.hpp"
 
+// /connect 127.0.0.1 t1 pass
+
 int	main(int ac, char **av)
 {
 	long port;

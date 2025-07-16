@@ -31,6 +31,7 @@ void Server::readFromSocket(struct pollfd pfdClient)
 
 	std::memset(&buffer, 0, sizeof buffer);
 	bytesRead = recv(pfdClient.fd, buffer, BUFFER_SIZE, 0);
+	std::cout << "buffer = " << buffer << "\n";
 	if (bytesRead <= 0)
 	{
 		if (bytesRead == 0)
@@ -51,7 +52,7 @@ void Server::readFromSocket(struct pollfd pfdClient)
 		{
 			toParse = clientMsgBuf.substr(0, pos);
 			clientMsgBuf.erase(0, pos + 2);
-			// std::cout << "Msg from fd [" << pfdClient.fd << "]: " << toParse << std::endl;
+			std::cout << "RECEIVED: " << toParse << std::endl;
             _clients[pfdClient.fd]->setMsgBuffer(clientMsgBuf);
 		}
 		if (!toParse.empty())
@@ -74,24 +75,28 @@ bool Server::chanIsOnServer(std::string chanName)
 
 CMD_TYPE Server::checkCMD(fullCmd cmd)
 {
-	if (cmd.verb == "/PASS")
+	if (cmd.verb == "PASS")
 		return PASS;
-	else if (cmd.verb == "/NICK")
+	else if (cmd.verb == "NICK")
 		return NICK;
-	else if (cmd.verb == "/USER")
+	else if (cmd.verb == "USER")
 		return USER;
-	else if (cmd.verb == "/PRIVMSG")
+	else if (cmd.verb == "PRIVMSG")
 		return PRIVMSG;
-	else if (cmd.verb == "/JOIN")
+	else if (cmd.verb == "JOIN")
 		return JOIN;
-	else if (cmd.verb == "/KICK")
+	else if (cmd.verb == "KICK")
 		return KICK;
-	else if (cmd.verb == "/INVITE")
+	else if (cmd.verb == "INVITE")
 		return INVITE;
-	else if (cmd.verb == "/TOPIC")
+	else if (cmd.verb == "TOPIC")
 		return TOPIC;
-	else if (cmd.verb == "/MODE")
+	else if (cmd.verb == "MODE")
 		return MODE;
+	else if (cmd.verb == "PING")
+		return PING;
+	else if (cmd.verb == "CAP")
+		return CAP;
 	else
 		return UNKNOWN;
 }
@@ -100,8 +105,10 @@ CMD_TYPE Server::checkCMD(fullCmd cmd)
 void Server::executeCmd(fullCmd cmd, Client *client)
 {
 	CMD_TYPE cmdType = checkCMD(cmd);
+	printCmd(cmd);
 
-	if (client->getStatus() == PASSWORD_NEEDED && cmdType != PASS) {
+	if (client->getStatus() == PASSWORD_NEEDED && cmdType != PASS && cmdType != CAP && cmdType != JOIN)
+	{
 		client->sendMessage("ERROR :Password required");
 		return ;
 	}
@@ -114,6 +121,9 @@ void Server::executeCmd(fullCmd cmd, Client *client)
 				break;
 			case NICK:
 				nickCmd(cmd, client);
+				break;
+			case USER:
+				userCmd(cmd, client);
 				break;
 			case PRIVMSG:
 				privmsgCmd(cmd, client);
@@ -133,8 +143,14 @@ void Server::executeCmd(fullCmd cmd, Client *client)
 			case MODE:
 				modeCmd(cmd, client);
 				break;
+			case PING:
+				pongCmd(cmd, client);
+				break;
+			case CAP:
+				break;
 			default:
 				sendError(*client, ERR_UNKNOWNCOMMAND);
+				printCmd(cmd);
 				break;
 		}
 	}

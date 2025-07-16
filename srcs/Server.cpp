@@ -5,6 +5,7 @@ Server::Server(){}
 Server::Server(int port, std::string &pwd): _port(port), _pwd(pwd)
 {
 	initServerSocket();
+	initCreationDate();
 }
 
 Server::~Server()
@@ -98,3 +99,9 @@ void Server::runIRC()
 	}
 }
 
+void Server::initCreationDate()
+{
+	std::time_t now = std::time(NULL);
+	_creationDate = std::string(std::ctime(&now));
+	_creationDate.erase(_creationDate.find_last_not_of("\n") + 1);
+}

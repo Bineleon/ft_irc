@@ -1,7 +1,7 @@
 #include "../includes/Server.hpp"
 #include "../includes/Client.hpp"
 
-void Server::sendReply(Client *client, int code, std::vector<std::string> &params, std::string const &trailing)
+void Server::sendReply(Client *client, int code, std::vector<std::string> const &params, std::string const &trailing)
 {
 	std::ostringstream oss;
 	oss << ":" << _name << " " << code << " " << client->getNickname();
@@ -92,3 +92,19 @@ void Server::sendInvite(Client *client, Client *toInvite, Channel *channel)
 	toInvite->sendMessage(inviteMsg.str());
 }
 
+void Server::sendWelcome(Client *client)
+{
+	std::string welcomeMsg = "Welcome to the IRC " + client->getMask();
+	std::vector<std::string> params;
+	params.push_back(client->getNickname());
+	sendReply(client, RPL_WELCOME, params, welcomeMsg);
+
+	std::string yourHostMsg = "Your host is " + _name + ", running version 1.0";
+	sendReply(client, RPL_YOURHOST, params, yourHostMsg);
+
+	std::string createdMsg = "This server was created " + _creationDate;
+	sendReply(client, RPL_CREATED, params, createdMsg);
+
+	std::string myInfoMsg = _name + " 1.0 o o";
+	sendReply(client, RPL_MYINFO, params, myInfoMsg);
+}

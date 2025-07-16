@@ -31,6 +31,7 @@ class Client;
 # include <csignal>
 # include <sstream>
 # include <iomanip>
+#include <ctime>
 
 # define BACKLOG 10
 # define BUFFER_SIZE 1024
@@ -59,6 +60,7 @@ class Server
 		std::map<std::string, Client*> _nickClients;
 		std::map<int, std::pair<ErrorFormat, std::string> >	_errorMessages;
 		std::map<std::string, Channel*> _channels;
+		std::string _creationDate;
 
 	public:
 		Server(int port, std::string &pwd);
@@ -96,7 +98,7 @@ class Server
 		void topicCmd(fullCmd cmd, Client *client);
 		void modeCmd(fullCmd cmd, Client *client);
 		
-		void sendReply(Client *client, int code, std::vector<std::string> &params, std::string const &trailing);
+		void sendReply(Client *client, int code, std::vector<std::string> const &params, std::string const &trailing);
 		void topicRPL(Client *client, Channel *channel);
 		void nameRPL(Client *client, Channel *channel);
 		void eofNamesRPL(Client *client, Channel *channel);
@@ -104,6 +106,11 @@ class Server
 		void kickRPL(Client *source, Client *target, Channel *channel, std::string const &comment);
 		void inviteRPL(Client *client, Client *toInvite, Channel *channel);
 		void sendInvite(Client *client, Client *toInvite, Channel *channel);
+		void sendWelcome(Client *client);
+
+		void initCreationDate();
+
+
 
 
 

@@ -2,7 +2,8 @@
 
 void printCmd(fullCmd cmd)
 {
-	std::cout << "Verb: " << cmd.verb << std::endl;
+	// std::cout << "Verb: " << cmd.verb << std::endl;
+	std::cout << cmd.verb << std::endl;
 	for (size_t i = 0; i < cmd.params.size(); ++i)
 		std::cout << "Param[" << i << "]: " << cmd.params[i] << std::endl;
 	std::cout << "Trailing: " << cmd.trailing << std::endl;

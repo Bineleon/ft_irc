@@ -85,8 +85,8 @@ Channel* Server::handleJoinChan(Client *client, std::string const &key, std::str
 
 void Server::joinCmd(fullCmd cmd, Client *client)
 {
-	if (!checkAuthenticated(client))
-		return;
+	// if (!checkAuthenticated(client))
+	// 	return;
 	if (checkNeedMoreParams(cmd))
 	{
 		sendError(*client, ERR_NEEDMOREPARAMS);
@@ -271,6 +271,8 @@ void Server::modeCmd(fullCmd cmd, Client *client)
 		sendError(*client, ERR_NEEDMOREPARAMS);
 		return;
 	}
+	if (!isValidChanName(cmd.params[0]))
+		return;
 	if (!chanIsOnServer(cmd.params[0]))
 	{
 		sendError(*client, ERR_NOSUCHCHANNEL);
@@ -303,6 +305,7 @@ void	Server::passCmd(fullCmd cmd, Client *client) {
 		return ;
 	}
 
+	client->sendMessage(":localhost NOTICE AUTH :Password accepted");
 	client->setStatus(NICKNAME_NEEDED);
 }
 
@@ -334,7 +337,10 @@ void	Server::nickCmd(fullCmd cmd, Client *client) {
 		if (client->getUsername().empty())
 			client->setStatus(USERNAME_NEEDED);
 		else
+		{
 			client->setStatus(AUTHENTICATED);
+			sendWelcome(client);
+		}
 	}
 	else {
 		msg = client->getNickname() + " changed his nickname to " + cmd.params[0] + ".";
@@ -367,7 +373,10 @@ void	Server::userCmd(fullCmd cmd, Client *client)
 	if (client->getNickname().empty())
 		client->setStatus(NICKNAME_NEEDED);
 	else
+	{
 		client->setStatus(AUTHENTICATED);
+		sendWelcome(client);
+	}
 }
 
 void	Server::pongCmd(fullCmd cmd, Client *client)
@@ -377,7 +386,7 @@ void	Server::pongCmd(fullCmd cmd, Client *client)
 		sendError(*client, ERR_NOORIGIN);
 		return;
 	}
-	
+
 	std::string target;
 	if (cmd.trailing.empty())
 		target = cmd.params[0];

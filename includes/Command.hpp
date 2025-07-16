@@ -24,6 +24,9 @@ enum CMD_TYPE
 	INVITE,
 	TOPIC,
 	MODE,
+	PING,
+	CAP,
+	IR_JOIN,
 	UNKNOWN
 };
 
