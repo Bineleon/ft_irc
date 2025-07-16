@@ -204,14 +204,13 @@ void	Channel::handleModes(Server *serv, Client *client, std::string const &modes
 	std::vector<std::string> params;
 	if (modes.empty())
 	{
-		params.push_back("mode");
-		serv->sendReply(*client, ERR_NEEDMOREPARAMS, params, "Not enough parameters");
+		serv->sendReply(client, ERR_NEEDMOREPARAMS, "mode", "Not enough parameters");
 		return;
 	}
 	if ((modes[0] != '-' && modes[0] != '+'))
 	{
-		params.push_back(modes[0]);
-		serv->sendReply(*client, ERR_UNKNOWNMODE, params, "is unknown mode char to me");
+		params.push_back(modes);
+		serv->sendReply(client, ERR_UNKNOWNMODE, params, "is unknown mode char to me");
 		return;
 	}
 
@@ -247,8 +246,7 @@ void	Channel::handleModes(Server *serv, Client *client, std::string const &modes
 			handleLimitMode(serv, client, add, modesParams, idxParams, mode);
 			break;
 		default:
-			params.push_back(modes);
-			serv->sendReply(*client, params, "is unknown mode char to me");
+			serv->sendReply(client, ERR_UNKNOWNMODE, std::string(1, mode), "is unknown mode char to me");
 			break;
 		}
 	}
@@ -260,7 +258,7 @@ void	Channel::handleKeyMode(Server *serv, Client *client, bool add, std::vector<
 	{
 		if (idx >= params.size() || params[idx].empty())
 		{
-			serv->sendError(*client, ERR_NEEDMOREPARAMS);
+			serv->sendReply(client, ERR_NEEDMOREPARAMS, "mode", "Not enough parameters");
 			return;
 		}
 		_key = params[idx++];
@@ -279,14 +277,17 @@ void	Channel::handleOpMode(Server *serv, Client *client, bool add, std::vector<s
 {
 	if (idx >= params.size() || params[idx].empty())
 	{
-		serv->sendError(*client, ERR_NEEDMOREPARAMS);
+		serv->sendReply(client, ERR_NEEDMOREPARAMS, "mode", "Not enough parameters");
 		return;
 	}
 	
 	std::string nickname = params[idx++];
 	if (!isUser(nickname))
 	{
-		serv->sendError(*client, ERR_USERNOTINCHANNEL);
+		std::vector<std::string> params;
+		params.push_back(client->getNickname());
+		params.push_back(_name);
+		serv->sendReply(client, ERR_USERNOTINCHANNEL, params, "They aren't on that channel");
 		return;
 	}
 	if (add)
@@ -304,14 +305,12 @@ void	Channel::handleLimitMode(Server *serv, Client *client, bool add, std::vecto
 	{
 		if (idx >= params.size() || params[idx].empty())
 		{
-			debug("lim1");
-			serv->sendError(*client, ERR_NEEDMOREPARAMS);
+			serv->sendReply(client, ERR_NEEDMOREPARAMS, "mode", "Not enough parameters");
 			return;
 		}
 		if (!convertToInt(params[idx], limit) || limit <= 0)
 		{
-			debug("lim2");
-			serv->sendError(*client, ERR_NEEDMOREPARAMS);
+			serv->sendReply(client, ERR_NEEDMOREPARAMS, "mode", "Not enough parameters");
 			return;
 		}
 		_userLimit = limit;

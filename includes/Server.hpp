@@ -90,7 +90,7 @@ class Server
 
 		void joinCmd(fullCmd cmd, Client *client);
 		JoinStatus	checkJoinStatus(Channel *channel, Client *client, std::string const &key) const;
-		void handleJoinErr(Client *client, JoinStatus status);
+		void handleJoinErr(Client *client, JoinStatus status, Channel *channel);
 		Channel* handleJoinChan(Client *client, std::string const &key, std::string chanName);
 
 		void kickCmd(fullCmd cmd, Client *client);
@@ -99,6 +99,8 @@ class Server
 		void modeCmd(fullCmd cmd, Client *client);
 		
 		void sendReply(Client *client, int code, std::vector<std::string> const &params, std::string const &trailing);
+		void sendReply(Client *client, int code, std::string const &param, std::string const &trailing);
+
 		void topicRPL(Client *client, Channel *channel);
 		void nameRPL(Client *client, Channel *channel);
 		void eofNamesRPL(Client *client, Channel *channel);

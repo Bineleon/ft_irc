@@ -15,6 +15,18 @@ void Server::sendReply(Client *client, int code, std::vector<std::string> const 
 	client->sendMessage(oss.str());
 }
 
+void Server::sendReply(Client *client, int code, std::string const &param, std::string const &trailing)
+{
+	std::ostringstream oss;
+	oss << ":" << _name << " " << code << " " << client->getNickname();
+
+	if (!param.empty())
+		oss << " " << param;
+	if (!trailing.empty())
+		oss << " :" << trailing;
+	client->sendMessage(oss.str());
+}
+
 //  :dan-!d@localhost JOIN #test    ; dan- is joining the channel #test
 
 void Server::topicRPL(Client *client, Channel *channel)

@@ -23,12 +23,12 @@ void Server::handleChanPrivmsg(fullCmd cmd, Client *client)
 	std::string const &chanName = cmd.params[0];
 	if (_channels.find(chanName) == _channels.end())
 	{
-		sendError(*client, ERR_NOSUCHCHANNEL);
+		sendReply(client, ERR_NOSUCHCHANNEL, chanName, "No such channel");
 		return;
 	}
 	if (cmd.trailing.empty())
 	{
-		sendError(*client, ERR_NOTEXTTOSEND);
+		sendReply(client, ERR_NOTEXTTOSEND, NULL, "No text to send");
 		return;
 	}
 	std::string pvMsg = buildPrivmsg(cmd, client);
@@ -40,12 +40,12 @@ void Server::handleUserPrivmsg(fullCmd cmd, Client *client)
 	std::string const &target = cmd.params[0];
 	if (_nickClients.find(target) == _nickClients.end())
 	{
-		sendError(*client, ERR_NOSUCHNICK);
+		sendReply(client, ERR_NOSUCHNICK, client->getNickname(), "No such nick");
 		return;
 	}
 	if (cmd.trailing.empty())
 	{
-		sendError(*client, ERR_NOTEXTTOSEND);
+		sendReply(client, ERR_NOTEXTTOSEND, NULL, "No text to send");
 		return;
 	}
 	std::string pvMsg = buildPrivmsg(cmd, client);
@@ -58,7 +58,7 @@ void Server::privmsgCmd(fullCmd cmd, Client *client)
 		return;
 	if (checkNeedMoreParams(cmd))
 	{
-		sendError(*client, ERR_NORECIPIENT);
+		sendReply(client, ERR_NORECIPIENT, NULL, "No recipient given");
 		return;
 	}
 	if (isValidChanName(cmd.params[0]))
@@ -85,11 +85,11 @@ Channel* Server::handleJoinChan(Client *client, std::string const &key, std::str
 
 void Server::joinCmd(fullCmd cmd, Client *client)
 {
-	// if (!checkAuthenticated(client))
-	// 	return;
+	if (!checkAuthenticated(client))
+		return;
 	if (checkNeedMoreParams(cmd))
 	{
-		sendError(*client, ERR_NEEDMOREPARAMS);
+		sendReply(client, ERR_NEEDMOREPARAMS, "join", "Not enough parameters");
 		return;
 	}
 	
@@ -105,14 +105,14 @@ void Server::joinCmd(fullCmd cmd, Client *client)
 
 		if (!isValidChanName(splitChan[i]))
 		{
-			sendError(*client, ERR_NOSUCHCHANNEL);
+			sendReply(client, ERR_NOSUCHCHANNEL, splitChan[i] , "No such channel");
 			continue;
 		}
 		Channel *channel = handleJoinChan(client, key, splitChan[i]);
 		JoinStatus status = checkJoinStatus(channel, client, key);
 		if (status != J_OK)
 		{
-			handleJoinErr(client, status);
+			handleJoinErr(client, status, channel);
 			continue;
 		}
 		channel->addUser(client);
@@ -135,23 +135,27 @@ JoinStatus Server::checkJoinStatus(Channel *channel, Client *client, std::string
     return J_OK;
 }
 
-void Server::handleJoinErr(Client *client, JoinStatus status)
+void Server::handleJoinErr(Client *client, JoinStatus status, Channel *channel)
 {
+	std::vector<std::string> params;
 	switch (status)
 	{
 		case J_FULL:
-			sendError(*client, ERR_CHANNELISFULL);
+			sendReply(client, ERR_CHANNELISFULL, channel->getName() , "Cannot join channel (+l)");
 			break;
 		case J_BANNED:
-			sendError(*client, ERR_BANNEDFROMCHAN);
+			sendReply(client, ERR_BANNEDFROMCHAN, channel->getName() , "Cannot join channel (+b)");
 			break;
 		case J_BAD_K:
-			sendError(*client, ERR_BADCHANNELKEY);
+			sendReply(client, ERR_BADCHANNELKEY, channel->getName() , "Cannot join channel (+k)");
 			break;
 		case J_ALRDYIN:
-			sendError(*client, ERR_USERONCHANNEL);
+			params.push_back(client->getNickname());
+			params.push_back(channel->getName());
+			sendReply(client, ERR_USERONCHANNEL, params, "is already on channel");
 			break;
 		case J_INVIT_O:
+			sendReply(client, ERR_INVITEONLYCHAN, channel->getName() , "Cannot join channel (+i)");
 			sendError(*client, ERR_INVITEONLYCHAN);
 			break;
 		default:
