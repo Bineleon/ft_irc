@@ -103,6 +103,12 @@ void	Channel::setTopic(std::string topic)
 	_topic = topic;
 }
 
+void	Channel::setHasTopic(bool hasTopic)
+{
+	_hasTopic = hasTopic;
+}
+
+
 void	Channel::setUserLimit(size_t userLimit)
 {
 	_userLimit = userLimit;

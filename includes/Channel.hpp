@@ -38,6 +38,8 @@ class Channel
 		void				setTopic(std::string topic);
 		void				setUserLimit(size_t userLimit);
 		void				setTopicRestric(bool isRestricted);
+		void				setHasTopic(bool hasTopic);
+
 		void				setKey(std::string key);
 		void				setHasKey(bool hasKey);
 		void				setInviteOnly(bool isInviteOnly);

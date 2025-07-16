@@ -259,6 +259,7 @@ void Server::topicCmd(fullCmd cmd, Client *client)
 		targetChannel->setTopic(cmd.params[1]);
 	else
 		targetChannel->setTopic(cmd.trailing);
+	targetChannel->setHasTopic(true);
 	topicRPL(client, targetChannel);
 }
 

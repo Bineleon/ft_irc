@@ -52,14 +52,13 @@ void Server::readFromSocket(struct pollfd pfdClient)
 		{
 			toParse = clientMsgBuf.substr(0, pos);
 			clientMsgBuf.erase(0, pos + 2);
-			std::cout << "RECEIVED: " << toParse << std::endl;
+			std::cout << "RECEIVED: " << clientMsgBuf << std::endl;
             _clients[pfdClient.fd]->setMsgBuffer(clientMsgBuf);
-		}
-		if (!toParse.empty())
-		{
-			fullCmd cmd = parseCmd(toParse);
-			// printCmd(cmd);
-			executeCmd(cmd, _clients[pfdClient.fd]);
+			if (!toParse.empty())
+			{
+				fullCmd cmd = parseCmd(toParse);
+				executeCmd(cmd, _clients[pfdClient.fd]);
+			}
 		}
 	}
 }
