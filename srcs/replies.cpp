@@ -108,3 +108,5 @@ void Server::sendWelcome(Client *client)
 	std::string myInfoMsg = _name + " 1.0 o o";
 	sendReply(client, RPL_MYINFO, params, myInfoMsg);
 }
+
+

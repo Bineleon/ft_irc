@@ -201,9 +201,17 @@ void Channel::modeRPL(Client *client, char mode, bool add, std::string const &pa
 
 void	Channel::handleModes(Server *serv, Client *client, std::string const &modes, std::vector<std::string> const &modesParams)
 {
-	if (modes.empty() || (modes[0] != '-' && modes[0] != '+'))
+	std::vector<std::string> params;
+	if (modes.empty())
 	{
-		serv->sendError(*client, ERR_UNKNOWNMODE);
+		params.push_back("mode");
+		serv->sendReply(*client, ERR_NEEDMOREPARAMS, params, "Not enough parameters");
+		return;
+	}
+	if ((modes[0] != '-' && modes[0] != '+'))
+	{
+		params.push_back(modes[0]);
+		serv->sendReply(*client, ERR_UNKNOWNMODE, params, "is unknown mode char to me");
 		return;
 	}
 
@@ -239,7 +247,8 @@ void	Channel::handleModes(Server *serv, Client *client, std::string const &modes
 			handleLimitMode(serv, client, add, modesParams, idxParams, mode);
 			break;
 		default:
-			serv->sendError(*client, ERR_UNKNOWNMODE);
+			params.push_back(modes);
+			serv->sendReply(*client, params, "is unknown mode char to me");
 			break;
 		}
 	}
