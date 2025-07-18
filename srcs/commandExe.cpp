@@ -156,7 +156,6 @@ void Server::handleJoinErr(Client *client, JoinStatus status, Channel *channel)
 			break;
 		case J_INVIT_O:
 			sendReply(client, ERR_INVITEONLYCHAN, channel->getName() , "Cannot join channel (+i)");
-			sendError(*client, ERR_INVITEONLYCHAN);
 			break;
 		default:
 			break;
@@ -165,27 +164,30 @@ void Server::handleJoinErr(Client *client, JoinStatus status, Channel *channel)
 
 void Server::kickCmd(fullCmd cmd, Client *client)
 {
+	std::vector<std::string> params;
 	if (!checkAuthenticated(client))
 		return;
 	if (checkNeedMoreParams(cmd) || cmd.params[1].empty())
 	{
-		sendError(*client, ERR_NEEDMOREPARAMS);
+		sendReply(client, ERR_NEEDMOREPARAMS, "join", "Not enough parameters");
 		return;
 	}
 	if (!isValidChanName(cmd.params[0]) || _channels.find(cmd.params[0]) == _channels.end())
 	{
-		sendError(*client, ERR_NOSUCHCHANNEL);
+		sendReply(client, ERR_NOSUCHCHANNEL, cmd.params[0] , "No such channel");
 		return;
 	}
 	Channel *channel = _channels[cmd.params[0]];
 	if (channel->getOperators().find(client->getNickname()) == channel->getOperators().end())
 	{
-		sendError(*client, ERR_CHANOPRIVSNEEDED);
+		sendReply(client, ERR_CHANOPRIVSNEEDED, channel->getName() , "They aren't on that channel");		
 		return;
 	}
 	if (channel->getUsers().find(cmd.params[1]) == channel->getUsers().end())
 	{
-		sendError(*client, ERR_USERNOTINCHANNEL);
+		params.push_back(client->getNickname());
+		params.push_back(channel->getName());
+		sendReply(client, ERR_USERNOTINCHANNEL, params , "You're not channel operator");		
 		return;
 	}
 	Client *clientToKick = channel->getUsers().find(cmd.params[1])->second;
@@ -196,30 +198,33 @@ void Server::kickCmd(fullCmd cmd, Client *client)
 
 void Server::inviteCmd(fullCmd cmd, Client *client)
 {
+	std::vector<std::string> params;
 	if (!checkAuthenticated(client))
 		return;
 	if (checkNeedMoreParams(cmd) || cmd.params[1].empty())
 	{
-		sendError(*client, ERR_NEEDMOREPARAMS);
+		sendReply(client, ERR_NEEDMOREPARAMS, "join", "Not enough parameters");
 		return;
 	}
 	if (!chanIsOnServer(cmd.params[1]))
 	{
-		sendError(*client, ERR_NOSUCHCHANNEL);
+		sendReply(client, ERR_NOSUCHCHANNEL, cmd.params[1] , "No such channel");
 		return;
 	}
 
 	Channel *chanToInviteTo = _channels[cmd.params[1]];
 	if (!chanToInviteTo->isOperator(client))
 	{
-		sendError(*client, ERR_CHANOPRIVSNEEDED);
+		sendReply(client, ERR_CHANOPRIVSNEEDED, chanToInviteTo->getName() , "You're not channel operator");		
 		return;
 	}
 
 	Client *toInvite = _nickClients[cmd.params[0]];
 	if (chanToInviteTo->isUser(toInvite))
 	{
-		sendError(*client, ERR_USERONCHANNEL);
+		params.push_back(toInvite->getNickname());
+		params.push_back(chanToInviteTo->getName());
+		sendReply(client, ERR_USERONCHANNEL, params, "is already on channel");
 		return;
 	}
 	if (chanToInviteTo->invite(toInvite))
@@ -235,23 +240,23 @@ void Server::topicCmd(fullCmd cmd, Client *client)
 		return;
 	if (checkNeedMoreParams(cmd))
 	{
-		sendError(*client, ERR_NEEDMOREPARAMS);
+		sendReply(client, ERR_NEEDMOREPARAMS, "join", "Not enough parameters");
 		return;
 	}
 	if (!chanIsOnServer(cmd.params[0]))
 	{
-		sendError(*client, ERR_NOSUCHCHANNEL);
+		sendReply(client, ERR_NOSUCHCHANNEL, cmd.params[0] , "No such channel");
 		return;
 	}
 	Channel *targetChannel = _channels[cmd.params[0]];
 	if (!targetChannel->isUser(client))
 	{
-		sendError(*client, ERR_NOTONCHANNEL);
+		sendReply(client, ERR_NOTONCHANNEL, targetChannel->getName() , "You're not on that channel");
 		return;
 	}
 	if (!targetChannel->isOperator(client) && targetChannel->getHasTopicRestric())
 	{
-		sendError(*client, ERR_CHANOPRIVSNEEDED);
+		sendReply(client, ERR_CHANOPRIVSNEEDED, targetChannel->getName() , "You're not channel operator");		
 		return;
 	}
 	if (cmd.params.size() < 2 && cmd.trailing.empty())
@@ -273,20 +278,20 @@ void Server::modeCmd(fullCmd cmd, Client *client)
 		return;
 	if (checkNeedMoreParams(cmd) || cmd.params.size() < 2)
 	{
-		sendError(*client, ERR_NEEDMOREPARAMS);
+		sendReply(client, ERR_NEEDMOREPARAMS, "join", "Not enough parameters");
 		return;
 	}
 	if (!isValidChanName(cmd.params[0]))
 		return;
 	if (!chanIsOnServer(cmd.params[0]))
 	{
-		sendError(*client, ERR_NOSUCHCHANNEL);
+		sendReply(client, ERR_NOSUCHCHANNEL, cmd.params[0] , "No such channel");
 		return;
 	}
 	Channel *targetChannel = _channels[cmd.params[0]];
 	if (!targetChannel->isOperator(client))
 	{
-		sendError(*client, ERR_CHANOPRIVSNEEDED);
+		sendReply(client, ERR_CHANOPRIVSNEEDED, targetChannel->getName() , "You're not channel operator");		
 		return;
 	}
 	std::string modes = cmd.params[1];
@@ -296,17 +301,17 @@ void Server::modeCmd(fullCmd cmd, Client *client)
 
 void	Server::passCmd(fullCmd cmd, Client *client) {
 	if (client->getStatus() != PASSWORD_NEEDED) {
-		sendError(*client, ERR_ALREADYREGISTERED);
+		sendReply(client, ERR_ALREADYREGISTERED, NULL , "You may not reregister");		
 		return ;
 	}
 
 	if (checkNeedMoreParams(cmd)) {
-		sendError(*client, ERR_NEEDMOREPARAMS);
+		sendReply(client, ERR_NEEDMOREPARAMS, "join", "Not enough parameters");
 		return ;
 	}
 
 	if (cmd.params[0] != getPwd()) {
-		sendError(*client, ERR_PASSWDMISMATCH);
+		sendReply(client, ERR_PASSWDMISMATCH, NULL , "Password incorrect");		
 		return ;
 	}
 
@@ -316,18 +321,18 @@ void	Server::passCmd(fullCmd cmd, Client *client) {
 
 void	Server::nickCmd(fullCmd cmd, Client *client) {
 	if (checkNeedMoreParams(cmd)) {
-		sendError(*client, ERR_NONICKNAMEGIVEN);
+		sendReply(client, ERR_NONICKNAMEGIVEN, NULL , "No nickname given");		
 		return ;
 	}
 
 	std::map<std::string, Client*>::iterator it = _nickClients.find(cmd.params[0]);
 	if (it != _nickClients.end()) {
-		sendError(*client, ERR_NICKNAMEINUSE);
+		sendReply(client, ERR_NICKNAMEINUSE, cmd.params[0] , "Nickname is already in use");		
 		return ;
 	}
 
 	if (isValidNickname(cmd.params[0]) == false) {
-		sendError(*client, ERR_ERRONEUSNICKNAME);
+		sendReply(client, ERR_ERRONEUSNICKNAME, cmd.params[0] , "Erroneus nickname");		
 		return ;
 	}
 
@@ -361,12 +366,12 @@ void	Server::userCmd(fullCmd cmd, Client *client)
 	if (checkNeedMoreParams(cmd) || cmd.params.size() < 3
 		|| (cmd.trailing.empty() && cmd.params.size() < 4)) 
 	{
-		sendError(*client, ERR_NEEDMOREPARAMS);
+		sendReply(client, ERR_NEEDMOREPARAMS, "join", "Not enough parameters");
 		return ;
 	}
 	if (client->getStatus() == AUTHENTICATED)
 	{
-		sendError(*client, ERR_ALREADYREGISTERED);
+		sendReply(client, ERR_ALREADYREGISTERED, NULL , "You may not reregister");		
 		return;
 	}
 	client->setUsername(cmd.params[0]);
@@ -388,7 +393,7 @@ void	Server::pongCmd(fullCmd cmd, Client *client)
 {
 	if (cmd.params.empty() && cmd.trailing.empty())
 	{
-		sendError(*client, ERR_NOORIGIN);
+		sendReply(client, ERR_NOORIGIN, NULL , "No origin specified");
 		return;
 	}
 
@@ -407,7 +412,7 @@ bool	Server::checkAuthenticated(Client *client)
 {
 	if (client->getStatus() != AUTHENTICATED)
 	{
-		sendError(*client, ERR_NOTREGISTERED);
+		sendReply(client, ERR_NOTREGISTERED, NULL , "You have not registered");
 		return false;
 	}
 	return true;

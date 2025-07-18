@@ -148,7 +148,7 @@ void Server::executeCmd(fullCmd cmd, Client *client)
 			case CAP:
 				break;
 			default:
-				sendError(*client, ERR_UNKNOWNCOMMAND);
+				sendReply(client, ERR_UNKNOWNCOMMAND, cmd.verb, "Unknown command");		
 				printCmd(cmd);
 				break;
 		}
