@@ -12,7 +12,7 @@ std::string &Client::getmsgBuffer(void)
 
 std::string Client::getMask(void) const
 {
-	return _nickname + "!" + "_username" + "@" + _IP;
+	return _nickname + "!" + _username + "@" + _IP;
 }
 
 void Client::setMsgBuffer(const std::string& buffer)

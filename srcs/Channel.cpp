@@ -26,6 +26,10 @@ Channel& Channel::operator=(const Channel& rhs)
 
 Channel::~Channel(void)
 {
+	_users.clear();
+	_operators.clear();
+	_banned.clear();
+	_invited.clear();
 }
 
 void Channel::addOperator(Client *client)

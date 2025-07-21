@@ -1,7 +1,9 @@
 // #include "../includes/minitcp.hpp"
 #include "../includes/Server.hpp"
 
-// /connect 127.0.0.1 t1 pass
+// /connect 127.0.0.1 6667 pass
+
+Server* gServ = NULL;
 
 int	main(int ac, char **av)
 {
@@ -21,6 +23,7 @@ int	main(int ac, char **av)
 	try
 	{
 		Server serv(port, pwd);
+		gServ = &serv;
 		serv.initErrorMessages();
 		serv.runIRC();
 	}

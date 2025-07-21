@@ -1,15 +1,21 @@
 #include "../includes/Server.hpp"
 
-void	handle_signals() {
-	std::signal(SIGINT, handle_signal);
-	std::signal(SIGTERM, handle_signal);
+extern Server* gServ;
+
+void	handleSignals()
+{
+	std::signal(SIGINT, handleSignal);
+	std::signal(SIGTERM, handleSignal);
 	std::signal(SIGPIPE, SIG_IGN);
 }
 
-void	handle_signal(int signal) {
+void	handleSignal(int signal) {
 	if (signal == SIGINT || signal == SIGTERM) {
 		std::cout << "\nSignal received, stopping server...\n";
 		// appeler les fonctions pour clean les sockets liberer la memoire etc
+		if (gServ)
+			gServ->cleanAll();
+		
 	}
-	std::exit(0);
+	std::exit(signal);
 }
