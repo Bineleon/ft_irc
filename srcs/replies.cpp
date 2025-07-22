@@ -4,7 +4,7 @@
 void Server::sendReply(Client *client, int code, std::vector<std::string> const &params, std::string const &trailing)
 {
 	std::ostringstream oss;
-	oss << ":" << _name << " " << code << " " << client->getNickname();
+	oss << ":" << _name << " " << std::setw(3) << std::setfill('0') << code << " " << client->getNickname();
 
 	for (size_t i = 0; i < params.size(); ++i)
 		oss << " " << params[i];
@@ -117,7 +117,7 @@ void Server::sendWelcome(Client *client)
 	std::string createdMsg = "This server was created " + _creationDate;
 	sendReply(client, RPL_CREATED, params, createdMsg);
 
-	std::string myInfoMsg = _name + " 1.0 o o";
+	std::string myInfoMsg = _name + " 1.0 itkol";
 	sendReply(client, RPL_MYINFO, params, myInfoMsg);
 }
 
