@@ -28,8 +28,7 @@ class Channel
 		std::string			const &getKey() const;
 		std::map<std::string, Client*>	const &getUsers() const;
 		std::map<std::string, Client*>	const &getOperators() const;
-		std::set<Client*>	const &getBanned() const;
-		std::set<Client*>	const &getInvited() const;
+		std::map<std::string, Client*>	const &getInvited() const;
 		size_t				const &getUserLimit() const;
 		bool				const &getHasUserLimit() const;
 		bool				const &getHasKey() const;
@@ -57,6 +56,8 @@ class Channel
 
 
 		void				broadcast(std::string const &msg, Client *except);
+		void				rmClient(const std::string& nickname);
+
 
 		// JoinStatus	checkJoinStatus(Client *client, std::string const &key) const;
 		// void		handleJoinErr(Client *client, JoinStatus status) const;
@@ -70,8 +71,8 @@ class Channel
 		std::string			_key;
 		std::map<std::string, Client*>	_users;
 		std::map<std::string, Client*>	_operators;
-		std::set<Client*>	_banned;
-		std::set<Client*>	_invited;
+		// std::set<Client*>	_invited;
+		std::map<std::string, Client*>	_invited;
 		size_t				_userLimit;
 		bool				_hasKey;
 		bool				_hasUserLimit;

@@ -28,7 +28,6 @@ Channel::~Channel(void)
 {
 	_users.clear();
 	_operators.clear();
-	_banned.clear();
 	_invited.clear();
 }
 
@@ -67,12 +66,7 @@ std::map<std::string, Client*>	const &Channel::getOperators() const
 	return _operators;
 }
 
-std::set<Client*>	const &Channel::getBanned() const
-{
-	return _banned;
-}
-
-std::set<Client*>	const &Channel::getInvited() const
+std::map<std::string, Client*>	const &Channel::getInvited() const
 {
 	return _invited;
 }
@@ -174,7 +168,7 @@ void	Channel::kickUser(Client *client)
 
 bool Channel::invite(Client *client)
 {
-	return _invited.insert(client).second;
+	return _invited.insert(std::pair<std::string, Client*>(client->getNickname(), client)).second;
 }
 
 
@@ -208,7 +202,7 @@ void	Channel::handleModes(Server *serv, Client *client, std::string const &modes
 	std::vector<std::string> params;
 	if (modes.empty())
 	{
-		serv->sendReply(client, ERR_NEEDMOREPARAMS, "mode", "Not enough parameters");
+		serv->sendReply(client, ERR_NEEDMOREPARAMS, "MODE", "Not enough parameters");
 		return;
 	}
 	if ((modes[0] != '-' && modes[0] != '+'))
@@ -262,7 +256,7 @@ void	Channel::handleKeyMode(Server *serv, Client *client, bool add, std::vector<
 	{
 		if (idx >= params.size() || params[idx].empty())
 		{
-			serv->sendReply(client, ERR_NEEDMOREPARAMS, "mode", "Not enough parameters");
+			serv->sendReply(client, ERR_NEEDMOREPARAMS, "MODE", "Not enough parameters");
 			return;
 		}
 		_key = params[idx++];
@@ -281,7 +275,7 @@ void	Channel::handleOpMode(Server *serv, Client *client, bool add, std::vector<s
 {
 	if (idx >= params.size() || params[idx].empty())
 	{
-		serv->sendReply(client, ERR_NEEDMOREPARAMS, "mode", "Not enough parameters");
+		serv->sendReply(client, ERR_NEEDMOREPARAMS, "MODE", "Not enough parameters");
 		return;
 	}
 	
@@ -309,12 +303,12 @@ void	Channel::handleLimitMode(Server *serv, Client *client, bool add, std::vecto
 	{
 		if (idx >= params.size() || params[idx].empty())
 		{
-			serv->sendReply(client, ERR_NEEDMOREPARAMS, "mode", "Not enough parameters");
+			serv->sendReply(client, ERR_NEEDMOREPARAMS, "MODE", "Not enough parameters");
 			return;
 		}
 		if (!convertToInt(params[idx], limit) || limit <= 0)
 		{
-			serv->sendReply(client, ERR_NEEDMOREPARAMS, "mode", "Not enough parameters");
+			serv->sendReply(client, ERR_NEEDMOREPARAMS, "MODE", "Not enough parameters");
 			return;
 		}
 		_userLimit = limit;
@@ -335,4 +329,11 @@ void	Channel::broadcast(std::string const &msg, Client *except)
 		if (it->second != except)
 			it->second->sendMessage(msg);
 	}
+}
+
+void Channel::rmClient(const std::string& nickname)
+{
+	_users.erase(nickname);
+	_operators.erase(nickname);
+	_invited.erase(nickname);
 }

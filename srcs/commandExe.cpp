@@ -89,7 +89,7 @@ void Server::joinCmd(fullCmd cmd, Client *client)
 		return;
 	if (checkNeedMoreParams(cmd))
 	{
-		sendReply(client, ERR_NEEDMOREPARAMS, "join", "Not enough parameters");
+		sendReply(client, ERR_NEEDMOREPARAMS, "JOIN", "Not enough parameters");
 		return;
 	}
 	
@@ -124,13 +124,11 @@ JoinStatus Server::checkJoinStatus(Channel *channel, Client *client, std::string
 {
 	if (channel->getHasUserLimit() && (channel->getUsers().size() >= channel->getUserLimit()))
 		return J_FULL;
-	else if (channel->getBanned().find(client) != channel->getBanned().end())
-		return J_BANNED;
 	else if (channel->getHasKey() && (key.empty() || key != channel->getKey()))
 		return J_BAD_K;
 	else if (channel->getUsers().find(client->getNickname()) != channel->getUsers().end())
 		return J_ALRDYIN;
-	else if (channel->getIsInviteOnly() && channel->getInvited().find(client) == channel->getInvited().end())
+	else if (channel->getIsInviteOnly() && channel->getInvited().find(client->getNickname()) == channel->getInvited().end())
 		return J_INVIT_O;
     return J_OK;
 }
@@ -169,7 +167,7 @@ void Server::kickCmd(fullCmd cmd, Client *client)
 		return;
 	if (checkNeedMoreParams(cmd) || cmd.params[1].empty())
 	{
-		sendReply(client, ERR_NEEDMOREPARAMS, "join", "Not enough parameters");
+		sendReply(client, ERR_NEEDMOREPARAMS, "KICK", "Not enough parameters");
 		return;
 	}
 	if (!isValidChanName(cmd.params[0]) || _channels.find(cmd.params[0]) == _channels.end())
@@ -203,7 +201,7 @@ void Server::inviteCmd(fullCmd cmd, Client *client)
 		return;
 	if (checkNeedMoreParams(cmd) || cmd.params[1].empty())
 	{
-		sendReply(client, ERR_NEEDMOREPARAMS, "join", "Not enough parameters");
+		sendReply(client, ERR_NEEDMOREPARAMS, "INVITE", "Not enough parameters");
 		return;
 	}
 	if (!chanIsOnServer(cmd.params[1]))
@@ -227,7 +225,6 @@ void Server::inviteCmd(fullCmd cmd, Client *client)
 		sendReply(client, ERR_USERONCHANNEL, params, "is already on channel");
 		return;
 	}
-	if (chanToInviteTo->invite(toInvite))
 	{
  		inviteRPL(client, toInvite, chanToInviteTo);
 		sendInvite(client, toInvite, chanToInviteTo);
@@ -240,7 +237,7 @@ void Server::topicCmd(fullCmd cmd, Client *client)
 		return;
 	if (checkNeedMoreParams(cmd))
 	{
-		sendReply(client, ERR_NEEDMOREPARAMS, "join", "Not enough parameters");
+		sendReply(client, ERR_NEEDMOREPARAMS, "TOPIC", "Not enough parameters");
 		return;
 	}
 	if (!chanIsOnServer(cmd.params[0]))
@@ -278,7 +275,7 @@ void Server::modeCmd(fullCmd cmd, Client *client)
 		return;
 	if (checkNeedMoreParams(cmd) || cmd.params.size() < 2)
 	{
-		sendReply(client, ERR_NEEDMOREPARAMS, "join", "Not enough parameters");
+		sendReply(client, ERR_NEEDMOREPARAMS, "MODE", "Not enough parameters");
 		return;
 	}
 	if (!isValidChanName(cmd.params[0]))
@@ -306,7 +303,7 @@ void	Server::passCmd(fullCmd cmd, Client *client) {
 	}
 
 	if (checkNeedMoreParams(cmd)) {
-		sendReply(client, ERR_NEEDMOREPARAMS, "join", "Not enough parameters");
+		sendReply(client, ERR_NEEDMOREPARAMS, "PASS", "Not enough parameters");
 		return ;
 	}
 
@@ -366,7 +363,7 @@ void	Server::userCmd(fullCmd cmd, Client *client)
 	if (checkNeedMoreParams(cmd) || cmd.params.size() < 3
 		|| (cmd.trailing.empty() && cmd.params.size() < 4)) 
 	{
-		sendReply(client, ERR_NEEDMOREPARAMS, "join", "Not enough parameters");
+		sendReply(client, ERR_NEEDMOREPARAMS, "USER", "Not enough parameters");
 		return ;
 	}
 	if (client->getStatus() == AUTHENTICATED)
@@ -416,4 +413,47 @@ bool	Server::checkAuthenticated(Client *client)
 		return false;
 	}
 	return true;
+}
+
+void Server::partCmd(fullCmd cmd, Client* client)
+{
+	if (checkNeedMoreParams(cmd))
+	{
+		sendReply(client, ERR_NEEDMOREPARAMS, "PART", "Not enough parameters");
+		return;
+	}
+
+	std::vector<std::string> channelNames = splitCmds(cmd.params[0]);
+	std::string reason = (cmd.trailing.empty()) ? client->getNickname() : cmd.trailing;
+
+	for (size_t i = 0; i < channelNames.size(); ++i)
+	{
+		std::string chanName = channelNames[i];
+
+		if (_channels.find(chanName) == _channels.end())
+		{
+			sendReply(client, ERR_NOSUCHCHANNEL, chanName, "No such channel");
+			continue;
+		}
+
+		Channel* chan = _channels[chanName];
+
+		if (!chan->isUser(client->getNickname()))
+		{
+			sendReply(client, ERR_NOTONCHANNEL, chanName, "You're not on that channel");
+			continue;
+		}
+
+		std::string partMsg = ":" + client->getMask() + " PART " + chanName;
+		if (!reason.empty())
+			partMsg += " :" + reason;
+		chan->broadcast(partMsg, client);
+
+		chan->rmClient(client->getNickname());
+		if (chan->getUsers().empty())
+		{
+			delete chan;
+			_channels.erase(chanName);
+		}
+	}
 }

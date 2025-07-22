@@ -27,6 +27,7 @@ enum CMD_TYPE
 	PING,
 	CAP,
 	IR_JOIN,
+	PART,
 	UNKNOWN
 };
 

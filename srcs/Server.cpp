@@ -79,7 +79,7 @@ void Server::runIRC()
 		else if (status == 0)
 			continue;
 
-		for (size_t i = 0; i < _pollFds.size(); ++i)
+		for (int i = _pollFds.size() - 1; i >= 0; --i)
 		{
 			if (!(_pollFds[i].revents & POLLIN))
 				continue;

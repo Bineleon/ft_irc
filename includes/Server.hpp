@@ -97,6 +97,8 @@ class Server
 		void inviteCmd(fullCmd cmd, Client *client);
 		void topicCmd(fullCmd cmd, Client *client);
 		void modeCmd(fullCmd cmd, Client *client);
+		void partCmd(fullCmd cmd, Client* client);
+
 		
 		void sendReply(Client *client, int code, std::vector<std::string> const &params, std::string const &trailing);
 		void sendReply(Client *client, int code, std::string const &param, std::string const &trailing);

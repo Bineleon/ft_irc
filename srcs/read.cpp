@@ -96,6 +96,8 @@ CMD_TYPE Server::checkCMD(fullCmd cmd)
 		return PING;
 	else if (cmd.verb == "CAP")
 		return CAP;
+	else if (cmd.verb == "PART")
+		return PART;
 	else
 		return UNKNOWN;
 }
@@ -144,6 +146,9 @@ void Server::executeCmd(fullCmd cmd, Client *client)
 				break;
 			case PING:
 				pongCmd(cmd, client);
+				break;
+			case PART:
+				partCmd(cmd, client);
 				break;
 			case CAP:
 				break;
