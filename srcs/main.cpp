@@ -24,7 +24,7 @@ int	main(int ac, char **av)
 	{
 		Server serv(port, pwd);
 		gServ = &serv;
-		serv.initErrorMessages();
+		// serv.initErrorMessages();
 		serv.runIRC();
 	}
 	catch(const std::exception& e)

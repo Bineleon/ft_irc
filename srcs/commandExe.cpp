@@ -37,6 +37,7 @@ void Server::handleChanPrivmsg(fullCmd cmd, Client *client)
 
 void Server::handleUserPrivmsg(fullCmd cmd, Client *client)
 {
+	debug("usermsg");
 	std::string const &target = cmd.params[0];
 	if (_nickClients.find(target) == _nickClients.end())
 	{
@@ -50,6 +51,7 @@ void Server::handleUserPrivmsg(fullCmd cmd, Client *client)
 	}
 	std::string pvMsg = buildPrivmsg(cmd, client);
 	_nickClients[target]->sendMessage(pvMsg);
+	debug("msg sent :" + pvMsg);
 }
 
 void Server::privmsgCmd(fullCmd cmd, Client *client)

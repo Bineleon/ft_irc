@@ -58,7 +58,7 @@ class Server
 		std::vector<struct pollfd> _pollFds;
 		std::map<int, Client*> _clients;
 		std::map<std::string, Client*> _nickClients;
-		std::map<int, std::pair<ErrorFormat, std::string> >	_errorMessages;
+		// std::map<int, std::pair<ErrorFormat, std::string> >	_errorMessages;
 		std::map<std::string, Channel*> _channels;
 		std::string _creationDate;
 
@@ -78,8 +78,8 @@ class Server
 
 		void cleanAll();
 
-		void initErrorMessages();
-		void sendError(const Client& client, int error);
+		// void initErrorMessages();
+		// void sendError(const Client& client, int error);
 		void executeCmd(fullCmd cmd, Client *client);
 		CMD_TYPE checkCMD(fullCmd cmd);
 
