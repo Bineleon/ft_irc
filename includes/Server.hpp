@@ -114,6 +114,7 @@ class Server
 		void inviteRPL(Client *client, Client *toInvite, Channel *channel);
 		void sendInvite(Client *client, Client *toInvite, Channel *channel);
 		void sendWelcome(Client *client);
+		void sendNickMsg(std::string oldMask, Client *client);
 
 		void initCreationDate();
 

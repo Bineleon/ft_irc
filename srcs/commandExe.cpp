@@ -14,7 +14,11 @@ std::vector<std::string> splitCmds(std::string const &param)
 std::string Server::buildPrivmsg(fullCmd cmd, Client *client)
 {
 	std::ostringstream oss;
-	oss << ":" << client->getMask() << " " << "PRIVMSG " << cmd.params[0] << " :" << cmd.trailing;
+	oss << ":" << client->getMask() << " " << "PRIVMSG " << cmd.params[0] << " :";
+	if (!cmd.params.empty() && !cmd.params[1].empty())
+		oss << cmd.params[1];
+	if (!cmd.trailing.empty())
+		oss << cmd.trailing;
 	return oss.str();
 }
 
@@ -38,18 +42,32 @@ void Server::handleChanPrivmsg(fullCmd cmd, Client *client)
 void Server::handleUserPrivmsg(fullCmd cmd, Client *client)
 {
 	debug("usermsg");
-	std::string const &target = cmd.params[0];
+	std::string target;
+	
+	if (!cmd.params.empty() && !cmd.params[0].empty())
+	{
+		debug("target is: " + cmd.params[0]);
+		target = cmd.params[0];
+	}
+	else
+	{
+		debug("NO TARGET");
+		target = client->getNickname();
+	}
+	debug("post target");
 	if (_nickClients.find(target) == _nickClients.end())
 	{
-		sendReply(client, ERR_NOSUCHNICK, client->getNickname(), "No such nick");
+		sendReply(client, ERR_NOSUCHNICK, target, "No such nick");
 		return;
 	}
-	if (cmd.trailing.empty())
+	if (cmd.trailing.empty() && cmd.params[1].empty())
 	{
 		sendReply(client, ERR_NOTEXTTOSEND, NULL, "No text to send");
 		return;
 	}
+	debug("pre build");
 	std::string pvMsg = buildPrivmsg(cmd, client);
+	debug("post build");
 	_nickClients[target]->sendMessage(pvMsg);
 	debug("msg sent :" + pvMsg);
 }
@@ -318,6 +336,15 @@ void	Server::passCmd(fullCmd cmd, Client *client) {
 	client->setStatus(NICKNAME_NEEDED);
 }
 
+
+void	Server::sendNickMsg(std::string oldMask, Client *client)
+{
+	std::ostringstream msg;
+
+	msg << ":" << oldMask << "NICK " << client->getNickname();
+	client->sendMessage(msg.str());
+}
+
 void	Server::nickCmd(fullCmd cmd, Client *client) {
 	if (checkNeedMoreParams(cmd)) {
 		sendReply(client, ERR_NONICKNAMEGIVEN, NULL , "No nickname given");		
@@ -336,6 +363,7 @@ void	Server::nickCmd(fullCmd cmd, Client *client) {
 	}
 
 	std::string	msg;
+	std::string oldMask = client->getMask();
 
 	if (client->getStatus() == NICKNAME_NEEDED) {
 		msg = "Requesting the new nick \"" + cmd.params[0] + "\".";
@@ -345,19 +373,19 @@ void	Server::nickCmd(fullCmd cmd, Client *client) {
 		client->sendMessage(msg);
 		if (client->getUsername().empty())
 			client->setStatus(USERNAME_NEEDED);
-		else
-		{
+		else {
 			client->setStatus(AUTHENTICATED);
 			sendWelcome(client);
 		}
+		_nickClients[cmd.params[0]] = client;
 	}
 	else {
-		msg = client->getNickname() + " changed his nickname to " + cmd.params[0] + ".";
-		client->sendMessage(msg);
+		_nickClients.erase(client->getNickname());
+		_nickClients[cmd.params[0]] = client;
+		client->setNickname(cmd.params[0]);
+		sendNickMsg(oldMask, client);
 	}
 
-	client->setNickname(cmd.params[0]);
-	_nickClients[cmd.params[0]] = client;
 }
 
 void	Server::userCmd(fullCmd cmd, Client *client)
