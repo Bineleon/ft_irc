@@ -5,11 +5,11 @@ NAME			= ircserv
 
 SRC_DIR			= srcs/
 SRCS			= main.cpp Server.cpp Client.cpp Channel.cpp read.cpp accept.cpp clientBis.cpp Command.cpp\
-				errorMsgs.cpp handleErrors.cpp utils.cpp commandExe.cpp replies.cpp
+				errorMsgs.cpp handleErrors.cpp utils.cpp commandExe.cpp replies.cpp cleanAll.cpp handleSignals.cpp
 SRC				= ${addprefix ${SRC_DIR}, ${SRCS}}
 
 INCLUDE_DIR		= includes/
-INCLUDES		=  Server.hpp Client.hpp
+INCLUDES		=  Server.hpp Client.hpp 
 INCLUDE			= ${addprefix ${INCLUDE_DIR}, ${INCLUDES}}
 
 OBJS_DIR		= objects/

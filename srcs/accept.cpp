@@ -30,5 +30,5 @@ void	Server::acceptNewClient() {
 	this->_clients.insert(std::make_pair(client_fd, newClient));
 	std::cout << "The new client has been added to the list of clients.\n";
 	std::string	reply = "Hello from server!\r\n";
-	send(new_pollfd.fd, reply.c_str(), reply.length(), 0);
+	newClient->sendMessage(reply);
 }
