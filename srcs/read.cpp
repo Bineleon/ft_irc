@@ -14,13 +14,15 @@ void Server::closeClient(struct pollfd pfdClient)
 		}
 	}
 	if (it != _pollFds.end())
-	_pollFds.erase(it);
+		_pollFds.erase(it);
 	std::map<int, Client*>::iterator cit = _clients.find(pfdClient.fd);
+	std::string nick = cit->second->getNickname();
 	if (cit != _clients.end())
 	{
 		delete cit->second;
 		_clients.erase(cit);
 	}
+	_nickClients.erase(nick);
 }
 
 void Server::readFromSocket(struct pollfd pfdClient)
@@ -44,6 +46,7 @@ void Server::readFromSocket(struct pollfd pfdClient)
 	}
 	else
 	{
+		debug("READ else");
 		_clients[pfdClient.fd]->appendToMsgBuf(buffer);
 		std::string clientMsgBuf = _clients[pfdClient.fd]->getmsgBuffer();
 		size_t pos;
