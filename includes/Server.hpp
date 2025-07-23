@@ -31,7 +31,8 @@ class Client;
 # include <csignal>
 # include <sstream>
 # include <iomanip>
-#include <ctime>
+# include <ctime>
+# include <cerrno>
 
 # define BACKLOG 10
 # define BUFFER_SIZE 1024

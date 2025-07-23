@@ -13,9 +13,28 @@ const std::string&	Client::getUsername() const {
 	return (this->_username);
 }
 
-void	Client::sendMessage(const std::string& msg) const {
-	std::string	fullMsg = msg + "\r\n";
-	send(this->_fd, fullMsg.c_str(), fullMsg.length(), 0);
+// void	Client::sendMessage(const std::string& msg) const {
+// 	std::string	fullMsg = msg + "\r\n";
+// 	send(this->_fd, fullMsg.c_str(), fullMsg.length(), 0);
+// }
+
+void Client::sendMessage(const std::string& msg) const
+{
+	std::string fullMsg = msg + "\r\n";
+	ssize_t bytesSent = send(this->_fd, fullMsg.c_str(), fullMsg.length(), 0);
+
+	if (bytesSent < 0)
+	{
+		if (errno == EAGAIN || errno == EWOULDBLOCK)
+		{
+			std::cerr << "Send would block for client [" << this->_nickname << "]" << std::endl;
+		}
+		else
+		{
+			std::cerr << "Send error for client [" << this->_nickname << "]" << std::endl;
+			perror("send");
+		}
+	}
 }
 
 // void	Client::PASS() {
