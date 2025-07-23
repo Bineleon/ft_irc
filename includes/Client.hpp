@@ -26,6 +26,8 @@ class Client
 		ClientStatus		_status;
 		Channel*			_currentChannel;
 		std::string			_lastCmd;
+		std::string			_writeBuffer;
+
 
 		Client(const Client&);
 		Client&	operator=(const Client&);
@@ -46,7 +48,7 @@ class Client
 		const std::string&	getLastCmd() const;
 		void				setLastCmd(const std::string& cmd);
 
-		void				sendMessage(const std::string& msg) const;
+		void				sendMessage(const std::string& msg);
 		// void	sendError(int error);
 
 		// void				PASS();
@@ -56,7 +58,11 @@ class Client
 		std::string			getMask(void) const;
 		ClientStatus const 	&getStatus(void) const;
 
-		void setMsgBuffer(const std::string& buffer);
+		void				setMsgBuffer(const std::string& buffer);
+		void				appendToWriteBuffer(const std::string& data);
+		void				flushWriteBuffer();
+		bool				hasDataToSend() const;
+		std::string&		getWriteBuffer();
 
 		~Client(){};
 };

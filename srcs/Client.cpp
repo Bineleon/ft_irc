@@ -18,24 +18,12 @@ const std::string&	Client::getUsername() const {
 // 	send(this->_fd, fullMsg.c_str(), fullMsg.length(), 0);
 // }
 
-void Client::sendMessage(const std::string& msg) const
+void Client::sendMessage(const std::string& msg)
 {
 	std::string fullMsg = msg + "\r\n";
-	ssize_t bytesSent = send(this->_fd, fullMsg.c_str(), fullMsg.length(), 0);
-
-	if (bytesSent < 0)
-	{
-		if (errno == EAGAIN || errno == EWOULDBLOCK)
-		{
-			std::cerr << "Send would block for client [" << this->_nickname << "]" << std::endl;
-		}
-		else
-		{
-			std::cerr << "Send error for client [" << this->_nickname << "]" << std::endl;
-			perror("send");
-		}
-	}
+	appendToWriteBuffer(fullMsg);
 }
+
 
 // void	Client::PASS() {
 
@@ -117,4 +105,20 @@ const std::string&	Client::getRealname() const {
 
 void	Client::setRealname(const std::string realname) {
 	this->_realname = realname;
+}
+
+void Client::appendToWriteBuffer(const std::string& data) {
+	_writeBuffer += data;
+}
+
+void Client::flushWriteBuffer() {
+	_writeBuffer.clear();
+}
+
+bool Client::hasDataToSend() const {
+	return !_writeBuffer.empty();
+}
+
+std::string& Client::getWriteBuffer() {
+	return _writeBuffer;
 }

@@ -64,40 +64,76 @@ void Server::initServerSocket()
 	std::cout << "Serveur waiting on port " << _port << "..." << std::endl;
 }
 
+// void Server::runIRC()
+// {
+// 	int status;
+
+// 	while (1)
+// 	{
+// 		status = poll(&_pollFds[0], _pollFds.size(), -1);
+// 		if (status == -1)
+// 		{
+// 			close(_fd);
+// 			throw std::runtime_error("Error: poll()");
+// 		}
+// 		else if (status == 0)
+// 			continue;
+
+// 		for (int i = _pollFds.size() - 1; i >= 0; --i)
+// 		{
+// 			if (!(_pollFds[i].revents & POLLIN))
+// 				continue;
+
+// 			if (_pollFds[i].fd == _fd)
+// 				acceptNewClient();
+// 			else
+// 			{
+// 				readFromSocket(_pollFds[i]);
+// 				// std::string	reply = "Hello from server!\r\n";
+// 				// send(_pollFds[i].fd, reply.c_str(), reply.length(), 0);
+// 				// std::map<int, Client*>::iterator it = this->_clients.find(_pollFds[i].fd);
+// 				// sendError(*it->second, 464);
+// 				//parse msg
+// 			}
+// 		}
+// 	}
+// }
+
+
 void Server::runIRC()
 {
-	int status;
-
 	while (1)
 	{
-		status = poll(&_pollFds[0], _pollFds.size(), -1);
-		if (status == -1)
+		for (size_t i = 0; i < _pollFds.size(); ++i)
 		{
-			close(_fd);
-			throw std::runtime_error("Error: poll()");
+			int fd = _pollFds[i].fd;
+			_pollFds[i].events = POLLIN;
+			if (_clients.find(fd) != _clients.end() && _clients[fd]->hasDataToSend())
+				_pollFds[i].events |= POLLOUT;
 		}
+
+		int status = poll(&_pollFds[0], _pollFds.size(), -1);
+		if (status == -1)
+			throw std::runtime_error("Error: poll()");
 		else if (status == 0)
 			continue;
-
-		for (int i = _pollFds.size() - 1; i >= 0; --i)
+			
+		for (int i = static_cast<int>(_pollFds.size()) - 1; i >= 0; --i)
 		{
-			if (!(_pollFds[i].revents & POLLIN))
-				continue;
-
-			if (_pollFds[i].fd == _fd)
-				acceptNewClient();
-			else
+			if (_pollFds[i].revents & POLLIN)
 			{
-				readFromSocket(_pollFds[i]);
-				// std::string	reply = "Hello from server!\r\n";
-				// send(_pollFds[i].fd, reply.c_str(), reply.length(), 0);
-				// std::map<int, Client*>::iterator it = this->_clients.find(_pollFds[i].fd);
-				// sendError(*it->second, 464);
-				//parse msg
+				if (_pollFds[i].fd == _fd)
+					acceptNewClient();
+				else
+					readFromSocket(_pollFds[i]);
 			}
+			if (_pollFds[i].revents & POLLOUT)
+				writeToSocket(_pollFds[i]);
 		}
 	}
+
 }
+
 
 void Server::initCreationDate()
 {
@@ -105,4 +141,28 @@ void Server::initCreationDate()
 	// _creationDate = std::string(std::ctime(&now));
 	// _creationDate.erase(_creationDate.find_last_not_of("\n") + 1);
 	_creationDate = "today";
+}
+
+void Server::writeToSocket(struct pollfd pfd)
+{
+	Client* client = _clients[pfd.fd];
+	if (!client || !client->hasDataToSend())
+		return;
+
+	std::string& buffer = client->getWriteBuffer();
+	ssize_t sent = send(pfd.fd, buffer.c_str(), buffer.size(), 0);
+
+	if (sent < 0)
+	{
+		if (errno == EAGAIN || errno == EWOULDBLOCK)
+			return;
+		std::cerr << "send() failed for client " << client->getNickname() << std::endl;
+		closeClient(pfd);
+		return;
+	}
+
+	if ((size_t)sent < buffer.size())
+		buffer.erase(0, sent);
+	else
+		client->flushWriteBuffer();
 }

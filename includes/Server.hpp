@@ -73,6 +73,8 @@ class Server
 		void runIRC();
 
 		void readFromSocket(struct pollfd pfdClient);
+		void writeToSocket(struct pollfd pfd);
+
 		void closeClient(struct pollfd pfdClient);
 
 		void acceptNewClient();
