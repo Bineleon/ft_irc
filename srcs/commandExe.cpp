@@ -479,7 +479,12 @@ void Server::partCmd(fullCmd cmd, Client* client)
 		if (!reason.empty())
 			partMsg += " :" + reason;
 		chan->broadcast(partMsg, client);
-
+		if (chan->isOperator(client) && chan->getOperators().size() == 1 && chan->getUsers().size() >= 2)
+		{
+			std::map<std::string, Client*>::iterator it = chan->getUsers().begin();
+			it++;
+			chan->addOperator(it->second);
+		}
 		chan->rmClient(client->getNickname());
 		if (chan->getUsers().empty())
 		{

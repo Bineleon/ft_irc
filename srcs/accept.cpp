@@ -10,7 +10,7 @@ void	Server::acceptNewClient() {
 		return ;
 	}
 
-	std::cout << "A new client has been accepted.\n";
+	logInfo("A new client has been accepted");
 
 	fcntl(client_fd, F_SETFL, O_NONBLOCK);
 
@@ -20,7 +20,7 @@ void	Server::acceptNewClient() {
 	new_pollfd.revents = 0;
 	this->_pollFds.push_back(new_pollfd);
 
-	std::cout << "The new client has been added to the list of pollFds.\n";
+	logInfo("The new client has been added to the list of pollFds.");
 
 	struct in_addr	addr = client_addr.sin_addr;
 	char*	ip_cstr = inet_ntoa(addr);
@@ -28,7 +28,7 @@ void	Server::acceptNewClient() {
 
 	Client*	newClient = new Client(client_fd, ip);
 	this->_clients.insert(std::make_pair(client_fd, newClient));
-	std::cout << "The new client has been added to the list of clients.\n";
+	logInfo("The new client has been added to the list of clients.");
 	std::string	reply = "Hello from server!\r\n";
 	newClient->sendMessage(reply);
 }

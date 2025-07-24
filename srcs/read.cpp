@@ -83,8 +83,10 @@ void Server::readFromSocket(struct pollfd pfdClient)
 	if (bytesRead <= 0)
 	{
 		if (bytesRead == 0)
-		{
-			std::cout << "[" << pfdClient.fd << "] Client socket closed connection." << std::endl;
+		{	
+			std::ostringstream msg;
+			msg << "[" << pfdClient.fd << "] Client socket closed connection." << std::endl;
+			logInfo(msg.str());
 			closeClient(pfdClient);
 		}
 		else
@@ -100,7 +102,6 @@ void Server::readFromSocket(struct pollfd pfdClient)
 		{
 			toParse = clientMsgBuf.substr(0, pos);
 			clientMsgBuf.erase(0, pos + 2);
-			// std::cout << "RECEIVED: " << clientMsgBuf << std::endl;
             _clients[pfdClient.fd]->setMsgBuffer(clientMsgBuf);
 			if (!toParse.empty())
 			{
