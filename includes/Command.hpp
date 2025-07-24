@@ -28,6 +28,7 @@ enum CMD_TYPE
 	CAP,
 	IR_JOIN,
 	PART,
+	QUIT,
 	UNKNOWN
 };
 

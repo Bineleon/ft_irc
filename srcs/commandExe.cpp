@@ -341,7 +341,7 @@ void	Server::sendNickMsg(std::string oldMask, Client *client)
 {
 	std::ostringstream msg;
 
-	msg << ":" << oldMask << "NICK " << client->getNickname();
+	msg << ":" << oldMask << " NICK " << client->getNickname();
 	client->sendMessage(msg.str());
 }
 
@@ -486,4 +486,20 @@ void Server::partCmd(fullCmd cmd, Client* client)
 			_channels.erase(chanName);
 		}
 	}
+}
+
+void Server::quitCmd(fullCmd cmd, Client *client)
+{
+	std::string reason = cmd.trailing.empty() ? "Client Quit" : cmd.trailing;
+	std::string quitMsg = ":" + client->getMask() + " QUIT :" + reason;
+
+	for (std::map<std::string, Channel*>::iterator it = _channels.begin(); it != _channels.end(); ++it)
+	{
+		Channel* chan = it->second;
+		if (chan->isUser(client))
+			chan->broadcast(quitMsg, client);
+	}
+
+	std::cout << "Client [" << client->getNickname() << "] quit: " << reason << std::endl;
+	closeClient(client);
 }

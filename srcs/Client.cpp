@@ -107,6 +107,8 @@ void	Client::setRealname(const std::string realname) {
 	this->_realname = realname;
 }
 
+int	const & Client::getFd() const { return _fd; }
+
 void Client::appendToWriteBuffer(const std::string& data) {
 	_writeBuffer += data;
 }

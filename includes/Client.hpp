@@ -37,16 +37,17 @@ class Client
 		Client(const int fd, const std::string& IP);
 
 		const std::string&	getUsername() const;
-		void	setUsername(const std::string username);
+		void				setUsername(const std::string username);
 		const std::string&	getNickname() const;
-		void	setNickname(const std::string username);
+		void				setNickname(const std::string username);
 		const std::string&	getRealname() const;
-		void	setRealname(const std::string username);
+		void				setRealname(const std::string username);
 		void				setStatus(const ClientStatus& newStatus);
 		const Channel*		getCurrentChannel() const;
 		void				setCurrentChannel(Channel* channel);
 		const std::string&	getLastCmd() const;
 		void				setLastCmd(const std::string& cmd);
+		int	const			&getFd() const;
 
 		void				sendMessage(const std::string& msg);
 		// void	sendError(int error);

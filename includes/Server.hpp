@@ -76,6 +76,8 @@ class Server
 		void writeToSocket(struct pollfd pfd);
 
 		void closeClient(struct pollfd pfdClient);
+		void closeClient(Client *client);
+
 		void rmClientFromChannels(Client *clientToRm);
 
 		void acceptNewClient();
@@ -102,6 +104,7 @@ class Server
 		void topicCmd(fullCmd cmd, Client *client);
 		void modeCmd(fullCmd cmd, Client *client);
 		void partCmd(fullCmd cmd, Client* client);
+		void quitCmd(fullCmd cmd, Client* client);
 
 		
 		void sendReply(Client *client, int code, std::vector<std::string> const &params, std::string const &trailing);

@@ -64,42 +64,6 @@ void Server::initServerSocket()
 	std::cout << "Serveur waiting on port " << _port << "..." << std::endl;
 }
 
-// void Server::runIRC()
-// {
-// 	int status;
-
-// 	while (1)
-// 	{
-// 		status = poll(&_pollFds[0], _pollFds.size(), -1);
-// 		if (status == -1)
-// 		{
-// 			close(_fd);
-// 			throw std::runtime_error("Error: poll()");
-// 		}
-// 		else if (status == 0)
-// 			continue;
-
-// 		for (int i = _pollFds.size() - 1; i >= 0; --i)
-// 		{
-// 			if (!(_pollFds[i].revents & POLLIN))
-// 				continue;
-
-// 			if (_pollFds[i].fd == _fd)
-// 				acceptNewClient();
-// 			else
-// 			{
-// 				readFromSocket(_pollFds[i]);
-// 				// std::string	reply = "Hello from server!\r\n";
-// 				// send(_pollFds[i].fd, reply.c_str(), reply.length(), 0);
-// 				// std::map<int, Client*>::iterator it = this->_clients.find(_pollFds[i].fd);
-// 				// sendError(*it->second, 464);
-// 				//parse msg
-// 			}
-// 		}
-// 	}
-// }
-
-
 void Server::runIRC()
 {
 	while (1)

@@ -20,6 +20,30 @@ void Server::rmClientFromChannels(Client *clientToRm)
 	}
 }
 
+void Server::closeClient(Client *client)
+{
+	std::vector<struct pollfd>::iterator it;
+	for (it = _pollFds.begin(); it != _pollFds.end(); ++it)
+	{
+		if (it->fd == client->getFd())
+		{
+			_pollFds.erase(it);
+			break;
+		}
+	}
+	close(client->getFd());
+
+	std::map<int, Client*>::iterator cit = _clients.find(client->getFd());
+	std::string nick = cit->second->getNickname();
+	if (cit != _clients.end())
+	{
+		rmClientFromChannels(cit->second);
+		delete cit->second;
+		_clients.erase(cit);
+		_nickClients.erase(nick);
+	}
+}
+
 void Server::closeClient(struct pollfd pfdClient)
 {
 	if (_pollFds.empty())
@@ -68,7 +92,6 @@ void Server::readFromSocket(struct pollfd pfdClient)
 	}
 	else
 	{
-		debug("READ else");
 		_clients[pfdClient.fd]->appendToMsgBuf(buffer);
 		std::string clientMsgBuf = _clients[pfdClient.fd]->getmsgBuffer();
 		size_t pos;
@@ -123,6 +146,8 @@ CMD_TYPE Server::checkCMD(fullCmd cmd)
 		return CAP;
 	else if (cmd.verb == "PART")
 		return PART;
+	else if (cmd.verb == "QUIT")
+		return QUIT;
 	else
 		return UNKNOWN;
 }
@@ -174,6 +199,9 @@ void Server::executeCmd(fullCmd cmd, Client *client)
 				break;
 			case PART:
 				partCmd(cmd, client);
+				break;
+			case QUIT:
+				quitCmd(cmd, client);
 				break;
 			case CAP:
 				break;
