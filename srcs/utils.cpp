@@ -53,3 +53,19 @@ void debug(std::string msg)
 {
 	std::cout << "\nDebug: " << msg << "\n";
 }
+
+void logInfo(const std::string& msg) {
+	std::cout << GREEN << "[INFO] " << RESET << msg << std::endl;
+}
+
+void logRecv(const std::string& from, const std::string& msg) {
+	std::cout << CYAN << "[RECV] From " << from << ": " << RESET << msg << std::endl;
+}
+
+void logSend(const std::string& to, const std::string& msg) {
+	std::cout << YELLOW << "[SEND] To " << to << ": " << RESET << msg << std::endl;
+}
+
+void logError(const std::string& msg) {
+	std::cerr << RED << "[ERROR] " << RESET << msg << std::endl;
+}

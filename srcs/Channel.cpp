@@ -56,17 +56,17 @@ std::string			const &Channel::getKey() const
 	return _key;
 }
 
-std::map<std::string, Client*>	Channel::getUsers()
+std::map<std::string, Client*>&	Channel::getUsers()
 {
 	return _users;
 }
 
-std::map<std::string, Client*>	Channel::getOperators()
+std::map<std::string, Client*>&	Channel::getOperators()
 {
 	return _operators;
 }
 
-std::map<std::string, Client*>	Channel::getInvited()
+std::map<std::string, Client*>&	Channel::getInvited()
 {
 	return _invited;
 }

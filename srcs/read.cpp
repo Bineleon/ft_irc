@@ -79,7 +79,7 @@ void Server::readFromSocket(struct pollfd pfdClient)
 
 	std::memset(&buffer, 0, sizeof buffer);
 	bytesRead = recv(pfdClient.fd, buffer, BUFFER_SIZE, 0);
-	std::cout << "buffer = " << buffer << "\n";
+	logRecv(_clients[pfdClient.fd]->getNickname(), buffer);
 	if (bytesRead <= 0)
 	{
 		if (bytesRead == 0)
@@ -100,7 +100,7 @@ void Server::readFromSocket(struct pollfd pfdClient)
 		{
 			toParse = clientMsgBuf.substr(0, pos);
 			clientMsgBuf.erase(0, pos + 2);
-			std::cout << "RECEIVED: " << clientMsgBuf << std::endl;
+			// std::cout << "RECEIVED: " << clientMsgBuf << std::endl;
             _clients[pfdClient.fd]->setMsgBuffer(clientMsgBuf);
 			if (!toParse.empty())
 			{
@@ -156,7 +156,6 @@ CMD_TYPE Server::checkCMD(fullCmd cmd)
 void Server::executeCmd(fullCmd cmd, Client *client)
 {
 	CMD_TYPE cmdType = checkCMD(cmd);
-	printCmd(cmd);
 
 	if (client->getStatus() == PASSWORD_NEEDED && cmdType != PASS && cmdType != CAP && cmdType != JOIN)
 	{
@@ -207,7 +206,6 @@ void Server::executeCmd(fullCmd cmd, Client *client)
 				break;
 			default:
 				sendReply(client, ERR_UNKNOWNCOMMAND, cmd.verb, "Unknown command");		
-				printCmd(cmd);
 				break;
 		}
 	}

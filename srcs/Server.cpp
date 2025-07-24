@@ -130,3 +130,36 @@ void Server::writeToSocket(struct pollfd pfd)
 	else
 		client->flushWriteBuffer();
 }
+
+
+void Server::updateNickInChannels(Client* client, const std::string& oldNick, const std::string& newNick)
+{
+	for (std::map<std::string, Channel*>::iterator it = _channels.begin(); it != _channels.end(); ++it)
+	{
+		Channel* chan = it->second;
+
+		std::map<std::string, Client*>& users = chan->getUsers();
+		std::map<std::string, Client*>::iterator userIt = users.find(oldNick);
+		if (userIt != users.end())
+		{
+			users.erase(userIt);
+			users[newNick] = client;
+		}
+
+		std::map<std::string, Client*>& ops = chan->getOperators();
+		std::map<std::string, Client*>::iterator opIt = ops.find(oldNick);
+		if (opIt != ops.end())
+		{
+			ops.erase(opIt);
+			ops[newNick] = client;
+		}
+
+		std::map<std::string, Client*>& invited = chan->getInvited();
+		std::map<std::string, Client*>::iterator invIt = invited.find(oldNick);
+		if (invIt != invited.end())
+		{
+			invited.erase(invIt);
+			invited[newNick] = client;
+		}
+	}
+}

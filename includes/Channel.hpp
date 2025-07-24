@@ -26,9 +26,9 @@ class Channel
 		std::string			const &getName() const;
 		std::string			const &getTopic() const;
 		std::string			const &getKey() const;
-		std::map<std::string, Client*>	getUsers();
-		std::map<std::string, Client*>	getOperators();
-		std::map<std::string, Client*>	getInvited();
+		std::map<std::string, Client*>&	getUsers();
+		std::map<std::string, Client*>&	getOperators();
+		std::map<std::string, Client*>&	getInvited();
 		size_t				const &getUserLimit() const;
 		bool				const &getHasUserLimit() const;
 		bool				const &getHasKey() const;

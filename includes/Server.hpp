@@ -124,6 +124,8 @@ class Server
 
 		bool				chanIsOnServer(std::string chanName);
 		bool				checkAuthenticated(Client *client);
+		void				updateNickInChannels(Client* client, const std::string& oldNick, const std::string& newNick);
+
 
 };
 

@@ -379,9 +379,10 @@ void	Server::nickCmd(fullCmd cmd, Client *client) {
 		}
 		_nickClients[cmd.params[0]] = client;
 	}
-	else {
+	else{
 		_nickClients.erase(client->getNickname());
 		_nickClients[cmd.params[0]] = client;
+		updateNickInChannels(client, client->getNickname(), cmd.params[0]);
 		client->setNickname(cmd.params[0]);
 		sendNickMsg(oldMask, client);
 	}
