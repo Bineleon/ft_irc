@@ -63,7 +63,7 @@ void logRecv(const std::string& from, const std::string& msg) {
 }
 
 void logSend(const std::string& to, const std::string& msg) {
-	std::cout << SMYELLOW << "[SEND] To " << to << ": " << RESET << msg << std::endl;
+	std::cout << SMYELLOW << "[SEND] " << to << ": " << RESET << msg << std::endl;
 }
 
 void logError(const std::string& msg) {

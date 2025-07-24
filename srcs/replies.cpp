@@ -18,7 +18,7 @@ void Server::sendReply(Client *client, int code, std::vector<std::string> const 
 void Server::sendReply(Client *client, int code, std::string const &param, std::string const &trailing)
 {
 	std::ostringstream oss;
-	oss << ":" << _name << " " << code << " " << client->getNickname();
+	oss << ":" << _name << " " << std::setw(3) << std::setfill('0') << code << " " << client->getNickname();
 
 	if (!param.empty())
 		oss << " " << param;
@@ -27,16 +27,38 @@ void Server::sendReply(Client *client, int code, std::string const &param, std::
 	client->sendMessage(oss.str());
 }
 
-//  :dan-!d@localhost JOIN #test    ; dan- is joining the channel #test
+void Server::broadcastReply(Client *client, Channel *channel, int code, std::vector<std::string> const &params, std::string const &trailing)
+{
+	std::ostringstream oss;
+	oss << ":" << _name << " " << std::setw(3) << std::setfill('0') << code << " " << client->getNickname();
+
+	for (size_t i = 0; i < params.size(); ++i)
+		oss << " " << params[i];
+
+	if (!trailing.empty())
+		oss << " :" << trailing;
+	channel->broadcast(oss.str(), NULL);
+}
+
+void Server::broadcastReply(Client *client, Channel *channel, int code, std::string const &param, std::string const &trailing)
+{
+	std::ostringstream oss;
+	oss << ":" << _name << " " << std::setw(3) << std::setfill('0') << code << " " << client->getNickname();
+
+	if (!param.empty())
+		oss << " " << param;
+	if (!trailing.empty())
+		oss << " :" << trailing;
+	channel->broadcast(oss.str(), NULL);
+}
+
 
 void Server::topicRPL(Client *client, Channel *channel)
 {
-	std::vector<std::string> topicParams;
-	topicParams.push_back(channel->getName());
 	if (channel->getTopic().empty())
-		sendReply(client, RPL_NOTOPIC, topicParams, "No topic is set");
+		broadcastReply(client, channel, RPL_NOTOPIC, channel->getName(), "No topic is set");
 	else
-		sendReply(client, RPL_TOPIC, topicParams, channel->getTopic());
+		broadcastReply(client, channel, RPL_TOPIC, channel->getName(), channel->getTopic());
 }
 
 void Server::nameRPL(Client *client, Channel *channel)

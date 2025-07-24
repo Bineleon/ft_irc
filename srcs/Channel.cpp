@@ -175,9 +175,9 @@ void	Channel::kickUser(Client *client)
 		_invited.erase(client->getNickname());
 }
 
-bool Channel::invite(Client *client)
+void Channel::invite(Client *client)
 {
-	return _invited.insert(std::pair<std::string, Client*>(client->getNickname(), client)).second;
+	_invited[client->getNickname()] = client;
 }
 
 

@@ -79,7 +79,6 @@ void Server::readFromSocket(struct pollfd pfdClient)
 
 	std::memset(&buffer, 0, sizeof buffer);
 	bytesRead = recv(pfdClient.fd, buffer, BUFFER_SIZE, 0);
-	logRecv(_clients[pfdClient.fd]->getNickname(), buffer);
 	if (bytesRead <= 0)
 	{
 		if (bytesRead == 0)
@@ -97,7 +96,6 @@ void Server::readFromSocket(struct pollfd pfdClient)
 		_clients[pfdClient.fd]->appendToMsgBuf(buffer);
 		std::string clientMsgBuf = _clients[pfdClient.fd]->getmsgBuffer();
 		size_t pos;
-
 		while ((pos = clientMsgBuf.find("\r\n")) != std::string::npos)
 		{
 			toParse = clientMsgBuf.substr(0, pos);
@@ -105,6 +103,7 @@ void Server::readFromSocket(struct pollfd pfdClient)
             _clients[pfdClient.fd]->setMsgBuffer(clientMsgBuf);
 			if (!toParse.empty())
 			{
+				logRecv(_clients[pfdClient.fd]->getNickname(), toParse);
 				fullCmd cmd = parseCmd(toParse);
 				executeCmd(cmd, _clients[pfdClient.fd]);
 			}

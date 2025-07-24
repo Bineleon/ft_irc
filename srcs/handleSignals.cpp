@@ -4,7 +4,8 @@ extern Server* gServ;
 
 void	handleSignal(int signal) {
 	if (signal == SIGINT || signal == SIGTERM) {
-		std::cout << "\nSignal received, stopping server...\n";
+		std::cout << "\n";
+		logInfo("Signal received, stopping server...");
 		if (gServ)
 			gServ->cleanAll();
 		std::exit(signal);

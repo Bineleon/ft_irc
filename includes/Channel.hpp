@@ -48,7 +48,7 @@ class Channel
 		bool				isOperator(Client *client);
 		bool				isInvited(Client *client);
 
-		bool				invite(Client *client);
+		void				invite(Client *client);
 
 		void				handleModes(Server *serv, Client *client, std::string const &modes, std::vector<std::string> const &modesParams);
 		void				handleKeyMode(Server *serv, Client *client, bool add, std::vector<std::string> const &params, size_t &idx, char mode);

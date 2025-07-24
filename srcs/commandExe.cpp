@@ -246,6 +246,7 @@ void Server::inviteCmd(fullCmd cmd, Client *client)
 		return;
 	}
 	{
+		chanToInviteTo->invite(toInvite);
  		inviteRPL(client, toInvite, chanToInviteTo);
 		sendInvite(client, toInvite, chanToInviteTo);
 	}
