@@ -76,6 +76,7 @@ class Server
 		void writeToSocket(struct pollfd pfd);
 
 		void closeClient(struct pollfd pfdClient);
+		void rmClientFromChannels(Client *clientToRm);
 
 		void acceptNewClient();
 

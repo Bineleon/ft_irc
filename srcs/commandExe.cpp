@@ -15,7 +15,7 @@ std::string Server::buildPrivmsg(fullCmd cmd, Client *client)
 {
 	std::ostringstream oss;
 	oss << ":" << client->getMask() << " " << "PRIVMSG " << cmd.params[0] << " :";
-	if (!cmd.params.empty() && !cmd.params[1].empty())
+	if (cmd.params.size() > 1 && !cmd.params[1].empty())
 		oss << cmd.params[1];
 	if (!cmd.trailing.empty())
 		oss << cmd.trailing;

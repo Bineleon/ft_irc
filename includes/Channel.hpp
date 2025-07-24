@@ -26,9 +26,9 @@ class Channel
 		std::string			const &getName() const;
 		std::string			const &getTopic() const;
 		std::string			const &getKey() const;
-		std::map<std::string, Client*>	const &getUsers() const;
-		std::map<std::string, Client*>	const &getOperators() const;
-		std::map<std::string, Client*>	const &getInvited() const;
+		std::map<std::string, Client*>	getUsers();
+		std::map<std::string, Client*>	getOperators();
+		std::map<std::string, Client*>	getInvited();
 		size_t				const &getUserLimit() const;
 		bool				const &getHasUserLimit() const;
 		bool				const &getHasKey() const;
@@ -46,6 +46,8 @@ class Channel
 		bool				isUser(Client *client);
 		bool				isUser(std::string nickname);
 		bool				isOperator(Client *client);
+		bool				isInvited(Client *client);
+
 		bool				invite(Client *client);
 
 		void				handleModes(Server *serv, Client *client, std::string const &modes, std::vector<std::string> const &modesParams);

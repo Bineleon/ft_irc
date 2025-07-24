@@ -56,17 +56,17 @@ std::string			const &Channel::getKey() const
 	return _key;
 }
 
-std::map<std::string, Client*>	const &Channel::getUsers() const
+std::map<std::string, Client*>	Channel::getUsers()
 {
 	return _users;
 }
 
-std::map<std::string, Client*>	const &Channel::getOperators() const
+std::map<std::string, Client*>	Channel::getOperators()
 {
 	return _operators;
 }
 
-std::map<std::string, Client*>	const &Channel::getInvited() const
+std::map<std::string, Client*>	Channel::getInvited()
 {
 	return _invited;
 }
@@ -146,6 +146,13 @@ bool	Channel::isUser(std::string nickname)
 	return true;
 }
 
+bool	Channel::isInvited(Client *client)
+{
+	if (_invited.find(client->getNickname()) == _invited.end())
+		return false;
+	return true;
+}
+
 bool	Channel::isOperator(Client *client)
 {
 	if (_operators.find(client->getNickname()) == _operators.end())
@@ -164,6 +171,8 @@ void	Channel::kickUser(Client *client)
 	rmOperator(client);
 	if (isUser(client))
 		_users.erase(client->getNickname());
+	if (isInvited(client))
+		_invited.erase(client->getNickname());
 }
 
 bool Channel::invite(Client *client)

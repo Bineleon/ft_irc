@@ -1,5 +1,25 @@
 #include "../includes/Server.hpp"
 
+void Server::rmClientFromChannels(Client *clientToRm)
+{
+	std::vector<std::string> channelsToRm;
+
+	for (std::map<std::string, Channel*>::iterator it = _channels.begin(); it != _channels.end(); ++it)
+	{
+		Channel *chan = it->second;
+		chan->kickUser(clientToRm);
+
+		if (chan->getUsers().empty())
+			channelsToRm.push_back(it->first);
+	}
+
+	for (size_t i = 0; i < channelsToRm.size(); ++i)
+	{
+		delete _channels[channelsToRm[i]];
+		_channels.erase(channelsToRm[i]);
+	}
+}
+
 void Server::closeClient(struct pollfd pfdClient)
 {
 	if (_pollFds.empty())
@@ -15,14 +35,16 @@ void Server::closeClient(struct pollfd pfdClient)
 	}
 	if (it != _pollFds.end())
 		_pollFds.erase(it);
+	
 	std::map<int, Client*>::iterator cit = _clients.find(pfdClient.fd);
 	std::string nick = cit->second->getNickname();
 	if (cit != _clients.end())
 	{
+		rmClientFromChannels(cit->second);
 		delete cit->second;
 		_clients.erase(cit);
+		_nickClients.erase(nick);
 	}
-	_nickClients.erase(nick);
 }
 
 void Server::readFromSocket(struct pollfd pfdClient)
