@@ -118,8 +118,6 @@ void Server::writeToSocket(struct pollfd pfd)
 
 	if (sent < 0)
 	{
-		if (errno == EAGAIN || errno == EWOULDBLOCK)
-			return;
 		std::cerr << "send() failed for client " << client->getNickname() << std::endl;
 		closeClient(pfd);
 		return;

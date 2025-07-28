@@ -32,7 +32,7 @@ void Server::handleChanPrivmsg(fullCmd cmd, Client *client)
 	}
 	if (cmd.trailing.empty())
 	{
-		sendReply(client, ERR_NOTEXTTOSEND, NULL, "No text to send");
+		sendReply(client, ERR_NOTEXTTOSEND, "No text to send");
 		return;
 	}
 	std::string pvMsg = buildPrivmsg(cmd, client);
@@ -54,9 +54,9 @@ void Server::handleUserPrivmsg(fullCmd cmd, Client *client)
 		sendReply(client, ERR_NOSUCHNICK, target, "No such nick");
 		return;
 	}
-	if (cmd.trailing.empty() && cmd.params[1].empty())
+	if (cmd.trailing.empty() && (cmd.params.size() < 2 || cmd.params[1].empty()))
 	{
-		sendReply(client, ERR_NOTEXTTOSEND, NULL, "No text to send");
+		sendReply(client, ERR_NOTEXTTOSEND, "No text to send");
 		return;
 	}
 	std::string pvMsg = buildPrivmsg(cmd, client);
@@ -69,7 +69,7 @@ void Server::privmsgCmd(fullCmd cmd, Client *client)
 		return;
 	if (checkNeedMoreParams(cmd))
 	{
-		sendReply(client, ERR_NORECIPIENT, NULL, "No recipient given");
+		sendReply(client, ERR_NORECIPIENT, "No recipient given");
 		return;
 	}
 	if (isValidChanName(cmd.params[0]))
@@ -310,7 +310,7 @@ void Server::modeCmd(fullCmd cmd, Client *client)
 
 void	Server::passCmd(fullCmd cmd, Client *client) {
 	if (client->getStatus() != PASSWORD_NEEDED) {
-		sendReply(client, ERR_ALREADYREGISTERED, NULL , "You may not reregister");		
+		sendReply(client, ERR_ALREADYREGISTERED, "You may not reregister");		
 		return ;
 	}
 	if (checkNeedMoreParams(cmd)) {
@@ -321,6 +321,8 @@ void	Server::passCmd(fullCmd cmd, Client *client) {
 		sendReply(client, ERR_PASSWDMISMATCH, "Password incorrect");	
 		return ;
 	}
+
+	debug("post pass missmatch");
 
 	client->sendMessage(":ircserv NOTICE AUTH :Password accepted");
 	client->setStatus(NICKNAME_NEEDED);
@@ -336,7 +338,7 @@ void	Server::sendNickMsg(std::string oldMask, Client *client)
 
 void	Server::nickCmd(fullCmd cmd, Client *client) {
 	if (checkNeedMoreParams(cmd)) {
-		sendReply(client, ERR_NONICKNAMEGIVEN, NULL , "No nickname given");		
+		sendReply(client, ERR_NONICKNAMEGIVEN, "No nickname given");		
 		return ;
 	}
 
@@ -386,7 +388,7 @@ void	Server::userCmd(fullCmd cmd, Client *client)
 	}
 	if (client->getStatus() == AUTHENTICATED)
 	{
-		sendReply(client, ERR_ALREADYREGISTERED, NULL , "You may not reregister");		
+		sendReply(client, ERR_ALREADYREGISTERED, "You may not reregister");		
 		return;
 	}
 	client->setUsername(cmd.params[0]);
@@ -412,7 +414,7 @@ void	Server::pongCmd(fullCmd cmd, Client *client)
 {
 	if (cmd.params.empty() && cmd.trailing.empty())
 	{
-		sendReply(client, ERR_NOORIGIN, NULL , "No origin specified");
+		sendReply(client, ERR_NOORIGIN, "No origin specified");
 		return;
 	}
 
@@ -430,7 +432,7 @@ bool	Server::checkAuthenticated(Client *client)
 {
 	if (client->getStatus() != AUTHENTICATED)
 	{
-		sendReply(client, ERR_NOTREGISTERED, NULL , "You have not registered");
+		sendReply(client, ERR_NOTREGISTERED, "You have not registered");
 		return false;
 	}
 	return true;
