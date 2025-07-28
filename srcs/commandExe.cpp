@@ -41,20 +41,14 @@ void Server::handleChanPrivmsg(fullCmd cmd, Client *client)
 
 void Server::handleUserPrivmsg(fullCmd cmd, Client *client)
 {
-	debug("usermsg");
 	std::string target;
 	
 	if (!cmd.params.empty() && !cmd.params[0].empty())
-	{
-		debug("target is: " + cmd.params[0]);
 		target = cmd.params[0];
-	}
 	else
 	{
-		debug("NO TARGET");
 		target = client->getNickname();
 	}
-	debug("post target");
 	if (_nickClients.find(target) == _nickClients.end())
 	{
 		sendReply(client, ERR_NOSUCHNICK, target, "No such nick");
@@ -65,11 +59,8 @@ void Server::handleUserPrivmsg(fullCmd cmd, Client *client)
 		sendReply(client, ERR_NOTEXTTOSEND, NULL, "No text to send");
 		return;
 	}
-	debug("pre build");
 	std::string pvMsg = buildPrivmsg(cmd, client);
-	debug("post build");
 	_nickClients[target]->sendMessage(pvMsg);
-	debug("msg sent :" + pvMsg);
 }
 
 void Server::privmsgCmd(fullCmd cmd, Client *client)
@@ -322,21 +313,18 @@ void	Server::passCmd(fullCmd cmd, Client *client) {
 		sendReply(client, ERR_ALREADYREGISTERED, NULL , "You may not reregister");		
 		return ;
 	}
-
 	if (checkNeedMoreParams(cmd)) {
 		sendReply(client, ERR_NEEDMOREPARAMS, "PASS", "Not enough parameters");
 		return ;
 	}
-
-	if (cmd.params[0] != getPwd()) {
-		sendReply(client, ERR_PASSWDMISMATCH, NULL , "Password incorrect");		
+	if (cmd.params.empty() || cmd.params[0] != getPwd()) {
+		sendReply(client, ERR_PASSWDMISMATCH, "Password incorrect");	
 		return ;
 	}
 
-	client->sendMessage(":localhost NOTICE AUTH :Password accepted");
+	client->sendMessage(":ircserv NOTICE AUTH :Password accepted");
 	client->setStatus(NICKNAME_NEEDED);
 }
-
 
 void	Server::sendNickMsg(std::string oldMask, Client *client)
 {
@@ -358,7 +346,7 @@ void	Server::nickCmd(fullCmd cmd, Client *client) {
 		return ;
 	}
 
-	if (isValidNickname(cmd.params[0]) == false) {
+	if (!isValidNickname(cmd.params[0])) {
 		sendReply(client, ERR_ERRONEUSNICKNAME, cmd.params[0] , "Erroneus nickname");		
 		return ;
 	}
@@ -367,10 +355,8 @@ void	Server::nickCmd(fullCmd cmd, Client *client) {
 	std::string oldMask = client->getMask();
 
 	if (client->getStatus() == NICKNAME_NEEDED || client->getStatus() == USERNAME_NEEDED) {
-		// msg = "Requesting the new nick \"" + cmd.params[0] + "\".";
-		// client->sendMessage(msg);
 		client->setNickname(cmd.params[0]);
-		msg << ":localhost NOTICE AUTH :Nickname set to " << client->getNickname() << ".";
+		msg << ":ircserv NOTICE AUTH :Nickname set to " << client->getNickname() << ".";
 		client->sendMessage(msg.str());
 		if (client->getUsername().empty())
 			client->setStatus(USERNAME_NEEDED);
@@ -410,7 +396,7 @@ void	Server::userCmd(fullCmd cmd, Client *client)
 		client->setRealname(cmd.trailing);
 
 	std::ostringstream msg;
-	msg << ":localhost NOTICE AUTH :Username set to " << client->getUsername() << ".";
+	msg << ":ircserv NOTICE AUTH :Username set to " << client->getUsername() << ".";
 	client->sendMessage(msg.str());
 
 	if (client->getNickname().empty())
@@ -438,7 +424,6 @@ void	Server::pongCmd(fullCmd cmd, Client *client)
 
 	std::string rpl = "PONG: " + target;
 	client->sendMessage(rpl);
-
 }
 
 bool	Server::checkAuthenticated(Client *client)

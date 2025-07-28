@@ -101,6 +101,11 @@ void Server::readFromSocket(struct pollfd pfdClient)
 			toParse = clientMsgBuf.substr(0, pos);
 			clientMsgBuf.erase(0, pos + 2);
             _clients[pfdClient.fd]->setMsgBuffer(clientMsgBuf);
+			if (toParse.size() + 2 > 512)
+			{
+				logError("Client " + _clients[pfdClient.fd]->getNickname() + " sent a message exceeding 512 bytes.");
+				continue;
+			}
 			if (!toParse.empty())
 			{
 				logRecv(_clients[pfdClient.fd]->getNickname(), toParse);

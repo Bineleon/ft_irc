@@ -6,23 +6,14 @@ bool convertToInt(std::string const &str, int &result)
 	std::stringstream ss(str);
 
 	if (str.empty())
-	{
-		debug("conv1");
 		return false;
-	}
 
 	ss >> tmp;
 	if (ss.fail() || !ss.eof())
-	{
-		debug("conv2");
 		return false;
-	}	
 
 	if (tmp < std::numeric_limits<int>::min() || tmp > std::numeric_limits<int>::max())
-	{
-		debug("conv3");
 		return false;
-	}
 
 	result = static_cast<int>(tmp);
 	return true;
@@ -42,7 +33,10 @@ bool isValidChanName(std::string const &chanName)
 	return true;
 }
 
-bool	isValidNickname(const std::string& nickname) {
+bool	isValidNickname(const std::string& nickname)
+{
+	if (std::isdigit(nickname[0]) || nickname[0] == '-')
+		return false;
 	std::size_t	found = nickname.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789[]{}\\|");
 	if (found != std::string::npos)
 		return false;

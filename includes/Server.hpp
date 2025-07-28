@@ -109,6 +109,8 @@ class Server
 		
 		void				sendReply(Client *client, int code, std::vector<std::string> const &params, std::string const &trailing);
 		void				sendReply(Client *client, int code, std::string const &param, std::string const &trailing);
+		void				sendReply(Client *client, int code, std::string const &trailing);
+
 		void				broadcastReply(Client *client, Channel *channel, int code, std::vector<std::string> const &params, std::string const &trailing);
 		void				broadcastReply(Client *client, Channel *channel, int code, std::string const &param, std::string const &trailing);
 

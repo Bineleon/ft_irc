@@ -4,8 +4,10 @@
 void Server::sendReply(Client *client, int code, std::vector<std::string> const &params, std::string const &trailing)
 {
 	std::ostringstream oss;
-	oss << ":" << _name << " " << std::setw(3) << std::setfill('0') << code << " " << client->getNickname();
-
+	oss << ":" << _name << " " << std::setw(3) << std::setfill('0') << code;
+	
+	if (!client->getNickname().empty())
+		oss << " " << client->getNickname();
 	for (size_t i = 0; i < params.size(); ++i)
 		oss << " " << params[i];
 
@@ -18,10 +20,22 @@ void Server::sendReply(Client *client, int code, std::vector<std::string> const 
 void Server::sendReply(Client *client, int code, std::string const &param, std::string const &trailing)
 {
 	std::ostringstream oss;
-	oss << ":" << _name << " " << std::setw(3) << std::setfill('0') << code << " " << client->getNickname();
-
+	oss << ":" << _name << " " << std::setw(3) << std::setfill('0') << code;
+	if (!client->getNickname().empty())
+		oss << " " << client->getNickname();
 	if (!param.empty())
 		oss << " " << param;
+	if (!trailing.empty())
+		oss << " :" << trailing;
+	client->sendMessage(oss.str());
+}
+
+void Server::sendReply(Client *client, int code, std::string const &trailing)
+{
+	std::ostringstream oss;
+	oss << ":" << _name << " " << std::setw(3) << std::setfill('0') << code;
+	if (!client->getNickname().empty())
+		oss << " " << client->getNickname();
 	if (!trailing.empty())
 		oss << " :" << trailing;
 	client->sendMessage(oss.str());
