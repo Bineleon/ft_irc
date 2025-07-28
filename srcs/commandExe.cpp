@@ -14,7 +14,7 @@ std::vector<std::string> splitCmds(std::string const &param)
 std::string Server::buildPrivmsg(fullCmd cmd, Client *client)
 {
 	std::ostringstream oss;
-	oss << ":" << client->getMask() << " " << "PRIVMSG " << cmd.params[0] << " :";
+	oss << ":" << client->getMask() << " PRIVMSG " << cmd.params[0] << " :";
 	if (cmd.params.size() > 1 && !cmd.params[1].empty())
 		oss << cmd.params[1];
 	if (!cmd.trailing.empty())
@@ -363,15 +363,15 @@ void	Server::nickCmd(fullCmd cmd, Client *client) {
 		return ;
 	}
 
-	std::string	msg;
+	std::ostringstream msg;
 	std::string oldMask = client->getMask();
 
-	if (client->getStatus() == NICKNAME_NEEDED) {
-		msg = "Requesting the new nick \"" + cmd.params[0] + "\".";
-		client->sendMessage(msg);
+	if (client->getStatus() == NICKNAME_NEEDED || client->getStatus() == USERNAME_NEEDED) {
+		// msg = "Requesting the new nick \"" + cmd.params[0] + "\".";
+		// client->sendMessage(msg);
 		client->setNickname(cmd.params[0]);
-		msg = "Nickname set to " + client->getNickname() + ".";
-		client->sendMessage(msg);
+		msg << ":localhost NOTICE AUTH :Nickname set to " << client->getNickname() << ".";
+		client->sendMessage(msg.str());
 		if (client->getUsername().empty())
 			client->setStatus(USERNAME_NEEDED);
 		else {
@@ -380,7 +380,7 @@ void	Server::nickCmd(fullCmd cmd, Client *client) {
 		}
 		_nickClients[cmd.params[0]] = client;
 	}
-	else{
+	else {
 		_nickClients.erase(client->getNickname());
 		_nickClients[cmd.params[0]] = client;
 		updateNickInChannels(client, client->getNickname(), cmd.params[0]);
@@ -408,6 +408,10 @@ void	Server::userCmd(fullCmd cmd, Client *client)
 		client->setRealname(cmd.params[3]);
 	else
 		client->setRealname(cmd.trailing);
+
+	std::ostringstream msg;
+	msg << ":localhost NOTICE AUTH :Username set to " << client->getUsername() << ".";
+	client->sendMessage(msg.str());
 
 	if (client->getNickname().empty())
 		client->setStatus(NICKNAME_NEEDED);
@@ -507,6 +511,8 @@ void Server::quitCmd(fullCmd cmd, Client *client)
 			chan->broadcast(quitMsg, client);
 	}
 
-	std::cout << "Client [" << client->getNickname() << "] quit: " << reason << std::endl;
+	std::ostringstream msg;
+	msg << "Client [" << client->getNickname() << "] quit: " << reason << std::endl;
+	logInfo(msg.str());
 	closeClient(client);
 }

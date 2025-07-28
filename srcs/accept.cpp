@@ -29,6 +29,6 @@ void	Server::acceptNewClient() {
 	Client*	newClient = new Client(client_fd, ip);
 	this->_clients.insert(std::make_pair(client_fd, newClient));
 	logInfo("The new client has been added to the list of clients.");
-	std::string	reply = "Hello from server!\r\n";
-	newClient->sendMessage(reply);
+	// std::string	reply = "Hello from server!\r\n";
+	// newClient->sendMessage(reply);
 }
