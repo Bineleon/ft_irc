@@ -77,7 +77,6 @@ ft_irc_new/
 ## Requirements
 - **C++98**
 - POSIX environment (Linux/macOS)
-- Network headers (`<sys/socket.h>`, `<netinet/in.h>`, `<arpa/inet.h>`)
 - `make`
 
 ---
